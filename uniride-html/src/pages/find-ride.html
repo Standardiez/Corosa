@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Find Ride - UniRide</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link href="../assets/styles/index.css" rel="stylesheet">
+        <link href="../assets/styles/components.css" rel="stylesheet">
+        <style>
+            /* small page-scoped tweaks */
+            .destination-card { cursor: pointer; }
+            .destination-card.selected { border-color: hsl(var(--primary)); background: color-mix(in srgb, hsl(var(--primary)) 8%, transparent); }
+        </style>
+</head>
+<body class="min-h-screen bg-background">
+    <header class="border-b bg-card">
+        <div class="container mx-auto px-4 py-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-primary">UniRide</h1>
+            </div>
+            <div>
+                <a href="index.html" class="btn btn-outline">Back to Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl font-bold mb-2">Where To?</h2>
+            <p class="text-muted-foreground mb-8">Select your destination to find available rides</p>
+
+            <div id="destinations-list" class="space-y-3">
+                <!-- destination cards rendered here -->
+            </div>
+
+            <button id="back-btn" class="btn btn-outline w-full mt-6">Back to Dashboard</button>
+        </div>
+    </main>
+
+    <script src="../scripts/find-ride.js"></script>
+    <script src="../scripts/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "uniride-html",
+  "version": "1.0.0",
+  "description": "A university carpooling web application built with HTML, CSS, and JavaScript.",
+  "main": "src/scripts/main.js",
+  "scripts": {
+    "start": "live-server src",
+    "build": "echo 'No build step required for HTML project.'"
+  },
+  "dependencies": {
+    "tailwindcss": "^2.2.19"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  },
+  "keywords": [
+    "carpooling",
+    "university",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
