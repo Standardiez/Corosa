@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ride Status - UniRide</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="../assets/styles/index.css" rel="stylesheet">
+  <link href="../assets/styles/components.css" rel="stylesheet">
+</head>
+
+<body class="bg-background min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur">
+    <div class="container flex h-16 items-center justify-between px-4">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
+          <svg class="h-6 w-6 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1h-2"></path>
+            <path d="M4 17h2"></path>
+            <path d="M16 4h2c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1h-2"></path>
+            <path d="M4 7h2"></path>
+            <path d="M5 17v1c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-1"></path>
+            <path d="M5 7V6c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v1"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">UniRide</h1>
+          <p class="text-xs text-muted-foreground">University Carpooling</p>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="find-ride.html" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+          Find a Ride
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Ride Status Progress -->
+  <main class="flex-1 container mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold text-center mb-6" id="rideTitle">Waiting for Confirmation</h1>
+
+    <div class="flex justify-center items-center gap-6 mb-10">
+      <div class="step">
+        <div class="circle" id="step1"></div>
+        <p>Waiting for Driver Confirmation</p>
+      </div>
+      <div class="step">
+        <div class="circle" id="step2"></div>
+        <p>Driver is on the way</p>
+      </div>
+      <div class="step">
+        <div class="circle" id="step3"></div>
+        <p>Passenger Pick-Up</p>
+      </div>
+      <div class="step">
+        <div class="circle" id="step4"></div>
+        <p>On the way to Destination</p>
+      </div>
+      <div class="step">
+        <div class="circle" id="step5"></div>
+        <p>Arrived at Destination</p>
+      </div>
+    </div>
+
+    <!-- Booking Details Card -->
+    <section class="max-w-lg mx-auto border rounded-xl p-6 bg-white shadow">
+      <h2 class="text-xl font-semibold mb-4">Booking Details</h2>
+
+      <!-- Driver Section -->
+      <div class="flex items-center gap-4 border-b pb-4 mb-4">
+        <img id="driverAvatar" src="" class="w-14 h-14 rounded-full">
+        <div class="flex-1">
+          <h3 id="driverName" class="font-semibold"></h3>
+          <p id="driverDetails" class="text-sm text-gray-500"></p>
+          <p id="driverRating" class="text-red-600 text-sm font-semibold"></p>
+        </div>
+      </div>
+
+      <!-- Route Details -->
+      <div class="mb-4 text-sm">
+        <p><strong>Pickup:</strong> <span id="pickupLocation"></span></p>
+        <p><strong>Destination:</strong> <span id="destinationLocation"></span></p>
+      </div>
+
+      <!-- Button -->
+      <button id="detailsBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg">
+        See Details
+      </button>
+    </section>
+  </main>
+
+  <script src="../scripts/ride-status.js"></script>
+</body>
+</html>
