@@ -32,7 +32,6 @@ CREATE INDEX IF NOT EXISTS idx_passengers_employment_status ON passengers(employ
 
 -- Insert sample data for testing
 INSERT INTO passengers (first_name, middle_initial, last_name, birthdate, email, mobile_number, emergency_contact, address, disabilities, employment_status, account_status, hashed_password) VALUES
-('John', 'A', 'Doe', '2000-05-15', 'john.doe@university.edu', '+1234567890', '+1234567891', '123 University St, Campus City', 'None', 'student', 'active', '$2y$10$example_hash_here'),
-('Jane', 'B', 'Smith', '1999-08-22', 'jane.smith@university.edu', '+1234567892', '+1234567893', '456 College Ave, Campus City', 'Visual impairment', 'student', 'active', '$2y$10$example_hash_here'),
-('Mike', 'C', 'Johnson', '2001-03-10', 'mike.johnson@university.edu', '+1234567894', '+1234567895', '789 Student Blvd, Campus City', 'None', 'employed', 'active', '$2y$10$example_hash_here');
+('John', 'A', 'Doe', '2000-05-15', 'john.doe@university.edu', '+9923232131', '+1234567891', '123 University St, Campus City', 'None', 'student', 'active', '$2y$10'),
+('Jane', 'B', 'Smith', '1999-08-22', 'jane.smith@university.edu', '+9982372372', '+1234567893', '456 College Ave, Campus City', 'None', 'student', 'active', '$2y$10$');
 
