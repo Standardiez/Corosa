@@ -53,7 +53,8 @@ function handleDestinationSelect(destinationId) {
       name: destination?.name || '',
       address: destination?.address || ''
     });
-    window.location.href = `/pickup-location.html?${params.toString()}`;
+    // Use relative path since this script runs from pages (e.g. pages/find-ride.html)
+    window.location.href = `./pickup-location.html?${params.toString()}`;
   }, 240);
 }
 
@@ -62,5 +63,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDestinations();
 
   const backBtn = document.getElementById('back-btn');
-  if (backBtn) backBtn.addEventListener('click', () => window.location.href = '/index.html');
+  if (backBtn) backBtn.addEventListener('click', () => window.location.href = './index.html');
 });
