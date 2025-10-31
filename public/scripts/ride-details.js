@@ -11,14 +11,14 @@ const mockRide = {
   time: 'Today, 8:30 AM'
 };
 
-// Render the Confirm Ride layout
-function renderConfirmRide(ride) {
-  const container = document.getElementById('confirmRideContainer');
+// Render the Ride Details layout
+function renderRideDetails(ride) {
+  const container = document.getElementById('rideDetailsContainer');
 
   container.innerHTML = `
-    <h1 class="text-2xl font-bold text-center mb-1">Confirm Your Ride</h1>
+    <h1 class="text-2xl font-bold text-center mb-1">Ride Details</h1>
     <p class="text-gray-500 text-center mb-6 text-sm">
-      Make sure information is correct before booking
+      Here's information about your ride.
     </p>
 
     <!-- Driver Information -->
@@ -41,23 +41,13 @@ function renderConfirmRide(ride) {
     <!-- Payment Method -->
     <div class="border rounded-xl p-4 mb-3">
       <h3 class="font-semibold text-gray-700 mb-2">Payment Method</h3>
-      <select id="paymentMethod" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
-        <option value="" disabled selected>Select a method</option>
-        <option value="cash">Cash</option>
-        <option value="gcash">GCash</option>
-        <option value="card">Card</option>
-      </select>
+      <p class="text-gray-800 font-semibold">Cash</p>
     </div>
 
     <!-- Add a Tip -->
     <div class="border rounded-xl p-4 mb-3">
       <h3 class="font-semibold text-gray-700 mb-2">Add a Tip?</h3>
-      <input 
-        type="number" 
-        id="tipAmount" 
-        placeholder="Enter tip amount (optional)" 
-        class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-      />
+      <p class="text-gray-800 font-semibold">₱10</p>
     </div>
 
     <!-- Fare -->
@@ -66,23 +56,15 @@ function renderConfirmRide(ride) {
       <p class="text-gray-800 font-semibold">₱150</p>
     </div>
 
-    <!-- Button -->
-    <button id="bookButton" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition">
-      Book Carosa
+    <!-- Buttons -->
+    <div class="flex gap-3">
+    <button id="reportButton" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 rounded-xl transition">
+      Report an issue
+    </button>
+    <button id="backButton" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition">
+      Back
     </button>
   `;
-
-  // Handle booking click
-  const bookButton = document.getElementById('bookButton');
-  bookButton.addEventListener('click', () => {
-    const paymentMethod = document.getElementById('paymentMethod').value;
-    const tipAmount = document.getElementById('tipAmount').value;
-
-    if (!paymentMethod) {
-      alert('Please select a payment method before booking.');
-      return;
-    }
-  });
 }
 
-renderConfirmRide(mockRide);
+renderRideDetails(mockRide);
