@@ -1,11 +1,11 @@
 <?php
 require_once '../config/database.php';
 
-class Passenger {
+class User {
     private $conn;
-    private $table_name = "passengers";
+    private $table_name = "users";
 
-    public $passenger_id;
+    public $user_id;
     public $first_name;
     public $middle_initial;
     public $last_name;
@@ -25,15 +25,15 @@ class Passenger {
     }
 
     /**
-     * Create a new passenger
+     * Create a new user
      */
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
                   (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
-                   emergency_contact, address, disabilities, employment_status, account_status, hashed_password) 
+                   emergency_contact, disabilities, employment_status, account_status, hashed_password) 
                   VALUES (:first_name, :middle_initial, :last_name, :birthdate, :email, :mobile_number, 
-                          :emergency_contact, :address, :disabilities, :employment_status, :account_status, :hashed_password)
-                  RETURNING passenger_id";
+                          :emergency_contact, :disabilities, :employment_status, :account_status, :hashed_password)
+                  RETURNING user_id";
 
         $stmt = $this->conn->prepare($query);
 
@@ -45,7 +45,6 @@ class Passenger {
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->mobile_number = htmlspecialchars(strip_tags($this->mobile_number));
         $this->emergency_contact = htmlspecialchars(strip_tags($this->emergency_contact));
-        $this->address = htmlspecialchars(strip_tags($this->address));
         $this->disabilities = htmlspecialchars(strip_tags($this->disabilities));
         $this->employment_status = htmlspecialchars(strip_tags($this->employment_status));
         $this->account_status = htmlspecialchars(strip_tags($this->account_status));
@@ -59,7 +58,6 @@ class Passenger {
         $stmt->bindParam(":email", $this->email);
         $stmt->bindParam(":mobile_number", $this->mobile_number);
         $stmt->bindParam(":emergency_contact", $this->emergency_contact);
-        $stmt->bindParam(":address", $this->address);
         $stmt->bindParam(":disabilities", $this->disabilities);
         $stmt->bindParam(":employment_status", $this->employment_status);
         $stmt->bindParam(":account_status", $this->account_status);
@@ -68,14 +66,14 @@ class Passenger {
         if($stmt->execute()) {
             // PostgreSQL: Get the returned ID from RETURNING clause
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->passenger_id = $row['passenger_id'];
+            $this->user_id = $row['user_id'];
             return true;
         }
         return false;
     }
 
     /**
-     * Get passenger by email
+     * Get user by email
      */
     public function getByEmail() {
         $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email LIMIT 1";
@@ -85,7 +83,7 @@ class Passenger {
         
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->passenger_id = $row['passenger_id'];
+            $this->user_id = $row['user_id'];
             $this->first_name = $row['first_name'];
             $this->middle_initial = $row['middle_initial'];
             $this->last_name = $row['last_name'];
@@ -93,7 +91,6 @@ class Passenger {
             $this->email = $row['email'];
             $this->mobile_number = $row['mobile_number'];
             $this->emergency_contact = $row['emergency_contact'];
-            $this->address = $row['address'];
             $this->disabilities = $row['disabilities'];
             $this->employment_status = $row['employment_status'];
             $this->account_status = $row['account_status'];
@@ -105,17 +102,17 @@ class Passenger {
     }
 
     /**
-     * Get passenger by ID
+     * Get user by ID
      */
     public function getById() {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE passenger_id = :passenger_id LIMIT 1";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_id = :user_id LIMIT 1";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":passenger_id", $this->passenger_id);
+        $stmt->bindParam(":user_id", $this->user_id);
         $stmt->execute();
         
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->passenger_id = $row['passenger_id'];
+            $this->user_id = $row['user_id'];
             $this->first_name = $row['first_name'];
             $this->middle_initial = $row['middle_initial'];
             $this->last_name = $row['last_name'];
@@ -123,7 +120,6 @@ class Passenger {
             $this->email = $row['email'];
             $this->mobile_number = $row['mobile_number'];
             $this->emergency_contact = $row['emergency_contact'];
-            $this->address = $row['address'];
             $this->disabilities = $row['disabilities'];
             $this->employment_status = $row['employment_status'];
             $this->account_status = $row['account_status'];
@@ -135,10 +131,10 @@ class Passenger {
     }
 
     /**
-     * Get all passengers
+     * Get all users
      */
     public function getAll() {
-        $query = "SELECT passenger_id, first_name, middle_initial, last_name, email, 
+        $query = "SELECT user_id, first_name, middle_initial, last_name, email, 
                          mobile_number, employment_status, account_status, created_at 
                   FROM " . $this->table_name . " 
                   ORDER BY created_at DESC";
@@ -150,15 +146,15 @@ class Passenger {
     }
 
     /**
-     * Update passenger information
+     * Update user information
      */
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
                   SET first_name = :first_name, middle_initial = :middle_initial, last_name = :last_name, 
                       birthdate = :birthdate, mobile_number = :mobile_number, emergency_contact = :emergency_contact,
-                      address = :address, disabilities = :disabilities, employment_status = :employment_status,
+                      disabilities = :disabilities, employment_status = :employment_status,
                       account_status = :account_status
-                  WHERE passenger_id = :passenger_id";
+                  WHERE user_id = :user_id";
 
         $stmt = $this->conn->prepare($query);
 
@@ -169,7 +165,6 @@ class Passenger {
         $this->birthdate = htmlspecialchars(strip_tags($this->birthdate));
         $this->mobile_number = htmlspecialchars(strip_tags($this->mobile_number));
         $this->emergency_contact = htmlspecialchars(strip_tags($this->emergency_contact));
-        $this->address = htmlspecialchars(strip_tags($this->address));
         $this->disabilities = htmlspecialchars(strip_tags($this->disabilities));
         $this->employment_status = htmlspecialchars(strip_tags($this->employment_status));
         $this->account_status = htmlspecialchars(strip_tags($this->account_status));
@@ -181,11 +176,10 @@ class Passenger {
         $stmt->bindParam(":birthdate", $this->birthdate);
         $stmt->bindParam(":mobile_number", $this->mobile_number);
         $stmt->bindParam(":emergency_contact", $this->emergency_contact);
-        $stmt->bindParam(":address", $this->address);
         $stmt->bindParam(":disabilities", $this->disabilities);
         $stmt->bindParam(":employment_status", $this->employment_status);
         $stmt->bindParam(":account_status", $this->account_status);
-        $stmt->bindParam(":passenger_id", $this->passenger_id);
+        $stmt->bindParam(":user_id", $this->user_id);
 
         if($stmt->execute()) {
             return true;
@@ -194,12 +188,12 @@ class Passenger {
     }
 
     /**
-     * Delete passenger
+     * Delete user
      */
     public function delete() {
-        $query = "DELETE FROM " . $this->table_name . " WHERE passenger_id = :passenger_id";
+        $query = "DELETE FROM " . $this->table_name . " WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":passenger_id", $this->passenger_id);
+        $stmt->bindParam(":user_id", $this->user_id);
 
         if($stmt->execute()) {
             return true;
@@ -208,3 +202,4 @@ class Passenger {
     }
 }
 ?>
+
