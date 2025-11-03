@@ -4,8 +4,21 @@
 -- Create database (run this first)
 -- CREATE DATABASE corosa_db;
 
--- Connect to the database
 -- \c corosa_db;
+
+-- ADDRESS Table ; Contains user address (moved earlier to satisfy FK in user.address_id)
+CREATE TABLE IF NOT EXISTS address (
+    address_id SERIAL PRIMARY KEY,
+    address_street VARCHAR(255),
+    address_barangay VARCHAR(255),
+    address_unit VARCHAR(255)
+);
+
+-- Sample Data
+INSERT INTO address (address_street, address_barangay, address_unit) VALUES
+('Maryheights Road', 'San Luis', 'Unit 2B'),
+('Pines Avenue', 'Camp 7', 'Block 5 Lot 10'),
+('University Drive', 'Greenhills', 'Dorm 3-Room 4');
 
 -- USER Table ; ONLY contains user data
 CREATE TABLE IF NOT EXISTS user (
@@ -61,24 +74,11 @@ INSERT INTO vehicle (plate_number, driver_id, vehicle_model, seat_capacity, vehi
 ('ABC-1234', 1, 'Toyota Vios 2018', 4, 'available'),
 ('PEO-763', 2, 'Toyota Wigo 2024', 3, 'available');
 
--- ADDRESS Table ; Contains user address
-CREATE TABLE IF NOT EXISTS address (
-    address_id SERIAL PRIMARY KEY,
-    address_street VARCHAR(255),
-    address_barangay VARCHAR(255),
-    address_unit VARCHAR(255)
-);
-
--- Sample Data
-INSERT INTO address (address_street, address_barangay, address_unit) VALUES
-('Maryheights Road', 'San Luis', 'Unit 2B'),
-('Pines Avenue', 'Camp 7', 'Block 5 Lot 10'),
-('University Drive', 'Greenhills', 'Dorm 3-Room 4');
 
 -- EMERGENCY_CONTACT Table ; Contains emergency contacts of users
 CREATE TABLE emergency_contact (
     contact_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id INT REFERENCES user(user_id) ON DELETE CASCADE,
     contact_name VARCHAR(255) NOT NULL,
     contact_number VARCHAR(20) NOT NULL
 );
@@ -109,7 +109,7 @@ INSERT INTO trip (driver_id, starting_location, end_location, available_seats, r
 -- BOOKINGS Table ; Contains the bookings data done by a user
 CREATE TABLE IF NOT EXISTS bookings (
     booking_id SERIAL PRIMARY KEY,
-    passenger_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    passenger_id INT REFERENCES user(user_id) ON DELETE CASCADE,
     booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     pick_up_location VARCHAR(255),
     drop_off_location VARCHAR(255),
@@ -159,7 +159,7 @@ INSERT INTO reviews (booking_id, rating, comment) VALUES
 -- HISTORY Table ; Contains the history of a user
 CREATE TABLE IF NOT EXISTS history (
     history_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id INT REFERENCES user(user_id) ON DELETE CASCADE,
     status VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
