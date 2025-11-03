@@ -1,7 +1,7 @@
 <?php
 /**
  * Database Configuration for PostgreSQL
- * Simple connection setup for UniRide project
+ * Simple connection setup for Corosa project
  */
 
 class Database {

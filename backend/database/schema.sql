@@ -38,7 +38,7 @@ emergency_contact_id, address_id, disabilities, employment_status, account_statu
 -- DRIVER Table ; ONLY contains users THAT ARE drivers
 CREATE TABLE IF NOT EXISTS driver (
     driver_id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id INT UNIQUE REFERENCES user(user_id) ON DELETE CASCADE,
     driver_license_image VARCHAR(255)
 );
 

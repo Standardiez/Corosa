@@ -3,7 +3,7 @@ require_once '../config/database.php';
 
 class User {
     private $conn;
-    private $table_name = "users";
+    private $table_name = "user";
 
     public $user_id;
     public $first_name;
