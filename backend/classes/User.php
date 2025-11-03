@@ -12,7 +12,7 @@ class User {
     public $birthdate;
     public $email;
     public $mobile_number;
-    public $address;
+    public $address_id;
     public $disabilities;
     public $employment_status;
     public $account_status;
@@ -28,9 +28,9 @@ class User {
      */
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
+                  (first_name, middle_initial, last_name, birthdate, email, mobile_number, address_id, 
                    disabilities, employment_status, account_status, hashed_password) 
-                  VALUES (:first_name, :middle_initial, :last_name, :birthdate, :email, :mobile_number, 
+                  VALUES (:first_name, :middle_initial, :last_name, :birthdate, :email, :mobile_number, :address_id, 
                           :disabilities, :employment_status, :account_status, :hashed_password)
                   RETURNING user_id";
 
@@ -55,6 +55,7 @@ class User {
         $stmt->bindParam(":birthdate", $this->birthdate);
         $stmt->bindParam(":email", $this->email);
         $stmt->bindParam(":mobile_number", $this->mobile_number);
+        $stmt->bindParam(":address_id", $this->address_id);
         $stmt->bindParam(":disabilities", $this->disabilities);
         $stmt->bindParam(":employment_status", $this->employment_status);
         $stmt->bindParam(":account_status", $this->account_status);
@@ -87,6 +88,7 @@ class User {
             $this->birthdate = $row['birthdate'];
             $this->email = $row['email'];
             $this->mobile_number = $row['mobile_number'];
+            $this->address_id = $row['address_id'];
             $this->disabilities = $row['disabilities'];
             $this->employment_status = $row['employment_status'];
             $this->account_status = $row['account_status'];
@@ -115,6 +117,7 @@ class User {
             $this->birthdate = $row['birthdate'];
             $this->email = $row['email'];
             $this->mobile_number = $row['mobile_number'];
+            $this->address_id = $row['address_id'];
             $this->disabilities = $row['disabilities'];
             $this->employment_status = $row['employment_status'];
             $this->account_status = $row['account_status'];
@@ -130,7 +133,7 @@ class User {
      */
     public function getAll() {
         $query = "SELECT user_id, first_name, middle_initial, last_name, email, 
-                         mobile_number, employment_status, account_status, created_at 
+                         mobile_number, address_id, employment_status, account_status, created_at 
                   FROM " . $this->table_name . " 
                   ORDER BY created_at DESC";
         
@@ -146,7 +149,7 @@ class User {
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
                   SET first_name = :first_name, middle_initial = :middle_initial, last_name = :last_name, 
-                      birthdate = :birthdate, mobile_number = :mobile_number,
+                      birthdate = :birthdate, mobile_number = :mobile_number, address_id = :address_id,
                       disabilities = :disabilities, employment_status = :employment_status,
                       account_status = :account_status
                   WHERE user_id = :user_id";
@@ -169,6 +172,7 @@ class User {
         $stmt->bindParam(":last_name", $this->last_name);
         $stmt->bindParam(":birthdate", $this->birthdate);
         $stmt->bindParam(":mobile_number", $this->mobile_number);
+        $stmt->bindParam(":address_id", $this->address_id);
         $stmt->bindParam(":disabilities", $this->disabilities);
         $stmt->bindParam(":employment_status", $this->employment_status);
         $stmt->bindParam(":account_status", $this->account_status);

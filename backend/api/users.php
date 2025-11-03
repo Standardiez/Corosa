@@ -43,7 +43,7 @@ switch($method) {
                         "birthdate" => $user->birthdate,
                         "email" => $user->email,
                         "mobile_number" => $user->mobile_number,
-                        "emergency_contact" => $user->emergency_contact,
+                        "address_id" => $user->address_id,
                         "disabilities" => $user->disabilities,
                         "employment_status" => $user->employment_status,
                         "account_status" => $user->account_status,
@@ -72,7 +72,7 @@ switch($method) {
                         "birthdate" => $user->birthdate,
                         "email" => $user->email,
                         "mobile_number" => $user->mobile_number,
-                        "emergency_contact" => $user->emergency_contact,
+                        "address_id" => $user->address_id,
                         "disabilities" => $user->disabilities,
                         "employment_status" => $user->employment_status,
                         "account_status" => $user->account_status,
@@ -113,7 +113,7 @@ switch($method) {
             $user->birthdate = $data->birthdate ?? null;
             $user->email = $data->email;
             $user->mobile_number = $data->mobile_number ?? '';
-            $user->emergency_contact = $data->emergency_contact ?? '';
+            $user->address_id = $data->address_id ?? null;
             $user->disabilities = $data->disabilities ?? '';
             $user->employment_status = $data->employment_status ?? 'student';
             $user->account_status = $data->account_status ?? 'active';
@@ -151,7 +151,7 @@ switch($method) {
             $user->last_name = $data->last_name ?? '';
             $user->birthdate = $data->birthdate ?? null;
             $user->mobile_number = $data->mobile_number ?? '';
-            $user->emergency_contact = $data->emergency_contact ?? '';
+            $user->address_id = $data->address_id ?? null;
             $user->disabilities = $data->disabilities ?? '';
             $user->employment_status = $data->employment_status ?? '';
             $user->account_status = $data->account_status ?? '';
