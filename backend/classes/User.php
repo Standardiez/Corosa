@@ -12,7 +12,6 @@ class User {
     public $birthdate;
     public $email;
     public $mobile_number;
-    public $emergency_contact;
     public $address;
     public $disabilities;
     public $employment_status;
@@ -30,9 +29,9 @@ class User {
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
                   (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
-                   emergency_contact, disabilities, employment_status, account_status, hashed_password) 
+                   disabilities, employment_status, account_status, hashed_password) 
                   VALUES (:first_name, :middle_initial, :last_name, :birthdate, :email, :mobile_number, 
-                          :emergency_contact, :disabilities, :employment_status, :account_status, :hashed_password)
+                          :disabilities, :employment_status, :account_status, :hashed_password)
                   RETURNING user_id";
 
         $stmt = $this->conn->prepare($query);
@@ -44,7 +43,6 @@ class User {
         $this->birthdate = htmlspecialchars(strip_tags($this->birthdate));
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->mobile_number = htmlspecialchars(strip_tags($this->mobile_number));
-        $this->emergency_contact = htmlspecialchars(strip_tags($this->emergency_contact));
         $this->disabilities = htmlspecialchars(strip_tags($this->disabilities));
         $this->employment_status = htmlspecialchars(strip_tags($this->employment_status));
         $this->account_status = htmlspecialchars(strip_tags($this->account_status));
@@ -57,7 +55,6 @@ class User {
         $stmt->bindParam(":birthdate", $this->birthdate);
         $stmt->bindParam(":email", $this->email);
         $stmt->bindParam(":mobile_number", $this->mobile_number);
-        $stmt->bindParam(":emergency_contact", $this->emergency_contact);
         $stmt->bindParam(":disabilities", $this->disabilities);
         $stmt->bindParam(":employment_status", $this->employment_status);
         $stmt->bindParam(":account_status", $this->account_status);
@@ -90,7 +87,6 @@ class User {
             $this->birthdate = $row['birthdate'];
             $this->email = $row['email'];
             $this->mobile_number = $row['mobile_number'];
-            $this->emergency_contact = $row['emergency_contact'];
             $this->disabilities = $row['disabilities'];
             $this->employment_status = $row['employment_status'];
             $this->account_status = $row['account_status'];
@@ -119,7 +115,6 @@ class User {
             $this->birthdate = $row['birthdate'];
             $this->email = $row['email'];
             $this->mobile_number = $row['mobile_number'];
-            $this->emergency_contact = $row['emergency_contact'];
             $this->disabilities = $row['disabilities'];
             $this->employment_status = $row['employment_status'];
             $this->account_status = $row['account_status'];
@@ -151,7 +146,7 @@ class User {
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
                   SET first_name = :first_name, middle_initial = :middle_initial, last_name = :last_name, 
-                      birthdate = :birthdate, mobile_number = :mobile_number, emergency_contact = :emergency_contact,
+                      birthdate = :birthdate, mobile_number = :mobile_number,
                       disabilities = :disabilities, employment_status = :employment_status,
                       account_status = :account_status
                   WHERE user_id = :user_id";
@@ -164,7 +159,6 @@ class User {
         $this->last_name = htmlspecialchars(strip_tags($this->last_name));
         $this->birthdate = htmlspecialchars(strip_tags($this->birthdate));
         $this->mobile_number = htmlspecialchars(strip_tags($this->mobile_number));
-        $this->emergency_contact = htmlspecialchars(strip_tags($this->emergency_contact));
         $this->disabilities = htmlspecialchars(strip_tags($this->disabilities));
         $this->employment_status = htmlspecialchars(strip_tags($this->employment_status));
         $this->account_status = htmlspecialchars(strip_tags($this->account_status));
@@ -175,7 +169,6 @@ class User {
         $stmt->bindParam(":last_name", $this->last_name);
         $stmt->bindParam(":birthdate", $this->birthdate);
         $stmt->bindParam(":mobile_number", $this->mobile_number);
-        $stmt->bindParam(":emergency_contact", $this->emergency_contact);
         $stmt->bindParam(":disabilities", $this->disabilities);
         $stmt->bindParam(":employment_status", $this->employment_status);
         $stmt->bindParam(":account_status", $this->account_status);

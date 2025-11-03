@@ -117,7 +117,8 @@ switch($method) {
             $user->disabilities = $data->disabilities ?? '';
             $user->employment_status = $data->employment_status ?? 'student';
             $user->account_status = $data->account_status ?? 'active';
-            $user->hashed_password = $data->hashed_password;
+            // Hash plaintext password before storing
+            $user->hashed_password = password_hash($data->hashed_password, PASSWORD_BCRYPT);
             
             if($user->create()) {
                 echo json_encode(array(

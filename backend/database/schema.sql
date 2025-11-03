@@ -41,12 +41,12 @@ CREATE INDEX IF NOT EXISTS idx_user_email ON user(email);
 CREATE INDEX IF NOT EXISTS idx_user_status ON user(account_status);
 
 INSERT INTO user (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
-emergency_contact_id, address_id, disabilities, employment_status, account_status, hashed_password) VALUES
-('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+9923232131', 1, 1, 'None', 'student', 'active', '$2y$10$'),
-('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+9982372372', 2, 2, 'None', 'student', 'active', '$2y$10$'),
-('Ethan', 'C', 'Winters', '1998-12-05', 'WintersDaddy@slu.edu.ph', '+9923456789', 3, 3, NULL, 'faculty', 'active', '$2y$10$'),
-('David', 'D', 'Martinez', '2001-03-10', 'cyberpunk@slu.edu.ph', '+9932145678', 1, 2, 'faculty', 'student', 'active', '$2y$10$'),
-('Lee', 'G', 'Hoon', '1997-09-09', 'woozi@slu.edu.ph', '+9945678123', 2, 1, NULL, 'staff', 'active', '$2y$10$');
+address_id, disabilities, employment_status, account_status, hashed_password) VALUES
+('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+9923232131', 1, 'None', 'student', 'active', '$2y$10$'),
+('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+9982372372', 2, 'None', 'student', 'active', '$2y$10$'),
+('Ethan', 'C', 'Winters', '1998-12-05', 'WintersDaddy@slu.edu.ph', '+9923456789', 3, NULL, 'faculty', 'active', '$2y$10$'),
+('David', 'D', 'Martinez', '2001-03-10', 'cyberpunk@slu.edu.ph', '+9932145678', 2, 'faculty', 'student', 'active', '$2y$10$'),
+('Lee', 'G', 'Hoon', '1997-09-09', 'woozi@slu.edu.ph', '+9945678123', 1, NULL, 'staff', 'active', '$2y$10$');
 
 -- DRIVER Table ; ONLY contains users THAT ARE drivers
 CREATE TABLE IF NOT EXISTS driver (
