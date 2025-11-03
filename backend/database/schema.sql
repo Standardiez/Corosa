@@ -24,10 +24,10 @@ CREATE TABLE IF NOT EXISTS user (
     hashed_password VARCHAR(255) NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_usewrs_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_users_status ON users(account_status);
+CREATE INDEX IF NOT EXISTS idx_user_email ON user(email);
+CREATE INDEX IF NOT EXISTS idx_user_status ON user(account_status);
 
-INSERT INTO users (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
+INSERT INTO user (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
 emergency_contact_id, address_id, disabilities, employment_status, account_status, hashed_password) VALUES
 ('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+9923232131', 1, 1, 'None', 'student', 'active', '$2y$10$'),
 ('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+9982372372', 2, 2, 'None', 'student', 'active', '$2y$10$'),

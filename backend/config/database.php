@@ -31,7 +31,6 @@ class Database {
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             
-            echo "Database connected successfully!";
             
         } catch(PDOException $exception) {
             echo "Connection error: " . $exception->getMessage();
