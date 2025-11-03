@@ -61,7 +61,6 @@ function handleRequestRide(ride) {
         time: ride.time,
         rating: ride.rating.toString()
     });
-    // Use relative path because `main.js` is used from pages (e.g. pages/index.html)
     window.location.href = `./request-ride.html?${params.toString()}`;
 }
 

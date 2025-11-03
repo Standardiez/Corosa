@@ -1,7 +1,7 @@
 // find-ride.js - Render destinations and navigate to pickup-location with URL params
 
 const destinations = [
-  { id: 'maryheights', name: 'Mary Heights Campus', address: '1301 Cardinal Drive' },
+  { id: 'maryheights', name: 'Maryheights Campus', address: '1301 Cardinal Drive' },
   { id: 'main', name: 'Main Campus', address: '800 S Main St' },
   { id: 'library', name: 'University Library', address: '450 Academic Way' },
   { id: 'stadium', name: 'University Stadium', address: '1500 Sports Complex Dr' },
@@ -53,8 +53,7 @@ function handleDestinationSelect(destinationId) {
       name: destination?.name || '',
       address: destination?.address || ''
     });
-    // Use relative path since this script runs from pages (e.g. pages/find-ride.html)
-    window.location.href = `./pickup-location.html?${params.toString()}`;
+    window.location.href = `pickup-location.html?${params.toString()}`;
   }, 240);
 }
 
@@ -63,5 +62,27 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDestinations();
 
   const backBtn = document.getElementById('back-btn');
-  if (backBtn) backBtn.addEventListener('click', () => window.location.href = './index.html');
+  if (backBtn) backBtn.addEventListener('click', () => window.location.href = 'index.html');
+
+  // Handle custom location selection from map
+  document.addEventListener('locationSelected', (e) => {
+    const { lat, lng, address, name } = e.detail;
+    const customDestination = {
+      id: `custom-${lat}-${lng}`,
+      name: name || 'Custom Location',
+      address: address,
+      lat: lat,
+      lng: lng
+    };
+
+    // Navigate to pickup location with custom destination
+    const params = new URLSearchParams({
+      destination: customDestination.id,
+      name: customDestination.name,
+      address: customDestination.address,
+      lat: customDestination.lat,
+      lng: customDestination.lng
+    });
+    window.location.href = `pickup-location.html?${params.toString()}`;
+  });
 });
