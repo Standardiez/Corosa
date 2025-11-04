@@ -1,0 +1,140 @@
+# Carosa Design System Guidelines
+
+## Color Usage
+
+### Primary Colors
+- `--primary`: Use for main CTAs, important interactive elements, and key UI highlights
+- `--primary-dark`: Use for hover states of primary elements and text that needs emphasis
+- `--primary-light`: Use for subtle primary-colored backgrounds and secondary elements
+
+### Background Colors
+- `--background`: Default page background
+- `--background-alt`: Use for card backgrounds and alternating sections
+- `--background-hover`: Apply to interactive elements on hover
+
+### Text Colors
+- `--text-primary`: Main body text
+- `--text-secondary`: Supporting text, subtitles, and less emphasis content
+- `--text-muted`: Placeholder text and disabled states
+
+### Accent Colors
+- `--accent`: Use sparingly for highlighting important status or special UI elements
+- `--accent-dark`: For hover states of accent elements
+- `--accent-light`: For backgrounds of accent-colored sections
+
+## Spacing Guidelines
+
+### Large Spacing (--spacing-lg: 2rem)
+Use for:
+- Vertical spacing between major sections
+- Padding around cards and containers
+- Margins between grouped components
+- Header and footer padding
+
+### Extra Large Spacing (--spacing-xl: 3rem)
+Use for:
+- Hero section padding
+- Large section separators
+- Top/bottom page margins
+- Major layout block spacing
+
+### Medium Spacing (--spacing-md: 1rem)
+Use for:
+- Internal padding in cards
+- Space between related elements
+- Button padding
+- Form field spacing
+
+### Small Spacing (--spacing-sm: 0.5rem)
+Use for:
+- Icon spacing
+- Tight element grouping
+- Small component internal spacing
+
+## Component-Specific Guidelines
+
+### Cards (.card)
+- Always use `--background-alt` for background
+- Apply `--spacing-lg` for outer padding
+- Use `--spacing-md` for content padding
+- Maintain consistent border-radius using `--radius-lg`
+
+### Buttons
+- Primary buttons: Use `--primary` background
+- Secondary buttons: Use transparent background with `--primary` border
+- Ghost buttons: Use no background with `--text-primary` color
+- Always maintain `--spacing-md` for padding
+
+### Navigation
+- Use `--spacing-lg` for main nav padding
+- Apply `--text-primary` for active links
+- Use `--text-secondary` for inactive links
+- Maintain consistent `--spacing-md` between nav items
+
+### Forms
+- Input fields: Use `--spacing-md` for padding
+- Form groups: Use `--spacing-lg` for separation
+- Labels: Apply `--text-secondary`
+- Error states: Use `--error` color
+
+### Layout Containers
+- Main content: Use `--spacing-xl` for top/bottom margins
+- Sections: Use `--spacing-lg` for separation
+- Inner containers: Use `--max-width` for content constraints
+
+## Typography Guidelines
+
+### Headings
+- H1: Use `--font-size-3xl` with `--font-weight-bold`
+- H2: Use `--font-size-2xl` with `--font-weight-semibold`
+- H3: Use `--font-size-xl` with `--font-weight-medium`
+- Apply `--spacing-lg` for margin-bottom on all headings
+
+### Body Text
+- Default: Use `--font-size-base` with `--font-weight-regular`
+- Large text: Use `--font-size-lg` for important paragraphs
+- Small text: Use `--font-size-sm` for secondary information
+
+## Current Project-Specific Patterns
+
+### Ride Cards
+- Use `--background-alt` background
+- Apply `--spacing-lg` padding
+- Use `--primary` for price display
+- Apply `--text-secondary` for ride details
+
+### Map Container
+- Full-width using 100vw
+- Apply `--spacing-xl` for bottom margin
+- Use `--background` for controls background
+
+### Action Buttons
+- Use `--primary` for "Book Ride" buttons
+- Apply `--accent` for special actions
+- Maintain consistent `--radius-md` border-radius
+
+### Status Indicators
+- Use `--success` for available status
+- Use `--warning` for waiting status
+- Use `--error` for unavailable status
+
+## Responsive Design
+
+### Breakpoints
+- Mobile: Default styles
+- Tablet: `--breakpoint-md` (768px)
+- Desktop: `--breakpoint-lg` (1024px)
+
+### Mobile Adjustments
+- Reduce `--spacing-xl` to `--spacing-lg`
+- Reduce `--spacing-lg` to `--spacing-md`
+- Stack elements vertically
+- Full-width cards and buttons
+
+## Dark Mode Guidelines
+
+When `.dark` class is applied:
+- Use `--dark-background` for main background
+- Apply `--dark-text-primary` for text
+- Maintain contrast ratios using provided dark mode variables
+- Adjust shadow intensity using `--shadow-dark` variants
