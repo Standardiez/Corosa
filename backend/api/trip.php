@@ -38,8 +38,10 @@ switch($method) {
                     "data" => array(
                         "trip_id" => $trip->trip_id,
                         "driver_id" => $trip->driver_id,
-                        "starting_location" => $trip->starting_location,
-                        "end_location" => $trip->end_location,
+                        "start_lat" => $trip->start_lat,
+                        "start_long" => $trip->start_long,
+                        "end_lat" => $trip->end_lat,
+                        "end_long" => $trip->end_long,
                         "available_seats" => $trip->available_seats,
                         "ride_distance" => $trip->ride_distance,
                         "ride_status" => $trip->ride_status,
@@ -72,8 +74,10 @@ switch($method) {
             $query = "SELECT 
                         t.trip_id,
                         t.driver_id,
-                        t.starting_location,
-                        t.end_location,
+                        t.start_lat,
+                        t.start_long,
+                        t.end_lat,
+                        t.end_long,
                         t.available_seats,
                         t.ride_distance,
                         t.ride_status,
@@ -89,7 +93,7 @@ switch($method) {
                         v.seat_capacity
                       FROM trip t
                       LEFT JOIN driver d ON t.driver_id = d.driver_id
-                      LEFT JOIN "user" u ON d.user_id = u.user_id
+                      LEFT JOIN user u ON d.user_id = u.user_id
                       LEFT JOIN vehicle v ON v.driver_id = d.driver_id
                       WHERE t.ride_status = 'scheduled'
                       ORDER BY t.created_at DESC";
@@ -149,8 +153,10 @@ switch($method) {
         if(!empty($data->trip_id)) {
             $trip->trip_id = $data->trip_id;
             $trip->driver_id = $data->driver_id ?? '';
-            $trip->starting_location = $data->starting_location ?? '';
-            $trip->end_location = $data->end_location ?? '';
+            $trip->start_lat = $data->start_lat ?? '';
+            $trip->start_long = $data->start_long ?? '';
+            $trip->end_lat = $data->end_lat ?? '';
+            $trip->end_long = $data->end_long ?? '';
             $trip->available_seats = $data->available_seats ?? 0;
             $trip->ride_distance = $data->ride_distance ?? 0;
             $trip->ride_status = $data->ride_status ?? '';

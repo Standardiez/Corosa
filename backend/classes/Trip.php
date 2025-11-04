@@ -72,7 +72,7 @@ class Trip {
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->trip_id = $row['trip_id'];
-            $this->driver_id = $row['driver_id']
+            $this->driver_id = $row['driver_id'];
             $this->start_lat = $row['start_lat'];
             $this->start_long= $row['start_long'];
             $this->end_lat= $row['end_lat'];
