@@ -77,6 +77,14 @@
             }
         });
 
+        // If a directions panel exists in the DOM, wire it so turn-by-turn steps appear
+        const directionsPanel = document.getElementById('directions-panel');
+        if (directionsPanel) {
+            directionsRenderer.setPanel(directionsPanel);
+            // clear placeholder text while we compute route
+            directionsPanel.textContent = 'Calculating route...';
+        }
+
         // Add custom markers for pickup and dropoff
         new google.maps.Marker({
             position: pickupLocation.coords,
@@ -110,10 +118,11 @@
             destination: dropoffLocation.coords,
             travelMode: google.maps.TravelMode.DRIVING
         }, (result, status) => {
-            if (status === google.maps.DirectionsStatus.OK) {
+            if (status === 'OK') {
                 directionsRenderer.setDirections(result);
             } else {
                 console.error('Directions request failed:', status);
+                if (directionsPanel) directionsPanel.textContent = 'Could not calculate route.';
             }
         });
     };
