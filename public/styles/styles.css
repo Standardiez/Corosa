@@ -337,3 +337,50 @@ body {
         opacity: 1;
     }
 }
+
+/* Hero / Landing styles */
+.hero {
+    min-height: calc(100vh - 4rem); /* account for header */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+}
+
+.hero-inner {
+    max-width: 900px;
+    padding: 0 var(--spacing-md);
+}
+
+.hero-title {
+    font-size: 4rem;
+    line-height: 1;
+    font-weight: 900;
+    color: #000; /* big black bold Corosa */
+    margin-bottom: var(--spacing-sm);
+}
+
+.hero-tagline {
+    font-size: var(--font-size-lg);
+    color: var(--color-muted-foreground);
+    margin-bottom: var(--spacing-md);
+}
+
+.hero-ctas .btn { min-width: 160px; }
+
+/* Accent button variant */
+.btn-accent {
+    background-color: var(--color-accent);
+    color: var(--color-primary-foreground);
+    border: none;
+}
+
+.btn-accent:hover {
+    background-color: hsl(0, 85%, 30%);
+}
+
+@media (max-width: 480px) {
+    .hero-title { font-size: 2.25rem; }
+    .hero-inner { padding: 0 var(--spacing-sm); }
+}
