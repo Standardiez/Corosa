@@ -4,7 +4,7 @@
     Endpoint: POST /backend/api/users.php
         - The frontend will send the following fields (names in form 'name' attributes):
             firstName, middleInitial, lastName, birthdate, email, mobile,
-            street, barangay, city, disabilities, employment, password
+            houseNumber, street, barangay, disabilities, employment, password
 
         - Preferred content type: application/json (also accept form-encoded for compatibility)
 
@@ -16,9 +16,9 @@
                 "birthdate":"1995-07-21",
                 "email":"juan@example.com",
                 "mobile":"09171234567",
-                "street":"123 Main St",
+                "houseNumber":"123",
+                "street":"Main St",
                 "barangay":"Barangay 1",
-                "city":"Maryheights",
                 "disabilities":"none",
                 "employment":"student",
                 "password":"(plain text from client)"
@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const birthdate = data.get('birthdate');
         const email = data.get('email').trim();
         const mobile = data.get('mobile').trim();
-        const street = data.get('street').trim();
-        const barangay = data.get('barangay').trim();
-        const city = data.get('city').trim();
+    const houseNumber = (data.get('houseNumber') || '').trim();
+    const street = (data.get('street') || '').trim();
+    const barangay = (data.get('barangay') || '').trim();
         const employment = data.get('employment');
         const password = data.get('password');
         const confirmPassword = data.get('confirmPassword');
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!email || !patterns.email.test(email)) { setError('email', 'Please enter a valid email'); valid = false; }
         if (!mobile || !patterns.mobile.test(mobile)) { setError('mobile', 'Enter a valid mobile number (09XXXXXXXXX)'); valid = false; }
-        if (!street || !barangay || !city) { setError('address', 'Please complete your address'); valid = false; }
+    if (!houseNumber || !street || !barangay) { setError('address', 'Please complete your address'); valid = false; }
         if (!employment) { setError('employment', 'Please select your employment status'); valid = false; }
 
         if (!password || password.length < 8) { setError('password', 'Password must be at least 8 characters'); valid = false; }

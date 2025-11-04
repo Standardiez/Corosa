@@ -36,7 +36,7 @@
 
                                 * Expected POST endpoint (example): /backend/api/users.php
                                 * The frontend sends form fields with these names: firstName, middleInitial,
-                                    lastName, birthdate, email, mobile, street, barangay, city, disabilities,
+                                    lastName, birthdate, email, mobile, houseNumber, street, barangay, disabilities,
                                     employment, password
                                 * For server-side validation errors, return JSON like:
                                     { "success": false, "errors": { "email": "already used" } }
@@ -85,10 +85,10 @@
 
                 <div class="form-group col-3">
                     <label class="form-label">Address</label>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:var(--spacing-sm);">
-                        <input id="street" name="street" class="input" placeholder="Street / House no." required>
+                    <div style="display:grid; grid-template-columns: 1fr 2fr 1fr; gap:var(--spacing-sm);">
+                        <input id="houseNumber" name="houseNumber" class="input" placeholder="House no." required>
+                        <input id="street" name="street" class="input" placeholder="Street name" required>
                         <input id="barangay" name="barangay" class="input" placeholder="Barangay" required>
-                        <input id="city" name="city" class="input" placeholder="City / Municipality" required>
                     </div>
                     <div class="error" data-error-for="address"></div>
                 </div>
