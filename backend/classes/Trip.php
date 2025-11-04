@@ -3,12 +3,14 @@ require_once '../config/database.php';
 
 class Trip {
     private $conn;
-    private $table_name = "trip";
+    private $table_name = "trips";
 
     public $trip_id;
     public $driver_id;
-    public $starting_location;
-    public $end_location;
+    public $start_lat;
+    public $start_long;
+    public $end_lat;
+    public $end_long;
     public $available_seats;
     public $ride_distance;
     public $ride_status;
@@ -23,24 +25,27 @@ class Trip {
      */
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  (driver_id, starting_location, end_location, available_seats, ride_distance, ride_status) 
-                  VALUES (:driver_id, :starting_location, :end_location, :available_seats, :ride_distance, :ride_status)
-                  RETURNING trip_id";
+                  (driver_id, start_lat, start_long, end_lat, end_long, available_seats, ride_distance, ride_status) 
+                  VALUES (:driver_id, :start_lat, :start_long, :end_lat, :end_long, :available_seats, :ride_distance, :ride_status)";
 
         $stmt = $this->conn->prepare($query);
 
         // Sanitize input data
         $this->driver_id = htmlspecialchars(strip_tags($this->driver_id));
-        $this->starting_location = htmlspecialchars(strip_tags($this->starting_location));
-        $this->end_location = htmlspecialchars(strip_tags($this->end_location));
+        $this->start_lat = htmlspecialchars(strip_tags($this->start_lat));
+        $this->start_long = htmlspecialchars(strip_tags($this->start_long));
+        $this->end_lat = htmlspecialchars(strip_tags($this->end_lat));
+        $this->end_long = htmlspecialchars(strip_tags($this->end_long));
         $this->available_seats = htmlspecialchars(strip_tags($this->available_seats));
         $this->ride_distance = htmlspecialchars(strip_tags($this->ride_distance));
         $this->ride_status = htmlspecialchars(strip_tags($this->ride_status));
 
         // Bind values
         $stmt->bindParam(":driver_id", $this->driver_id);
-        $stmt->bindParam(":starting_location", $this->starting_location);
-        $stmt->bindParam(":end_location", $this->end_location);
+        $stmt->bindParam(":start_lat", $this->start_lat);
+        $stmt->bindParam(":start_long", $this->start_long);
+        $stmt->bindParam(":end_lat", $this->end_lat);
+        $stmt->bindParam(":end_long", $this->end_long);
         $stmt->bindParam(":available_seats", $this->available_seats);
         $stmt->bindParam(":ride_distance", $this->ride_distance);
         $stmt->bindParam(":ride_status", $this->ride_status);
@@ -67,8 +72,10 @@ class Trip {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->trip_id = $row['trip_id'];
             $this->driver_id = $row['driver_id'];
-            $this->starting_location = $row['starting_location'];
-            $this->end_location = $row['end_location'];
+            $this->start_lat = $row['start_lat'];
+            $this->start_long= $row['start_long'];
+            $this->end_lat= $row['end_lat'];
+            $this->end_long = $row['end_long'];
             $this->available_seats = $row['available_seats'];
             $this->ride_distance = $row['ride_distance'];
             $this->ride_status = $row['ride_status'];
@@ -96,7 +103,7 @@ class Trip {
      * Get all trips
      */
     public function getAll() {
-        $query = "SELECT trip_id, driver_id, starting_location, end_location, 
+        $query = "SELECT trip_id, driver_id, start_lat, start_long, end_lat, end_long,
                          available_seats, ride_distance, ride_status, created_at 
                   FROM " . $this->table_name . " 
                   ORDER BY created_at DESC";
@@ -112,25 +119,28 @@ class Trip {
      */
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
-                  SET driver_id = :driver_id, starting_location = :starting_location, 
-                      end_location = :end_location, available_seats = :available_seats,
-                      ride_distance = :ride_distance, ride_status = :ride_status
+                  SET driver_id = :driver_id, start_lat = :start_lat, start_long = :start_long, end_lat = :end_lat, end_long = :end_long,
+                    available_seats = :available_seats, ride_distance = :ride_distance, ride_status = :ride_status
                   WHERE trip_id = :trip_id";
 
         $stmt = $this->conn->prepare($query);
 
         // Sanitize
         $this->driver_id = htmlspecialchars(strip_tags($this->driver_id));
-        $this->starting_location = htmlspecialchars(strip_tags($this->starting_location));
-        $this->end_location = htmlspecialchars(strip_tags($this->end_location));
+        $this->start_lat = htmlspecialchars(strip_tags($this->start_lat));
+        $this->start_long = htmlspecialchars(strip_tags($this->start_long));
+        $this->end_lat= htmlspecialchars(strip_tags($this->end_lat));
+        $this->end_long = htmlspecialchars(strip_tags($this->end_long));
         $this->available_seats = htmlspecialchars(strip_tags($this->available_seats));
         $this->ride_distance = htmlspecialchars(strip_tags($this->ride_distance));
         $this->ride_status = htmlspecialchars(strip_tags($this->ride_status));
 
         // Bind values
         $stmt->bindParam(":driver_id", $this->driver_id);
-        $stmt->bindParam(":starting_location", $this->starting_location);
-        $stmt->bindParam(":end_location", $this->end_location);
+        $stmt->bindParam(":start_lat", $this->start_lat);
+        $stmt->bindParam(":start_long", $this->start_long);
+        $stmt->bindParam(":end_lat", $this->end_lat);
+        $stmt->bindParam(":end_long", $this->end_long);
         $stmt->bindParam(":available_seats", $this->available_seats);
         $stmt->bindParam(":ride_distance", $this->ride_distance);
         $stmt->bindParam(":ride_status", $this->ride_status);

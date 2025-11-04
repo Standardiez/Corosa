@@ -8,8 +8,10 @@ class Bookings {
     public $booking_id;
     public $passenger_id;
     public $booking_date;
-    public $pick_up_location;
-    public $drop_off_location;
+    public $start_lat;
+    public $start_long;
+    public $end_lat;
+    public $end_long;
     public $payment_type;
     public $total_cost;
     public $booking_confirmation;
@@ -24,29 +26,29 @@ class Bookings {
      */
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  (passenger_id, booking_date, pick_up_location, drop_off_location, 
+                  (passenger_id, booking_date, start_lat, start_long, end_lat, end_long, 
                    payment_type, total_cost, booking_confirmation) 
-                  VALUES (:passenger_id, :booking_date, :pick_up_location, :drop_off_location, 
-                          :payment_type, :total_cost, :booking_confirmation)
-                  RETURNING booking_id";
+                  VALUES (:passenger_id, :booking_date, :start_lat, :start_long, :end_lat, :end_long,
+                          :payment_type, :total_cost, :booking_confirmation)";
 
         $stmt = $this->conn->prepare($query);
 
         // Sanitize input data
         $this->passenger_id = htmlspecialchars(strip_tags($this->passenger_id));
         $this->booking_date = htmlspecialchars(strip_tags($this->booking_date));
-        $this->pick_up_location = htmlspecialchars(strip_tags($this->pick_up_location));
-        $this->drop_off_location = htmlspecialchars(strip_tags($this->drop_off_location));
+        $this->start_lat = htmlspecialchars(strip_tags($this->start_lat));
+        $this->start_long = htmlspecialchars(strip_tags($this->start_long));
+        $this->end_lat = htmlspecialchars(strip_tags($this->end_lat));
+        $this->end_long = htmlspecialchars(strip_tags($this->end_long));
         $this->payment_type = htmlspecialchars(strip_tags($this->payment_type));
         $this->total_cost = htmlspecialchars(strip_tags($this->total_cost));
-        // Handle boolean for PostgreSQL
-        $this->booking_confirmation = filter_var($this->booking_confirmation, FILTER_VALIDATE_BOOLEAN);
+        $this->booking_confirmation = $this->booking_confirmation ? 1 : 0; // Convert to MySQL boolean
 
         // Bind values
         $stmt->bindParam(":passenger_id", $this->passenger_id);
         $stmt->bindParam(":booking_date", $this->booking_date);
-        $stmt->bindParam(":pick_up_location", $this->pick_up_location);
-        $stmt->bindParam(":drop_off_location", $this->drop_off_location);
+        $stmt->bindParam(":start_lat", $this->start_lat);
+        $stmt->bindParam(":start_long", $this->start_long);
         $stmt->bindParam(":payment_type", $this->payment_type);
         $stmt->bindParam(":total_cost", $this->total_cost);
         $stmt->bindParam(":booking_confirmation", $this->booking_confirmation, PDO::PARAM_BOOL);
@@ -74,8 +76,8 @@ class Bookings {
             $this->booking_id = $row['booking_id'];
             $this->passenger_id = $row['passenger_id'];
             $this->booking_date = $row['booking_date'];
-            $this->pick_up_location = $row['pick_up_location'];
-            $this->drop_off_location = $row['drop_off_location'];
+            $this->start_lat = $row['start_lat'];
+            $this->start_long = $row['start_long'];
             $this->payment_type = $row['payment_type'];
             $this->total_cost = $row['total_cost'];
             $this->booking_confirmation = $row['booking_confirmation'];
@@ -103,8 +105,8 @@ class Bookings {
      * Get all bookings
      */
     public function getAll() {
-        $query = "SELECT booking_id, passenger_id, booking_date, pick_up_location, 
-                         drop_off_location, payment_type, total_cost, booking_confirmation, created_at 
+        $query = "SELECT booking_id, passenger_id, booking_date, start_lat, 
+                         start_long, payment_type, total_cost, booking_confirmation, created_at 
                   FROM " . $this->table_name . " 
                   ORDER BY created_at DESC";
         
@@ -120,7 +122,8 @@ class Bookings {
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
                   SET passenger_id = :passenger_id, booking_date = :booking_date, 
-                      pick_up_location = :pick_up_location, drop_off_location = :drop_off_location,
+                      start_lat = :start_lat, start_long = :start_long,
+                      end_lat = :end_lat, end_long = :end_long,
                       payment_type = :payment_type, total_cost = :total_cost, 
                       booking_confirmation = :booking_confirmation
                   WHERE booking_id = :booking_id";
@@ -130,8 +133,10 @@ class Bookings {
         // Sanitize
         $this->passenger_id = htmlspecialchars(strip_tags($this->passenger_id));
         $this->booking_date = htmlspecialchars(strip_tags($this->booking_date));
-        $this->pick_up_location = htmlspecialchars(strip_tags($this->pick_up_location));
-        $this->drop_off_location = htmlspecialchars(strip_tags($this->drop_off_location));
+        $this->start_lat = htmlspecialchars(strip_tags($this->start_lat));
+        $this->start_long = htmlspecialchars(strip_tags($this->start_long));
+        $this->end_lat = htmlspecialchars(strip_tags($this->end_lat));
+        $this->end_long = htmlspecialchars(strip_tags($this->end_long));
         $this->payment_type = htmlspecialchars(strip_tags($this->payment_type));
         $this->total_cost = htmlspecialchars(strip_tags($this->total_cost));
         // Handle boolean for PostgreSQL
@@ -140,8 +145,10 @@ class Bookings {
         // Bind values
         $stmt->bindParam(":passenger_id", $this->passenger_id);
         $stmt->bindParam(":booking_date", $this->booking_date);
-        $stmt->bindParam(":pick_up_location", $this->pick_up_location);
-        $stmt->bindParam(":drop_off_location", $this->drop_off_location);
+        $stmt->bindParam(":start_lat", $this->start_lat);
+        $stmt->bindParam(":start_long", $this->start_long);
+        $stmt->bindParam(":end_lat", $this->end_lat);
+        $stmt->bindParam(":end_long", $this->end_long);
         $stmt->bindParam(":payment_type", $this->payment_type);
         $stmt->bindParam(":total_cost", $this->total_cost);
         $stmt->bindParam(":booking_confirmation", $this->booking_confirmation, PDO::PARAM_BOOL);

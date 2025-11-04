@@ -39,8 +39,10 @@ switch($method) {
                         "booking_id" => $booking->booking_id,
                         "passenger_id" => $booking->passenger_id,
                         "booking_date" => $booking->booking_date,
-                        "pick_up_location" => $booking->pick_up_location,
-                        "drop_off_location" => $booking->drop_off_location,
+                        "start_lat" => $booking->start_lat,
+                        "start_long" => $booking->start_long,
+                        "end_lat" => $booking->end_lat,
+                        "end_long" => $booking->end_long,
                         "payment_type" => $booking->payment_type,
                         "total_cost" => $booking->total_cost,
                         "booking_confirmation" => $booking->booking_confirmation,
@@ -89,11 +91,14 @@ switch($method) {
         // Create new booking
         $data = json_decode(file_get_contents("php://input"));
         
-        if(!empty($data->passenger_id) && !empty($data->pick_up_location) && !empty($data->drop_off_location)) {
+        if(!empty($data->passenger_id) && !empty($data->start_lat) && !empty($data->start_long)
+        && !empty($data->end_lat) && !empty($data->end_long)) {
             $booking->passenger_id = $data->passenger_id;
             $booking->booking_date = $data->booking_date ?? date('Y-m-d H:i:s');
-            $booking->pick_up_location = $data->pick_up_location;
-            $booking->drop_off_location = $data->drop_off_location;
+            $booking->start_lat = $data->start_lat;
+            $booking->start_long = $data->start_long;
+            $booking->end_lat = $data->end_lat;
+            $booking->end_long = $data->end_long;
             $booking->payment_type = $data->payment_type ?? 'cash';
             $booking->total_cost = $data->total_cost ?? 0;
             $booking->booking_confirmation = $data->booking_confirmation ?? false;
@@ -113,7 +118,7 @@ switch($method) {
         } else {
             echo json_encode(array(
                 "success" => false,
-                "message" => "Missing required fields (passenger_id, pick_up_location, drop_off_location)"
+                "message" => "Missing required fields (passenger_id, start_lat, start_long, end_lat, end_long)"
             ));
         }
         break;
@@ -126,8 +131,10 @@ switch($method) {
             $booking->booking_id = $data->booking_id;
             $booking->passenger_id = $data->passenger_id ?? '';
             $booking->booking_date = $data->booking_date ?? '';
-            $booking->pick_up_location = $data->pick_up_location ?? '';
-            $booking->drop_off_location = $data->drop_off_location ?? '';
+            $booking->start_lat = $data->start_lat ?? '';
+            $booking->start_long = $data->start_long ?? '';
+            $booking->end_lat = $data->end_lat ?? '';
+            $booking->end_long = $data->end_long ?? '';
             $booking->payment_type = $data->payment_type ?? '';
             $booking->total_cost = $data->total_cost ?? 0;
             $booking->booking_confirmation = $data->booking_confirmation ?? false;

@@ -37,7 +37,6 @@ switch($method) {
                     "message" => "Address retrieved successfully",
                     "data" => array(
                         "address_id" => $address->address_id,
-                        "user_id" => $address->user_id,
                         "address_street" => $address->address_street,
                         "address_barangay" => $address->address_barangay,
                         "address_unit" => $address->address_unit
@@ -85,28 +84,21 @@ switch($method) {
         // Create new address
         $data = json_decode(file_get_contents("php://input"));
         
-        if(!empty($data->user_id)) {
-            $address->user_id = $data->user_id;
-            $address->address_street = $data->address_street ?? '';
-            $address->address_barangay = $data->address_barangay ?? '';
-            $address->address_unit = $data->address_unit ?? '';
-            
-            if($address->create()) {
-                echo json_encode(array(
-                    "success" => true,
-                    "message" => "Address created successfully",
-                    "data" => array("address_id" => $address->address_id)
-                ));
-            } else {
-                echo json_encode(array(
-                    "success" => false,
-                    "message" => "Failed to create address"
-                ));
-            }
+        // Note: Address table doesn't have user_id - users reference address_id instead
+        $address->address_street = $data->address_street ?? '';
+        $address->address_barangay = $data->address_barangay ?? '';
+        $address->address_unit = $data->address_unit ?? '';
+        
+        if($address->create()) {
+            echo json_encode(array(
+                "success" => true,
+                "message" => "Address created successfully",
+                "data" => array("address_id" => $address->address_id)
+            ));
         } else {
             echo json_encode(array(
                 "success" => false,
-                "message" => "Missing required fields (user_id)"
+                "message" => "Failed to create address"
             ));
         }
         break;
@@ -117,7 +109,6 @@ switch($method) {
         
         if(!empty($data->address_id)) {
             $address->address_id = $data->address_id;
-            $address->user_id = $data->user_id ?? '';
             $address->address_street = $data->address_street ?? '';
             $address->address_barangay = $data->address_barangay ?? '';
             $address->address_unit = $data->address_unit ?? '';
