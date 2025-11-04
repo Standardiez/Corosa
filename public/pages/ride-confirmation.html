@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confirm Ride — Corosa</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <style>
+        .confirm-card { max-width:900px; margin:0 auto; }
+        .trip-summary { display:flex; gap:var(--spacing-md); margin-bottom:var(--spacing-md); }
+        .trip-block { flex:1; background:var(--color-secondary); padding:var(--spacing-md); border-radius:var(--radius-md); }
+        .driver-card { display:flex; gap:var(--spacing-md); align-items:center; padding:var(--spacing-md); border-radius:var(--radius-md); border:1px solid var(--color-border); background:var(--color-background); }
+        .driver-avatar { width:64px; height:64px; border-radius:50%; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; color:var(--color-muted-foreground); flex-shrink:0; }
+        .fare-breakdown { margin-top:var(--spacing-md); border-radius:var(--radius-md); padding:var(--spacing-md); background:var(--color-secondary); }
+        .fare-row { display:flex; justify-content:space-between; padding:6px 0; }
+        .confirm-actions { margin-top:var(--spacing-md); display:flex; gap:var(--spacing-sm); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1 style="font-size:1rem;">Corosa</h1>
+                </div>
+            </div>
+            <nav class="nav header-nav">
+                <a class="btn btn-outline" href="index.html">Home</a>
+                <a class="btn btn-outline" href="signup.html">Create account</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container confirm-card" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
+        <section class="card">
+            <h2 style="margin:0 0 var(--spacing-sm) 0;">Confirm your ride</h2>
+            <p class="text-muted">Review trip and driver details, choose payment method, then confirm.</p>
+
+            <div class="trip-summary">
+                <div class="trip-block">
+                    <small class="text-muted">Pickup</small>
+                    <div id="pickup-location">Loading...</div>
+                </div>
+                <div class="trip-block">
+                    <small class="text-muted">Drop-off</small>
+                    <div id="dropoff-location">Loading...</div>
+                </div>
+            </div>
+
+            <div class="driver-card">
+                <div class="driver-avatar" id="driver-avatar">
+                    <!-- svg avatar -->
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 8h-16v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div style="flex:1">
+                    <div style="font-weight:700" id="driver-name">Loading...</div>
+                    <div class="employment-status" id="driver-employment">&nbsp;</div>
+                    <div class="vehicle-row" id="driver-vehicle" style="margin-top:var(--spacing-sm); color:var(--color-muted-foreground)"></div>
+                </div>
+                <div style="width:160px; text-align:right">
+                    <div style="font-size:0.9rem; color:var(--color-muted-foreground)">Seats</div>
+                    <div id="driver-capacity" style="font-weight:700"></div>
+                </div>
+            </div>
+
+            <div class="fare-breakdown">
+                <h4 style="margin:0 0 var(--spacing-sm) 0">Fare breakdown</h4>
+                <div class="fare-row"><div>Base fare</div><div id="fare-base">—</div></div>
+                <div class="fare-row"><div>Distance</div><div id="fare-distance">—</div></div>
+                <div class="fare-row"><div>Per-km charge</div><div id="fare-perkm">—</div></div>
+                <div class="fare-row" style="font-weight:700; border-top:1px solid rgba(0,0,0,0.06); padding-top:8px;"><div>Total</div><div id="fare-total">—</div></div>
+            </div>
+
+            <div style="margin-top:var(--spacing-md);">
+                <label class="form-label">Payment method</label>
+                <select id="payment-method" class="input" style="max-width:320px;">
+                    <option value="cash">Cash</option>
+                    <option value="card">Card (on-file)</option>
+                </select>
+            </div>
+
+            <div class="confirm-actions">
+                <button id="back-btn" class="btn btn-outline">Back</button>
+                <button id="confirm-btn" class="btn btn-primary">Confirm ride</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
+        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script src="../js/ride-confirmation.js"></script>
+</body>
+</html>

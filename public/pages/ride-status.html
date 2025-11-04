@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ride Status — Corosa</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <style>
+        .status-card { max-width:980px; margin:0 auto; }
+        .stages { display:flex; gap:var(--spacing-lg); align-items:center; justify-content:space-between; margin-bottom:var(--spacing-md); }
+        .stage { display:flex; flex-direction:column; align-items:center; gap:var(--spacing-xs); flex:1; }
+        .stage .circle { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; }
+        .stage.pending .circle { background:var(--color-secondary); color:var(--color-muted-foreground); border:1px solid var(--color-border); }
+        .stage.active .circle { background:var(--color-primary); color:var(--color-primary-foreground); }
+        .stage.done .circle { background:var(--color-accent); color:var(--color-primary-foreground); }
+        .map-area { width:100%; height:360px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:var(--spacing-md); }
+        .summary { display:flex; gap:var(--spacing-md); margin-bottom:var(--spacing-md); }
+        .summary .block { flex:1; background:var(--color-secondary); padding:var(--spacing-md); border-radius:var(--radius-md); }
+        .driver-mini { display:flex; gap:var(--spacing-md); align-items:center; padding:var(--spacing-sm); border-radius:var(--radius-md); border:1px solid var(--color-border); background:var(--color-background); }
+        .driver-avatar { width:48px; height:48px; border-radius:50%; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; color:var(--color-muted-foreground); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1 style="font-size:1rem;">Corosa</h1>
+                </div>
+            </div>
+            <nav class="nav header-nav">
+                <a class="btn btn-outline" href="index.html">Home</a>
+                <a class="btn btn-outline" href="signup.html">Create account</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container status-card" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
+        <section class="card">
+            <h2 style="margin:0 0 var(--spacing-sm) 0">Ride status</h2>
+            <p class="text-muted">Track your ride in real time.</p>
+
+            <div class="stages" id="stages">
+                <div class="stage" id="stage-1">
+                    <div class="circle">1</div>
+                    <div class="text-muted">Driver en route</div>
+                </div>
+                <div class="stage" id="stage-2">
+                    <div class="circle">2</div>
+                    <div class="text-muted">Onboard — heading to drop-off</div>
+                </div>
+                <div class="stage" id="stage-3">
+                    <div class="circle">3</div>
+                    <div class="text-muted">Completed</div>
+                </div>
+            </div>
+
+            <div id="map" class="map-area">Loading map…</div>
+
+            <div class="summary">
+                <div class="block">
+                    <small class="text-muted">Pickup</small>
+                    <div id="pickup-location">Loading...</div>
+                </div>
+                <div class="block">
+                    <small class="text-muted">Drop-off</small>
+                    <div id="dropoff-location">Loading...</div>
+                </div>
+            </div>
+
+            <div class="driver-mini" id="driver-mini">
+                <div class="driver-avatar" id="driver-avatar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 8h-16v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div style="flex:1">
+                    <div id="driver-name" style="font-weight:700">Loading...</div>
+                    <div id="driver-employment" class="text-muted"></div>
+                </div>
+                <div style="text-align:right">
+                    <div class="text-muted">Seats</div>
+                    <div id="driver-capacity" style="font-weight:700">—</div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
+        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script src="../js/ride-status.js"></script>
+</body>
+</html>

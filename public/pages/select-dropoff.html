@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Select pickup — Corosa</title>
+    <title>Select drop-off — Corosa</title>
     <link rel="stylesheet" href="../styles/styles.css">
 </head>
 <body>
@@ -29,26 +29,34 @@
     <main class="container" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
         <section class="card" style="display:grid; gap:var(--spacing-md);">
 
-            <!-- Map selection card (dummy placeholder for map + drag-drop pin integration later) -->
+            <!-- Pickup Location Summary -->
+            <div class="card" style="background-color:var(--color-secondary); border:none;">
+                <div style="display:flex; align-items:start; gap:var(--spacing-md);">
+                    <div style="color:var(--color-primary); flex-shrink:0;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 style="margin:0; color:var(--color-muted-foreground);">Pickup Location</h4>
+                        <p id="pickup-location" style="margin:var(--spacing-xs) 0 0 0; font-weight:500;">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map selection card -->
             <div class="map-dummy-card card">
-                <h3 style="margin:0;">Select pickup location</h3>
-                <p class="text-muted">Drag and drop a pin on the map to choose your pickup point.</p>
-                <button id="location-btn" class="btn btn-outline" style="margin-bottom:var(--spacing-sm);">
-                    <svg style="width:16px;height:16px;margin-right:var(--spacing-xs)" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" fill="currentColor"/>
-                        <path d="M12 2a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1z" fill="currentColor"/>
-                        <path d="M12 18a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1z" fill="currentColor"/>
-                        <path d="M2 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1z" fill="currentColor"/>
-                        <path d="M18 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2h-2a1 1 0 0 1-1-1z" fill="currentColor"/>
-                    </svg>
-                    Use my location
-                </button>
+                <h3 style="margin:0;">Select drop-off location</h3>
+                <p class="text-muted">Drag and drop a pin on the map to choose your drop-off point.</p>
                 <div id="map" class="map-placeholder">Loading map…</div>
                 <div id="map-info" style="width:100%; text-align:center; margin-top:var(--spacing-sm);">
                     <small class="text-muted">Selected: <span id="selected-coords">none</span></small>
                 </div>
                 <small class="text-muted">Tip: Zoom and pan to place the pin accurately.</small>
-                <div style="width:100%; display:flex; justify-content:flex-end; margin-top:var(--spacing-md);">
+                <div style="width:100%; display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
+                    <button id="back-btn" class="btn btn-outline">
+                        Back
+                    </button>
                     <button id="next-btn" class="btn btn-primary" disabled>
                         Next
                     </button>
@@ -103,6 +111,6 @@
     </footer>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-    <script src="../js/select-pickup.js"></script>
+    <script src="../js/select-dropoff.js"></script>
 </body>
 </html>
