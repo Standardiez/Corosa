@@ -13,6 +13,24 @@ CREATE TABLE IF NOT EXISTS address (
     address_unit VARCHAR(255)
 ) ENGINE=InnoDB;
 
+-- USERS
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    middle_initial VARCHAR(10),
+    last_name VARCHAR(100) NOT NULL,
+    birthdate DATE,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    mobile_number VARCHAR(20),
+    address_id INT,
+    disabilities TEXT,
+    employment_status VARCHAR(50),
+    account_status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    hashed_password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (address_id) REFERENCES address(address_id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
 -- EMERGENCY_CONTACT
 CREATE TABLE IF NOT EXISTS emergency_contact (
     contact_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,23 +49,6 @@ CREATE TABLE IF NOT EXISTS history (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- USERS
-CREATE TABLE IF NOT EXISTS users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(100) NOT NULL,
-    middle_initial VARCHAR(10),
-    last_name VARCHAR(100) NOT NULL,
-    birthdate DATE,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    mobile_number VARCHAR(20),
-    address_id INT,
-    disabilities TEXT,
-    employment_status VARCHAR(50),
-    account_status VARCHAR(20) DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    hashed_password VARCHAR(255) NOT NULL,
-    FOREIGN KEY (address_id) REFERENCES address(address_id) ON DELETE SET NULL
-) ENGINE=InnoDB;
 
 -- DRIVER
 CREATE TABLE IF NOT EXISTS driver (
@@ -67,7 +68,7 @@ CREATE TABLE IF NOT EXISTS vehicle (
     FOREIGN KEY (driver_id) REFERENCES driver(driver_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- TRIP
+-- TRIPS
 CREATE TABLE IF NOT EXISTS trips (
     trip_id INT AUTO_INCREMENT PRIMARY KEY,
     driver_id INT,
