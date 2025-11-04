@@ -3,7 +3,7 @@ require_once '../config/database.php';
 
 class Trip {
     private $conn;
-    private $table_name = "trip";
+    private $table_name = "trips";
 
     public $trip_id;
     public $driver_id;
@@ -26,8 +26,7 @@ class Trip {
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
                   (driver_id, start_lat, start_long, end_lat, end_long, available_seats, ride_distance, ride_status) 
-                  VALUES (:driver_id, :start_long, :start_lat, :end_long, :end_lat, :available_seats, :ride_distance, :ride_status)
-                  RETURNING trip_id";
+                  VALUES (:driver_id, :start_lat, :start_long, :end_lat, :end_long, :available_seats, :ride_distance, :ride_status)";
 
         $stmt = $this->conn->prepare($query);
 

@@ -28,9 +28,8 @@ class Bookings {
         $query = "INSERT INTO " . $this->table_name . " 
                   (passenger_id, booking_date, start_lat, start_long, end_lat, end_long, 
                    payment_type, total_cost, booking_confirmation) 
-                  VALUES (:passenger_id, :booking_date, :start_lat, :start_long, 
-                          :payment_type, :total_cost, :booking_confirmation)
-                  RETURNING booking_id";
+                  VALUES (:passenger_id, :booking_date, :start_lat, :start_long, :end_lat, :end_long,
+                          :payment_type, :total_cost, :booking_confirmation)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -39,12 +38,11 @@ class Bookings {
         $this->booking_date = htmlspecialchars(strip_tags($this->booking_date));
         $this->start_lat = htmlspecialchars(strip_tags($this->start_lat));
         $this->start_long = htmlspecialchars(strip_tags($this->start_long));
-        $this->start_lat = htmlspecialchars(strip_tags($this->start_lat));
-        $this->start_long = htmlspecialchars(strip_tags($this->start_long));
+        $this->end_lat = htmlspecialchars(strip_tags($this->end_lat));
+        $this->end_long = htmlspecialchars(strip_tags($this->end_long));
         $this->payment_type = htmlspecialchars(strip_tags($this->payment_type));
         $this->total_cost = htmlspecialchars(strip_tags($this->total_cost));
-        // Handle boolean for PostgreSQL
-        $this->booking_confirmation = filter_var($this->booking_confirmation, FILTER_VALIDATE_BOOLEAN);
+        $this->booking_confirmation = $this->booking_confirmation ? 1 : 0; // Convert to MySQL boolean
 
         // Bind values
         $stmt->bindParam(":passenger_id", $this->passenger_id);

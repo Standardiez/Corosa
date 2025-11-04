@@ -3,7 +3,7 @@ require_once '../config/database.php';
 
 class User {
     private $conn;
-    private $table_name = "\"user\"";  // PostgreSQL reserved word, must be quoted
+    private $table_name = "users";  // Changed from "user" to "users"
 
     public $user_id;
     public $first_name;
@@ -31,8 +31,7 @@ class User {
                   (first_name, middle_initial, last_name, birthdate, email, mobile_number, address_id, 
                    disabilities, employment_status, account_status, hashed_password) 
                   VALUES (:first_name, :middle_initial, :last_name, :birthdate, :email, :mobile_number, :address_id, 
-                          :disabilities, :employment_status, :account_status, :hashed_password)
-                  RETURNING user_id";
+                          :disabilities, :employment_status, :account_status, :hashed_password)";
 
         $stmt = $this->conn->prepare($query);
 
