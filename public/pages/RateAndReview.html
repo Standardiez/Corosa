@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Ride Details - Post ride — Carosa</title>
+	<link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+	<header class="header">
+		<div class="container header-content">
+			<div class="logo">
+				<div class="logo-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+						<path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</div>
+				<div class="logo-text">
+					<h1 style="font-size:1rem;">Carosa</h1>
+					<p style="font-size:0.75rem; color:var(--text-secondary); margin:0;">Maryheights Carpooling</p>
+				</div>
+			</div>
+			<nav class="nav header-nav">
+				<a class="btn btn-primary" href="#find">Find Ride</a>
+				<a class="btn btn-outline" href="#offer">Offer Ride</a>
+				<a class="btn btn-outline" href="#rides">My Rides</a>
+			</nav>
+			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
+		</div>
+	</header>
+
+	<main>
+		<div class="ride-details-container">
+			<div class="ride-details-header">
+				<h1>Ride Details</h1>
+				<p>Here's information about your ride.</p>
+			</div>
+
+			<div class="detail-card">
+				<h2>Driver Information</h2>
+				<div class="driver-info">
+					<div class="driver-avatar">🚗</div>
+					<div class="driver-details">
+						<h3>Steven Valdez</h3>
+						<div class="driver-meta">
+							<span class="badge">4.8★ 4 Seater</span>
+							<span class="vehicle-info">
+								🚙 Toyota Innova ★4.8
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="detail-card">
+				<h2>Route Details</h2>
+				<div class="detail-section">
+					<p style="color:var(--text-secondary); margin:0;">Route information will be displayed here.</p>
+				</div>
+			</div>
+
+			<div class="detail-card">
+				<h2>Payment Details</h2>
+				<div class="detail-section">
+					<p style="color:var(--text-secondary); margin:0;">Payment information will be displayed here.</p>
+				</div>
+			</div>
+
+			<div class="detail-card">
+				<h2>Your rating</h2>
+				<div class="rating-container">
+					<button class="star-btn" data-rating="1" aria-label="1 star">★</button>
+					<button class="star-btn" data-rating="2" aria-label="2 stars">★</button>
+					<button class="star-btn" data-rating="3" aria-label="3 stars">★</button>
+					<button class="star-btn" data-rating="4" aria-label="4 stars">★</button>
+					<button class="star-btn" data-rating="5" aria-label="5 stars">★</button>
+				</div>
+			</div>
+
+			<div class="action-buttons">
+				<button class="btn btn-report">Report an issue</button>
+				<button class="btn btn-back" onclick="window.history.back()">Back</button>
+			</div>
+		</div>
+	</main>
+
+	<footer class="container" style="padding:var(--spacing-lg) 0; text-align:center; color:var(--text-muted); margin-top:var(--spacing-xl);">
+		<small>&copy; <span id="year"></span> Carosa — SLU Maryheights</small>
+	</footer>
+
+	<script>
+		// Current year
+		document.getElementById('year').textContent = new Date().getFullYear();
+
+		// Star rating functionality
+		const starButtons = document.querySelectorAll('.star-btn');
+		let selectedRating = 0;
+
+		starButtons.forEach(star => {
+			star.addEventListener('click', function() {
+				selectedRating = parseInt(this.dataset.rating);
+				updateStars();
+			});
+
+			star.addEventListener('mouseenter', function() {
+				const hoverRating = parseInt(this.dataset.rating);
+				highlightStars(hoverRating);
+			});
+		});
+
+		document.querySelector('.rating-container').addEventListener('mouseleave', function() {
+			updateStars();
+		});
+
+		function updateStars() {
+			starButtons.forEach((star, index) => {
+				if (index < selectedRating) {
+					star.classList.add('active');
+				} else {
+					star.classList.remove('active');
+				}
+			});
+		}
+
+		function highlightStars(rating) {
+			starButtons.forEach((star, index) => {
+				if (index < rating) {
+					star.style.color = '#fbbf24';
+				} else {
+					star.style.color = 'var(--text-muted)';
+				}
+			});
+		}
+
+		// Report issue handler
+		document.querySelector('.btn-report').addEventListener('click', function() {
+			alert('Report issue functionality would be implemented here.');
+		});
+	</script>
+</body>
+</html>
