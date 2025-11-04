@@ -10,18 +10,18 @@ CREATE TABLE IF NOT EXISTS address (
     address_id INT AUTO_INCREMENT PRIMARY KEY,
     address_street VARCHAR(255),
     address_barangay VARCHAR(255),
-    address_unit VARCHAR(255)
+    address_unit VARCHAR(100)
 ) ENGINE=InnoDB;
 
 -- USERS
 CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
-    middle_initial VARCHAR(10),
+    middle_initial VARCHAR(3),
     last_name VARCHAR(100) NOT NULL,
     birthdate DATE,
     email VARCHAR(255) UNIQUE NOT NULL,
-    mobile_number VARCHAR(20),
+    mobile_number VARCHAR(13),
     address_id INT,
     disabilities TEXT,
     employment_status VARCHAR(50),
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS emergency_contact (
     contact_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     contact_name VARCHAR(255) NOT NULL,
-    contact_number VARCHAR(20) NOT NULL,
+    contact_number VARCHAR(13) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS emergency_contact (
 CREATE TABLE IF NOT EXISTS history (
     history_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    status VARCHAR(100),
+    history_status VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS trips (
     end_long DECIMAL(11,8),
     start_lat DECIMAL(10,8),
     start_long DECIMAL(11,8),
-    available_seats INT,
+    available_seats TINYINT UNSIGNED,
     ride_distance DECIMAL(10,2),
     ride_status VARCHAR(50) DEFAULT 'scheduled',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS trip_assignment (
     assignment_id INT AUTO_INCREMENT PRIMARY KEY,
     booking_id INT,
     trip_id INT,
-    seat_number INT,
+    seat_number TINYINT UNSIGNED,
     assignment_status VARCHAR(50) DEFAULT 'confirmed',
     payment_type VARCHAR(50),
     total_cost DECIMAL(10,2),
@@ -132,8 +132,8 @@ CREATE INDEX idx_bookings_end ON bookings(end_lat, end_long);
 
 -- Sample Data (users must be inserted after users table exists)
 INSERT INTO users (first_name, middle_initial, last_name, birthdate, email, mobile_number, address_id, disabilities, employment_status, account_status, hashed_password) VALUES
-('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+9923232131', NULL, 'None', 'student', 'active', '$2y$10$'),
-('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+9982372372', NULL, 'None', 'student', 'active', '$2y$10$');
+('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+63213521245', NULL, 'None', 'student', 'active', '$2y$10$'),
+('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+63321573919', NULL, 'None', 'student', 'active', '$2y$10$');
 
 INSERT INTO driver (user_id, driver_license_image) VALUES
 (1, 'john_license.png');
