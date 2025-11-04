@@ -44,16 +44,16 @@
     function setSelectedLocationInfo(coords, address = '') {
         const el = document.getElementById('selected-coords');
         const nextBtn = document.getElementById('next-btn');
-        
+
         if (el) {
             const coordsText = fmtLatLng(coords);
             el.textContent = address ? `${address} (${coordsText})` : coordsText;
-            
+
             // Store the current selection
             currentLocation.address = address || coordsText;
             currentLocation.coords = coords;
         }
-        
+
         // Enable the next button when we have coordinates
         if (nextBtn) {
             nextBtn.disabled = false;
@@ -69,7 +69,7 @@
                     // Store in sessionStorage
                     sessionStorage.setItem('pickupLocation', currentLocation.address);
                     sessionStorage.setItem('pickupCoords', JSON.stringify(currentLocation.coords));
-                    
+
                     // Navigate to drop-off page
                     window.location.href = 'select-dropoff.html';
                 }
@@ -88,7 +88,7 @@
                 let locationName = '';
 
                 // First try to find a point of interest or establishment
-                const poi = result.address_components.find(component => 
+                const poi = result.address_components.find(component =>
                     component.types.includes('point_of_interest') ||
                     component.types.includes('establishment')
                 );
@@ -97,10 +97,10 @@
                     locationName = poi.long_name;
                 } else {
                     // If no POI, try to construct an address from street + sublocality
-                    const street = result.address_components.find(component => 
+                    const street = result.address_components.find(component =>
                         component.types.includes('route')
                     );
-                    const area = result.address_components.find(component => 
+                    const area = result.address_components.find(component =>
                         component.types.includes('sublocality') ||
                         component.types.includes('neighborhood')
                     );

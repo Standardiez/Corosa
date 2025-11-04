@@ -25,7 +25,7 @@
     function loadPickupLocation() {
         const params = new URLSearchParams(window.location.search);
         const pickupEl = document.getElementById('pickup-location');
-        
+
         // Try to get location from URL parameters first
         let pickupLocation = params.get('pickup');
         let pickupCoords = params.get('coords');
@@ -61,12 +61,12 @@
     function setSelectedLocationInfo(coords, address = '') {
         const el = document.getElementById('selected-coords');
         const nextBtn = document.getElementById('next-btn');
-        
+
         if (el) {
             const coordsText = fmtLatLng(coords);
             el.textContent = address ? `${address} (${coordsText})` : coordsText;
         }
-        
+
         // Enable the next button when we have coordinates
         if (nextBtn) {
             nextBtn.disabled = false;
@@ -84,7 +84,7 @@
                 let locationName = '';
 
                 // First try to find a point of interest or establishment
-                const poi = result.address_components.find(component => 
+                const poi = result.address_components.find(component =>
                     component.types.includes('point_of_interest') ||
                     component.types.includes('establishment')
                 );
@@ -93,10 +93,10 @@
                     locationName = poi.long_name;
                 } else {
                     // If no POI, try to construct an address from street + sublocality
-                    const street = result.address_components.find(component => 
+                    const street = result.address_components.find(component =>
                         component.types.includes('route')
                     );
-                    const area = result.address_components.find(component => 
+                    const area = result.address_components.find(component =>
                         component.types.includes('sublocality') ||
                         component.types.includes('neighborhood')
                     );
