@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create an account — Corosa</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1 style="font-size:1rem;">Corosa</h1>
+                </div>
+            </div>
+            <nav class="nav header-nav">
+                <a class="btn btn-outline" href="index.html">Home</a>
+                <a class="btn btn-outline" href="index.html#find">Find Ride</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
+        <section class="form-card card">
+            <h2 style="margin-bottom:var(--spacing-md);">Create your Corosa account</h2>
+            <p class="text-muted" style="margin-bottom:var(--spacing-md);">Sign up as a Passenger to find carpool rides around SLU Maryheights.</p>
+
+                        <!--
+                                Integration notes for backend developer:
+
+                                * Expected POST endpoint (example): /backend/api/users.php
+                                * The frontend sends form fields with these names: firstName, middleInitial,
+                                    lastName, birthdate, email, mobile, street, barangay, city, disabilities,
+                                    employment, password
+                                * For server-side validation errors, return JSON like:
+                                    { "success": false, "errors": { "email": "already used" } }
+                                * On success, return: { "success": true, "userId": 123, "message": "Account created" }
+                                * If you require a CSRF token, include a hidden input named "csrf_token" here and
+                                    instruct the frontend to include it in requests.
+                                * The 'name' attributes map directly to keys in the payload; keep them stable to
+                                    avoid frontend changes.
+                        -->
+
+                        <form id="signupForm" class="form-grid" novalidate>
+                <div class="form-group col-1">
+                    <label for="firstName" class="form-label">First name</label>
+                    <input id="firstName" name="firstName" class="input" required>
+                    <div class="error" data-error-for="firstName"></div>
+                </div>
+
+                <div class="form-group col-1">
+                    <label for="middleInitial" class="form-label">Middle initial</label>
+                    <input id="middleInitial" name="middleInitial" class="input" maxlength="1">
+                </div>
+
+                <div class="form-group col-1">
+                    <label for="lastName" class="form-label">Last name</label>
+                    <input id="lastName" name="lastName" class="input" required>
+                    <div class="error" data-error-for="lastName"></div>
+                </div>
+
+                <div class="form-group col-1">
+                    <label for="birthdate" class="form-label">Birthdate</label>
+                    <input id="birthdate" name="birthdate" type="date" class="input" required>
+                    <div class="error" data-error-for="birthdate"></div>
+                </div>
+
+                <div class="form-group col-2">
+                    <label for="email" class="form-label">Email</label>
+                    <input id="email" name="email" type="email" class="input" required>
+                    <div class="error" data-error-for="email"></div>
+                </div>
+
+                <div class="form-group col-1">
+                    <label for="mobile" class="form-label">Mobile number</label>
+                    <input id="mobile" name="mobile" class="input" placeholder="09XXXXXXXXX" required>
+                    <div class="error" data-error-for="mobile"></div>
+                </div>
+
+                <div class="form-group col-3">
+                    <label class="form-label">Address</label>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:var(--spacing-sm);">
+                        <input id="street" name="street" class="input" placeholder="Street / House no." required>
+                        <input id="barangay" name="barangay" class="input" placeholder="Barangay" required>
+                        <input id="city" name="city" class="input" placeholder="City / Municipality" required>
+                    </div>
+                    <div class="error" data-error-for="address"></div>
+                </div>
+
+                <div class="form-group col-1">
+                    <label for="disabilities" class="form-label">Disabilities</label>
+                    <select id="disabilities" name="disabilities" class="input">
+                        <option value="none">None</option>
+                        <option value="visual">Visual impairment</option>
+                        <option value="hearing">Hearing impairment</option>
+                        <option value="mobility">Mobility impairment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-1">
+                    <label for="employment" class="form-label">Employment status</label>
+                    <select id="employment" name="employment" class="input" required>
+                        <option value="student">Student</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="staff">Staff</option>
+                    </select>
+                    <div class="error" data-error-for="employment"></div>
+                </div>
+
+                <div class="form-group col-1 password-row">
+                    <div style="flex:1;">
+                        <label for="password" class="form-label">Password</label>
+                        <input id="password" name="password" type="password" class="input" required>
+                        <div class="help-text">Minimum 8 characters.</div>
+                        <div class="error" data-error-for="password"></div>
+                    </div>
+
+                    <div style="flex:1;">
+                        <label for="confirmPassword" class="form-label">Confirm password</label>
+                        <input id="confirmPassword" name="confirmPassword" type="password" class="input" required>
+                        <div class="error" data-error-for="confirmPassword"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <button type="submit" class="btn btn-primary">Create account</button>
+                    <a href="index.html" class="btn btn-outline" style="margin-left:var(--spacing-md);">Back</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
+        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
+
+    <script src="../js/signup.js"></script>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

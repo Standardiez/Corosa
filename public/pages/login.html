@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login — Corosa</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1 style="font-size:1rem;">Corosa</h1>
+                </div>
+            </div>
+            <nav class="nav header-nav">
+                <a class="btn btn-outline" href="index.html">Home</a>
+                <a class="btn btn-outline" href="signup.html">Create account</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
+        <section class="form-card card" style="max-width:480px; margin:0 auto;">
+            <h2 style="margin-bottom:var(--spacing-md);">Welcome back</h2>
+            <p class="text-muted" style="margin-bottom:var(--spacing-md);">Sign in to find and manage your rides.</p>
+
+            <!-- Integration notes: Backend endpoint POST /backend/api/login.php
+                 Payload: { email, password }
+                 Success response: { success: true, userId: X, token?: "..." }
+                 Error response: { success: false, message: "Invalid credentials" }
+            -->
+
+            <form id="loginForm" class="form-grid" novalidate>
+                <div class="form-group col-3">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input id="loginEmail" name="email" type="email" class="input" required>
+                    <div class="error" data-error-for="email"></div>
+                </div>
+
+                <div class="form-group col-3">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input id="loginPassword" name="password" type="password" class="input" required>
+                    <div class="error" data-error-for="password"></div>
+                </div>
+
+                <div class="form-row">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                    <a href="signup.html" class="btn btn-outline" style="margin-left:var(--spacing-md);">Create account</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
+        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
+
+    <script src="../js/login.js"></script>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
