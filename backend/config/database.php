@@ -13,6 +13,8 @@ class Database {
     private $password = 'admin123'; // PostgreSQL password
     private $conn;
 
+    
+
     /**
      * Get database connection
      * @return PDO|null
@@ -22,6 +24,7 @@ class Database {
 
         try {
             // Create connection string for PostgreSQL
+            // Using pgsql driver (alternative to postgresql)
             $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name;
             
             // Create PDO connection
@@ -31,9 +34,13 @@ class Database {
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             
+            // Set timezone to UTC (optional, adjust as needed)
+            $this->conn->exec("SET timezone TO 'UTC'");
             
         } catch(PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
+            // Log error instead of echoing (for production)
+            error_log("Database connection error: " . $exception->getMessage());
+            throw new Exception("Database connection failed: " . $exception->getMessage());
         }
 
         return $this->conn;

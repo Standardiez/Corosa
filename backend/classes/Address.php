@@ -6,7 +6,6 @@ class Address {
     private $table_name = "address";
 
     public $address_id;
-    public $user_id;
     public $address_street;
     public $address_barangay;
     public $address_unit;
@@ -20,20 +19,18 @@ class Address {
      */
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  (user_id, address_street, address_barangay, address_unit) 
-                  VALUES (:user_id, :address_street, :address_barangay, :address_unit)
+                  (address_street, address_barangay, address_unit) 
+                  VALUES (:address_street, :address_barangay, :address_unit)
                   RETURNING address_id";
 
         $stmt = $this->conn->prepare($query);
 
         // Sanitize input data
-        $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->address_street = htmlspecialchars(strip_tags($this->address_street));
         $this->address_barangay = htmlspecialchars(strip_tags($this->address_barangay));
         $this->address_unit = htmlspecialchars(strip_tags($this->address_unit));
 
         // Bind values
-        $stmt->bindParam(":user_id", $this->user_id);
         $stmt->bindParam(":address_street", $this->address_street);
         $stmt->bindParam(":address_barangay", $this->address_barangay);
         $stmt->bindParam(":address_unit", $this->address_unit);
@@ -59,7 +56,6 @@ class Address {
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->address_id = $row['address_id'];
-            $this->user_id = $row['user_id'];
             $this->address_street = $row['address_street'];
             $this->address_barangay = $row['address_barangay'];
             $this->address_unit = $row['address_unit'];
@@ -69,14 +65,15 @@ class Address {
     }
 
     /**
-     * Get all addresses for a user
+     * Get all addresses (no user_id in address table - users reference address_id)
+     * This method is kept for API compatibility but returns all addresses
      */
     public function getByUserId() {
+        // Note: Address table doesn't have user_id - users reference address_id instead
+        // This method returns all addresses for backward compatibility
         $query = "SELECT * FROM " . $this->table_name . " 
-                  WHERE user_id = :user_id 
                   ORDER BY address_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":user_id", $this->user_id);
         $stmt->execute();
         
         return $stmt;
@@ -100,20 +97,18 @@ class Address {
      */
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
-                  SET user_id = :user_id, address_street = :address_street, 
+                  SET address_street = :address_street, 
                       address_barangay = :address_barangay, address_unit = :address_unit
                   WHERE address_id = :address_id";
 
         $stmt = $this->conn->prepare($query);
 
         // Sanitize
-        $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->address_street = htmlspecialchars(strip_tags($this->address_street));
         $this->address_barangay = htmlspecialchars(strip_tags($this->address_barangay));
         $this->address_unit = htmlspecialchars(strip_tags($this->address_unit));
 
         // Bind values
-        $stmt->bindParam(":user_id", $this->user_id);
         $stmt->bindParam(":address_street", $this->address_street);
         $stmt->bindParam(":address_barangay", $this->address_barangay);
         $stmt->bindParam(":address_unit", $this->address_unit);

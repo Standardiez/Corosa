@@ -1,44 +1,55 @@
-// Application state
+// Load API configuration
+let apiLoaded = false;
+
+// Application state (accessible globally)
 const state = {
-    mockRides: [
-        {
-            id: '1',
-            driverName: 'Sarah Johnson',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-            carModel: 'Toyota Camry',
-            userType: 'student',
-            seatsAvailable: 3,
-            rating: 4.8,
-            startLocation: { lat: 51.5074, lng: -0.1278, name: 'Downtown Apartments' },
-            endLocation: { lat: 51.5155, lng: -0.1425, name: 'University Campus' },
-            time: 'Today, 8:30 AM'
-        },
-        {
-            id: '2',
-            driverName: 'Dr. Michael Chen',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-            carModel: 'Honda Accord',
-            userType: 'employee',
-            seatsAvailable: 2,
-            rating: 5.0,
-            startLocation: { lat: 51.5000, lng: -0.1400, name: 'Westside Residences' },
-            endLocation: { lat: 51.5155, lng: -0.1425, name: 'University Campus' },
-            time: 'Today, 9:00 AM'
-        }
-    ]
+    rides: [],
+    isLoading: false,
+    error: null
 };
 
+// Make state globally accessible
+window.state = state;
+
+// Load API script dynamically
+function loadAPIScript() {
+    return new Promise((resolve, reject) => {
+        if (apiLoaded) {
+            resolve();
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = '../scripts/api-config.js';
+        script.onload = () => {
+            apiLoaded = true;
+            resolve();
+        };
+        script.onerror = () => {
+            reject(new Error('Failed to load API configuration'));
+        };
+        document.head.appendChild(script);
+    });
+}
+
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    // Render initial rides
-    renderRides(state.mockRides);
+document.addEventListener('DOMContentLoaded', async () => {
+    // Only initialize if rides-list element exists
+    const ridesList = document.getElementById('rides-list');
+    if (!ridesList) return;
+    
+    // Load API configuration
+    await loadAPIScript();
+    
+    // Load rides from API
+    await loadRides();
     
     // Setup search functionality
-    const searchInput = document.querySelector('input[placeholder="Search rides..."]');
+    const searchInput = document.querySelector('input[placeholder="Search rides..."], input[placeholder="Search destination..."]');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const filteredRides = state.mockRides.filter(ride => 
+            const filteredRides = state.rides.filter(ride => 
                 ride.driverName.toLowerCase().includes(searchTerm) ||
                 ride.startLocation.name.toLowerCase().includes(searchTerm) ||
                 ride.endLocation.name.toLowerCase().includes(searchTerm)
@@ -47,6 +58,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Load rides from API
+async function loadRides() {
+    state.isLoading = true;
+    state.error = null;
+    
+    try {
+        // Show loading state
+        const ridesList = document.getElementById('rides-list');
+        if (ridesList) {
+            ridesList.innerHTML = '<div class="text-center py-8"><p class="text-muted-foreground">Loading rides...</p></div>';
+        }
+        
+        // Fetch rides from API
+        const rides = await getAllTrips();
+        state.rides = rides;
+        
+        // Render rides
+        renderRides(rides);
+        
+        // Show message if no rides found
+        if (rides.length === 0 && ridesList) {
+            ridesList.innerHTML = '<div class="text-center py-8"><p class="text-muted-foreground">No rides available at the moment.</p></div>';
+        }
+    } catch (error) {
+        console.error('Error loading rides:', error);
+        state.error = error.message;
+        
+        // Show error message
+        const ridesList = document.getElementById('rides-list');
+        if (ridesList) {
+            ridesList.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-red-500 mb-2">Failed to load rides</p>
+                    <p class="text-sm text-muted-foreground">${error.message}</p>
+                    <button onclick="loadRides()" class="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                        Retry
+                    </button>
+                </div>
+            `;
+        }
+    } finally {
+        state.isLoading = false;
+    }
+}
 
 // Handle ride request
 function handleRequestRide(ride) {
@@ -69,7 +125,16 @@ function renderRides(rides) {
     const ridesList = document.getElementById('rides-list');
     if (!ridesList) return;
 
+    // Clear existing content
     ridesList.innerHTML = '';
+    
+    // Show message if no rides
+    if (rides.length === 0) {
+        ridesList.innerHTML = '<div class="text-center py-8"><p class="text-muted-foreground">No rides available at the moment.</p></div>';
+        return;
+    }
+
+    // Render each ride
     rides.forEach(ride => {
         const rideElement = document.createElement('div');
         rideElement.innerHTML = generateRideCard(ride);

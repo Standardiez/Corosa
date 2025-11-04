@@ -3,7 +3,7 @@ require_once '../config/database.php';
 
 class User {
     private $conn;
-    private $table_name = "user";
+    private $table_name = "\"user\"";  // PostgreSQL reserved word, must be quoted
 
     public $user_id;
     public $first_name;

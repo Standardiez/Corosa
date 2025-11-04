@@ -21,7 +21,8 @@ INSERT INTO address (address_street, address_barangay, address_unit) VALUES
 ('University Drive', 'Greenhills', 'Dorm 3-Room 4');
 
 -- USER Table ; ONLY contains user data
-CREATE TABLE IF NOT EXISTS user (
+-- Note: "user" is a PostgreSQL reserved word, so it must be quoted
+CREATE TABLE IF NOT EXISTS "user" (
     user_id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     middle_initial VARCHAR(10),
@@ -37,10 +38,10 @@ CREATE TABLE IF NOT EXISTS user (
     hashed_password VARCHAR(255) NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_email ON user(email);
-CREATE INDEX IF NOT EXISTS idx_user_status ON user(account_status);
+CREATE INDEX IF NOT EXISTS idx_user_email ON "user"(email);
+CREATE INDEX IF NOT EXISTS idx_user_status ON "user"(account_status);
 
-INSERT INTO user (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
+INSERT INTO "user" (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
 address_id, disabilities, employment_status, account_status, hashed_password) VALUES
 ('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+9923232131', 1, 'None', 'student', 'active', '$2y$10$'),
 ('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+9982372372', 2, 'None', 'student', 'active', '$2y$10$'),
@@ -51,7 +52,7 @@ address_id, disabilities, employment_status, account_status, hashed_password) VA
 -- DRIVER Table ; ONLY contains users THAT ARE drivers
 CREATE TABLE IF NOT EXISTS driver (
     driver_id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES user(user_id) ON DELETE CASCADE,
+    user_id INT UNIQUE REFERENCES "user"(user_id) ON DELETE CASCADE,
     driver_license_image VARCHAR(255)
 );
 
@@ -78,7 +79,7 @@ INSERT INTO vehicle (plate_number, driver_id, vehicle_model, seat_capacity, vehi
 -- EMERGENCY_CONTACT Table ; Contains emergency contacts of users
 CREATE TABLE emergency_contact (
     contact_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES user(user_id) ON DELETE CASCADE,
+    user_id INT REFERENCES "user"(user_id) ON DELETE CASCADE,
     contact_name VARCHAR(255) NOT NULL,
     contact_number VARCHAR(20) NOT NULL
 );
@@ -109,7 +110,7 @@ INSERT INTO trip (driver_id, starting_location, end_location, available_seats, r
 -- BOOKINGS Table ; Contains the bookings data done by a user
 CREATE TABLE IF NOT EXISTS bookings (
     booking_id SERIAL PRIMARY KEY,
-    passenger_id INT REFERENCES user(user_id) ON DELETE CASCADE,
+    passenger_id INT REFERENCES "user"(user_id) ON DELETE CASCADE,
     booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     pick_up_location VARCHAR(255),
     drop_off_location VARCHAR(255),
@@ -159,7 +160,7 @@ INSERT INTO reviews (booking_id, rating, comment) VALUES
 -- HISTORY Table ; Contains the history of a user
 CREATE TABLE IF NOT EXISTS history (
     history_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES user(user_id) ON DELETE CASCADE,
+    user_id INT REFERENCES "user"(user_id) ON DELETE CASCADE,
     status VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

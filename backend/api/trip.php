@@ -68,8 +68,34 @@ switch($method) {
                 "data" => $trips
             ));
         } else {
-            // Get all trips
-            $stmt = $trip->getAll();
+            // Get all trips with driver and user information
+            $query = "SELECT 
+                        t.trip_id,
+                        t.driver_id,
+                        t.starting_location,
+                        t.end_location,
+                        t.available_seats,
+                        t.ride_distance,
+                        t.ride_status,
+                        t.created_at,
+                        u.user_id,
+                        u.first_name,
+                        u.middle_initial,
+                        u.last_name,
+                        u.email,
+                        u.employment_status,
+                        v.vehicle_model,
+                        v.plate_number,
+                        v.seat_capacity
+                      FROM trip t
+                      LEFT JOIN driver d ON t.driver_id = d.driver_id
+                      LEFT JOIN "user" u ON d.user_id = u.user_id
+                      LEFT JOIN vehicle v ON v.driver_id = d.driver_id
+                      WHERE t.ride_status = 'scheduled'
+                      ORDER BY t.created_at DESC";
+            
+            $stmt = $db->prepare($query);
+            $stmt->execute();
             $trips = array();
             
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {

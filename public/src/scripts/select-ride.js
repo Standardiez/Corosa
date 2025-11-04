@@ -1,5 +1,29 @@
 // select-ride.js
 
+// Load API configuration
+let apiLoaded = false;
+
+function loadAPIScript() {
+    return new Promise((resolve, reject) => {
+        if (apiLoaded || typeof getAllTrips !== 'undefined') {
+            apiLoaded = true;
+            resolve();
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = '../scripts/api-config.js';
+        script.onload = () => {
+            apiLoaded = true;
+            resolve();
+        };
+        script.onerror = () => {
+            reject(new Error('Failed to load API configuration'));
+        };
+        document.head.appendChild(script);
+    });
+}
+
 // Get URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const destinationName = urlParams.get('destinationName');
@@ -67,6 +91,51 @@ function showLocationDetails() {
 }
 
 // Initialize location details when the page loads
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     showLocationDetails();
+    
+    // Load API and fetch rides if available
+    try {
+        await loadAPIScript();
+        
+        // Filter rides by destination if destination is specified
+        if (destinationName) {
+            const allRides = await getAllTrips();
+            const filteredRides = allRides.filter(ride => 
+                ride.endLocation.name.toLowerCase().includes(destinationName.toLowerCase()) ||
+                ride.startLocation.name.toLowerCase().includes(pickupName?.toLowerCase() || '')
+            );
+            
+            // Store filtered rides in state if available
+            if (typeof window.state !== 'undefined') {
+                window.state.rides = filteredRides;
+            }
+            
+            // Render filtered rides
+            if (typeof renderRides === 'function') {
+                renderRides(filteredRides);
+            } else {
+                // Fallback: render rides directly
+                const ridesList = document.getElementById('rides-list');
+                if (ridesList && filteredRides.length > 0) {
+                    filteredRides.forEach(ride => {
+                        const rideCard = document.createElement('div');
+                        rideCard.innerHTML = `
+                            <div class="ride-card mb-4">
+                                <div class="ride-card__content">
+                                    <h3>${ride.driverName}</h3>
+                                    <p>From: ${ride.startLocation.name}</p>
+                                    <p>To: ${ride.endLocation.name}</p>
+                                    <p>Seats: ${ride.seatsAvailable}</p>
+                                </div>
+                            </div>
+                        `;
+                        ridesList.appendChild(rideCard);
+                    });
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error loading rides:', error);
+    }
 });
