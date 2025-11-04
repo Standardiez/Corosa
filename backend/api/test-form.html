@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration</title>
+</head>
+<body>
+    <h2>Test Registration Form</h2>
+    <form id="testForm">
+        <div>
+            <label>First Name: <input type="text" id="firstName" required></label>
+        </div>
+        <div>
+            <label>Last Name: <input type="text" id="lastName" required></label>
+        </div>
+        <div>
+            <label>Email: <input type="email" id="email" required></label>
+        </div>
+        <div>
+            <label>Mobile: <input type="text" id="mobile" required></label>
+        </div>
+        <div>
+            <label>Password: <input type="password" id="password" required></label>
+        </div>
+        <button type="submit">Test Register</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                mobile: document.getElementById('mobile').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('/Corosa/backend/api/test-register.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+                console.log('Server response:', result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

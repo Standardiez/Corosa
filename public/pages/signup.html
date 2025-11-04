@@ -47,7 +47,7 @@
                                     avoid frontend changes.
                         -->
 
-                        <form id="signupForm" class="form-grid" novalidate>
+                        <form id="signupForm" class="form-grid" method="POST" action="javascript:void(0);" novalidate>
                 <div class="form-group col-1">
                     <label for="firstName" class="form-label">First name</label>
                     <input id="firstName" name="firstName" class="input" required>
@@ -141,7 +141,7 @@
         <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
-    <script src="../js/signup.js"></script>
+    <script src="../js/test.js"></script>
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

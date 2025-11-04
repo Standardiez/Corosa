@@ -4,7 +4,7 @@
     Endpoint: POST /backend/api/users.php
         - The frontend will send the following fields (names in form 'name' attributes):
             firstName, middleInitial, lastName, birthdate, email, mobile,
-            houseNumber, street, barangay, disabilities, employment, password
+            street, barangay, city, disabilities, employment, password
 
         - Preferred content type: application/json (also accept form-encoded for compatibility)
 
@@ -16,9 +16,9 @@
                 "birthdate":"1995-07-21",
                 "email":"juan@example.com",
                 "mobile":"09171234567",
-                "houseNumber":"123",
-                "street":"Main St",
+                "street":"123 Main St",
                 "barangay":"Barangay 1",
+                "city":"Maryheights",
                 "disabilities":"none",
                 "employment":"student",
                 "password":"(plain text from client)"
@@ -41,11 +41,12 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('signupForm');
-
-    const patterns = {
-        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        mobile: /^09\d{9}$/
-    };
+    console.log('Form element found:', form);
+    
+    if (!form) {
+        console.error('Signup form not found!');
+        return;
+    }
 
     function setError(fieldName, message) {
         const el = document.querySelector(`[data-error-for="${fieldName}"]`);
@@ -56,32 +57,57 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('[data-error-for]').forEach(e => e.textContent = '');
     }
 
-    form.addEventListener('submit', function (e) {
+    function setError(fieldName, message) {
+        const el = document.querySelector(`[data-error-for="${fieldName}"]`);
+        if (el) el.textContent = message || '';
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('[data-error-for]').forEach(e => e.textContent = '');
+    }
+
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
+        console.log('Form submission started');
         clearErrors();
 
-        const data = new FormData(form);
-        const firstName = data.get('firstName').trim();
-        const lastName = data.get('lastName').trim();
-        const birthdate = data.get('birthdate');
-        const email = data.get('email').trim();
-        const mobile = data.get('mobile').trim();
-    const houseNumber = (data.get('houseNumber') || '').trim();
-    const street = (data.get('street') || '').trim();
-    const barangay = (data.get('barangay') || '').trim();
-        const employment = data.get('employment');
-        const password = data.get('password');
-        const confirmPassword = data.get('confirmPassword');
-
+        // Basic validation
+        const formData = new FormData(form);
+        const required = ['firstName', 'lastName', 'email', 'mobile', 'password'];
         let valid = true;
 
+        for (const field of required) {
+            if (!formData.get(field)) {
+                setError(field, `${field} is required`);
+                valid = false;
+            }
+        }
+
+        if (!valid) {
+            console.log('Validation failed');
+            return;
+        }
+            const firstName = data.get('firstName')?.trim() || '';
+            const lastName = data.get('lastName')?.trim() || '';
+            const birthdate = data.get('birthdate');
+            const email = data.get('email')?.trim() || '';
+            const mobile = data.get('mobile')?.trim() || '';
+            const houseNumber = data.get('houseNumber')?.trim() || '';
+            const street = data.get('street')?.trim() || '';
+            const barangay = data.get('barangay')?.trim() || '';
+            const employment = data.get('employment');
+            const disabilities = data.get('disabilities');
+            const password = data.get('password');
+            const confirmPassword = data.get('confirmPassword');
+
+        
         if (!firstName) { setError('firstName', 'First name is required'); valid = false; }
         if (!lastName) { setError('lastName', 'Last name is required'); valid = false; }
         if (!birthdate) { setError('birthdate', 'Please enter your birthdate'); valid = false; }
 
         if (!email || !patterns.email.test(email)) { setError('email', 'Please enter a valid email'); valid = false; }
         if (!mobile || !patterns.mobile.test(mobile)) { setError('mobile', 'Enter a valid mobile number (09XXXXXXXXX)'); valid = false; }
-    if (!houseNumber || !street || !barangay) { setError('address', 'Please complete your address'); valid = false; }
+            if (!houseNumber || !street || !barangay) { setError('address', 'Please complete your address'); valid = false; }
         if (!employment) { setError('employment', 'Please select your employment status'); valid = false; }
 
         if (!password || password.length < 8) { setError('password', 'Password must be at least 8 characters'); valid = false; }
@@ -98,8 +124,21 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Build a payload object for later integration
-        const payload = Object.fromEntries(data.entries());
+            // Build the payload object with the correct field names
+            const payload = {
+                firstName,
+                middleInitial: data.get('middleInitial')?.trim() || '',
+                lastName,
+                birthdate,
+                email,
+                mobile,
+                houseNumber,
+                street,
+                barangay,
+                disabilities,
+                employment,
+                password
+            };
         console.log('Signup payload (mock):', payload);
 
         /*
@@ -107,39 +146,41 @@ document.addEventListener('DOMContentLoaded', function () {
            1) Set `useBackend` to true and update `endpoint` to match the server route.
            2) Server should accept JSON (application/json) or form-encoded data.
         */
-        const useBackend = false; // change to true to enable
+        const useBackend = true;
 
-        if (useBackend) {
-            const endpoint = '/backend/api/users.php'; // adjust if your API path differs
-            fetch(endpoint, {
+        try {
+            const response = await fetch('/Corosa/backend/api/test-register.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-                .then(res => res.json())
-                .then(resp => {
-                    if (resp && resp.success) {
-                        // on success you might redirect to login or user dashboard
-                        alert(resp.message || 'Account created');
-                        // Redirect the user to the login page after successful account creation
-                        window.location.href = '/pages/login.html';
-                    } else if (resp && resp.errors) {
-                        // map server-side validation errors to form fields
-                        Object.keys(resp.errors).forEach(f => setError(f, resp.errors[f]));
-                    } else {
-                        alert('Unexpected server response');
-                    }
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstName: data.get('firstName'),
+                    lastName: data.get('lastName'),
+                    email: data.get('email'),
+                    mobile: data.get('mobile'),
+                    password: data.get('password')
                 })
-                .catch(err => {
-                    console.error('Signup request failed', err);
-                    alert('Could not connect to the server. Please try again later.');
-                });
-        } else {
-            // Mock submission: show a friendly message and clear the form (in real app, POST to backend)
-            alert('Account created (mock). In the final app this will submit to the server.');
-            form.reset();
-            // After mock success, redirect user to the login page so they can sign in
-            window.location.href = '/pages/login.html';
+            });
+
+            const result = await response.json();
+            console.log('Server response:', result);
+
+            if (result.success) {
+                alert('Account created successfully!');
+                window.location.href = '../pages/login.html';
+            } else {
+                alert('Error: ' + (result.message || 'Failed to create account'));
+            }
+        } catch (error) {
+            console.error('Error during signup:', error);
+            alert('Error during signup. Check console for details.');
         }
+
+        // Mock submission: show a friendly message and clear the form (in real app, POST to backend)
+        alert('Account created (mock). In the final app this will submit to the server.');
+        form.reset();
+        // After mock success, redirect user to the login page so they can sign in
+        window.location.href = '../pages/login.html';
     });
 });
