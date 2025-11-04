@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniRide - University Carpooling</title>
+    <!-- Google Maps script is loaded dynamically by map-view.js using a gitignored key file or localStorage -->
+    <link href="../assets/styles/tailwind.css" rel="stylesheet">
+    <link href="../assets/styles/components.css" rel="stylesheet">
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container flex h-16 items-center justify-between px-4">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
+                    <svg class="h-6 w-6 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 17h2c.6 0 1-.4 1-1v-2c0-.6-.4-1-1-1h-2"></path>
+                        <path d="M4 17h2"></path>
+                        <path d="M16 4h2c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1h-2"></path>
+                        <path d="M4 7h2"></path>
+                        <path d="M5 17v1c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-1"></path>
+                        <path d="M5 7V6c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v1"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">UniRide</h1>
+                    <p class="text-xs text-muted-foreground">University Carpooling</p>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="find-ride.html" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+                    <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </svg>
+                    Find a Ride
+                </a>
+                <a href="#" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+                    Offer Ride
+                </a>
+                <a href="#" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+                    My Rides
+                </a>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <button class="inline-flex items-center justify-center rounded-full w-10 h-10 border border-input bg-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+                <button class="inline-flex items-center justify-center w-10 h-10 hover:bg-accent hover:text-accent-foreground rounded-md md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <div class="grid lg:grid-cols-3 gap-6 h-[calc(100vh-8rem)]">
+            <!-- Map Section -->
+            <div class="lg:col-span-2 h-full rounded-lg overflow-hidden bg-card border border-border/50 shadow-lg">
+                <div id="map" class="h-full w-full rounded-lg shadow-lg"></div>
+            </div>
+
+            <!-- Rides List Section -->
+            <div class="h-full flex flex-col bg-card rounded-lg border border-border/50 shadow-lg overflow-hidden">
+                <div class="p-4 border-b border-border/50 space-y-3">
+                    <h2 class="text-xl font-bold">Available Rides</h2>
+
+                    <!-- Location details container -->
+                    <div id="destination-filter" class="hidden space-y-3">
+                        <!-- Location cards will be inserted here by JavaScript -->
+                    </div>
+
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </svg>
+                            <input type="text" placeholder="Search destination..." class="pl-9 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        </div>
+                        <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18"></path>
+                                <path d="M7 12h10"></path>
+                                <path d="M10 18h4"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 p-4 overflow-auto" id="rides-list">
+                    <div id="rides-placeholder" class="text-center text-sm text-muted-foreground">
+                        Loading rides...
+                    </div>
+                    <!-- Ride cards will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+                <!-- Floating action button -->
+    <button id="help-btn" class="fixed bottom-6 right-6 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 w-10 shadow-lg" title="Help/Contact">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+    </button>
+    <script src="../scripts/api-config.js"></script>
+    <script src="../scripts/main.js"></script>
+    <script src="../components/map-view.js"></script>
+    <script src="../scripts/select-ride.js"></script>
+</body>
+</html>

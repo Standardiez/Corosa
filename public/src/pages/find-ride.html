@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Find Ride - UniRide</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link href="../assets/styles/index.css" rel="stylesheet">
+        <link href="../assets/styles/components.css" rel="stylesheet">
+        <style>
+            /* small page-scoped tweaks */
+            .destination-card { cursor: pointer; }
+            .destination-card.selected { border-color: hsl(var(--primary)); background: color-mix(in srgb, hsl(var(--primary)) 8%, transparent); }
+        </style>
+</head>
+<body class="min-h-screen bg-background">
+    <header class="border-b bg-card">
+        <div class="container mx-auto px-4 py-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-primary">UniRide</h1>
+            </div>
+            <div>
+                <a href="index.html" class="btn btn-outline">Back to Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl font-bold mb-2">Where To?</h2>
+            <p class="text-muted-foreground mb-8">Select your destination to find available rides</p>
+
+            <!-- Drop pin card -->
+            <div class="destination-card bg-card border rounded-lg p-4 mb-4 hover:border-primary transition-colors">
+                <div class="flex items-start gap-3" onclick="openMapDialog()">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-1">Drop a Pin</h3>
+                        <p class="text-muted-foreground text-sm">Select your destination by dropping a pin on the map</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="destinations-list" class="space-y-3">
+                <!-- destination cards rendered here -->
+            </div>
+
+            <button id="back-btn" class="btn btn-outline w-full mt-6">Back to Dashboard</button>
+        </div>
+    </main>
+
+    <!-- Map Dialog -->
+    <div id="map-dialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden" style="z-index: 50;">
+        <div class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] gap-4 border shadow-lg sm:rounded-lg" style="background: hsl(var(--card)); padding: 1.5rem;">
+            <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+                <h2 class="text-lg font-semibold leading-none tracking-tight">Select Location</h2>
+                <p class="text-sm text-muted-foreground">Click on the map to drop a pin at your destination</p>
+            </div>
+            <div class="h-[400px] rounded-md border" id="map"></div>
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+                <button onclick="closeMapDialog()" class="btn btn-outline">Cancel</button>
+                <button onclick="confirmLocation()" class="btn btn-primary" disabled id="confirm-location-btn">Confirm Location</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../components/map-view.js"></script>
+    <script src="../scripts/map-dialog.js"></script>
+    <script src="../scripts/find-ride.js"></script>
+    <script src="../scripts/main.js"></script>
+</body>
+</html>

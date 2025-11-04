@@ -1,0 +1,119 @@
+/* Component styles for UniRide (enhanced from React version)
+	 Purpose: provide better layout, spacing, and visual polish while keeping Tailwind utility usage.
+*/
+
+:root {
+	--card-radius: 0.75rem;
+}
+
+/* Header */
+.container {
+	max-width: 1280px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+header {
+	background: hsl(var(--background));
+}
+
+.logo-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* Map container - ensure map fills available area and has soft rounded corners */
+#map {
+	height: 100%;
+	min-height: 320px;
+	border-radius: var(--card-radius);
+	box-shadow: var(--shadow-elevated);
+}
+
+/* Ride list and cards */
+.ride-card {
+	background: hsl(var(--card));
+	color: hsl(var(--card-foreground));
+	border-radius: calc(var(--card-radius) - 0.125rem);
+	box-shadow: var(--shadow-card);
+	border: 1px solid rgba(0,0,0,0.04);
+	transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.ride-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 30px rgba(16,24,40,0.12);
+}
+
+.ride-card__content {
+	padding: 1rem;
+}
+
+.ride-card__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.ride-card__avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 9999px;
+	overflow: hidden;
+	background: hsl(var(--muted));
+}
+
+.ride-meta {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.125rem 0.5rem;
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.5rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.btn-primary {
+	background: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+	border: none;
+}
+
+.btn-outline {
+	background: transparent;
+	border: 1px solid hsl(var(--border));
+	color: hsl(var(--foreground));
+}
+
+/* Search input styles */
+.search-input {
+	padding-left: 2.25rem; /* space for the icon */
+}
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
+	.lg\:col-span-2 { grid-column: span 3 / span 3; }
+	.container { padding-left: 1rem; padding-right: 1rem; }
+}
+
+@media (max-width: 640px) {
+	#map { min-height: 260px; }
+	.ride-card__header { gap: 0.5rem; }
+	.btn { padding: 0.4rem 0.6rem; }
+}

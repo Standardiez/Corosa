@@ -1,30 +1,37 @@
 -- Corosa Database Schema
--- MySQL Database Setup for University Carpooling App
+-- MySQL Database Setup — final ERD-aligned version
 
 -- Create database (run this first)
 CREATE DATABASE IF NOT EXISTS corosa_db;
 USE corosa_db;
 
--- ADDRESS Table
+-- ADDRESS
 CREATE TABLE IF NOT EXISTS address (
     address_id INT AUTO_INCREMENT PRIMARY KEY,
     address_street VARCHAR(255),
     address_barangay VARCHAR(255),
-    address_unit VARCHAR(255),
-    latitude DECIMAL(10,8),     -- Added for precise location
-    longitude DECIMAL(11,8),    -- Added for precise location
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    address_unit VARCHAR(255)
 ) ENGINE=InnoDB;
 
--- Sample Data
-INSERT INTO address (address_street, address_barangay, address_unit) VALUES
-('Maryheights Road', 'San Luis', 'Unit 2B'),
-('Pines Avenue', 'Camp 7', 'Block 5 Lot 10'),
-('University Drive', 'Greenhills', 'Dorm 3-Room 4');
+-- EMERGENCY_CONTACT
+CREATE TABLE IF NOT EXISTS emergency_contact (
+    contact_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    contact_name VARCHAR(255) NOT NULL,
+    contact_number VARCHAR(20) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- USER Table ; ONLY contains user data
--- USERS Table
+-- HISTORY
+CREATE TABLE IF NOT EXISTS history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    status VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- USERS
 CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -32,147 +39,110 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(100) NOT NULL,
     birthdate DATE,
     email VARCHAR(255) UNIQUE NOT NULL,
-    mobile_number VARCHAR(20),    -- Changed to 20 to accommodate international formats
+    mobile_number VARCHAR(20),
     address_id INT,
-    profile_picture VARCHAR(255), -- Added for user avatars
     disabilities TEXT,
-    employment_status ENUM('student', 'faculty', 'staff') NOT NULL DEFAULT 'student',
-    account_status ENUM('active', 'inactive', 'suspended') NOT NULL DEFAULT 'active',
+    employment_status VARCHAR(50),
+    account_status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     hashed_password VARCHAR(255) NOT NULL,
     FOREIGN KEY (address_id) REFERENCES address(address_id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-CREATE INDEX IF NOT EXISTS idx_user_email ON "user"(email);
-CREATE INDEX IF NOT EXISTS idx_user_status ON "user"(account_status);
-
-INSERT INTO "user" (first_name, middle_initial, last_name, birthdate, email, mobile_number, 
-address_id, disabilities, employment_status, account_status, hashed_password) VALUES
-('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+9923232131', 1, 'None', 'student', 'active', '$2y$10$'),
-('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+9982372372', 2, 'None', 'student', 'active', '$2y$10$'),
-('Ethan', 'C', 'Winters', '1998-12-05', 'WintersDaddy@slu.edu.ph', '+9923456789', 3, NULL, 'faculty', 'active', '$2y$10$'),
-('David', 'D', 'Martinez', '2001-03-10', 'cyberpunk@slu.edu.ph', '+9932145678', 2, 'faculty', 'student', 'active', '$2y$10$'),
-('Lee', 'G', 'Hoon', '1997-09-09', 'woozi@slu.edu.ph', '+9945678123', 1, NULL, 'staff', 'active', '$2y$10$');
-
--- DRIVER Table ; ONLY contains users THAT ARE drivers
+-- DRIVER
 CREATE TABLE IF NOT EXISTS driver (
-    driver_id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES "user"(user_id) ON DELETE CASCADE,
-    driver_license_image VARCHAR(255)
-);
+    driver_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNIQUE NOT NULL,
+    driver_license_image VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- Sample Data
-INSERT INTO driver (user_id, driver_license_image) VALUES
-(1, 'john_license.png'),
-(3, 'ethan_license.png');
-
--- VEHICLE Table ; Contains vehicle data
+-- VEHICLE
 CREATE TABLE IF NOT EXISTS vehicle (
     plate_number VARCHAR(20) PRIMARY KEY,
-    driver_id INT REFERENCES driver(driver_id) ON DELETE CASCADE,
+    driver_id INT,
     vehicle_model VARCHAR(100),
-    seat_capacity INT CHECK (seat_capacity > 0),
-    vehicle_status VARCHAR(50) DEFAULT 'available'
-);
+    seat_capacity INT,
+    vehicle_status VARCHAR(50) DEFAULT 'available',
+    FOREIGN KEY (driver_id) REFERENCES driver(driver_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- Sample Data
-INSERT INTO vehicle (plate_number, driver_id, vehicle_model, seat_capacity, vehicle_status) VALUES
-('ABC-1234', 1, 'Toyota Vios 2018', 4, 'available'),
-('PEO-763', 2, 'Toyota Wigo 2024', 3, 'available');
-
-
--- EMERGENCY_CONTACT Table ; Contains emergency contacts of users
-CREATE TABLE emergency_contact (
-    contact_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES "user"(user_id) ON DELETE CASCADE,
-    contact_name VARCHAR(255) NOT NULL,
-    contact_number VARCHAR(20) NOT NULL
-);
-
--- Sample Data
-INSERT INTO emergency_contact (user_id, contact_name, contact_number) VALUES
-(1, 'Hannah Montana', '+639101112233'),
-(1, 'Marco Santos', '+639121314151'),
-(2, 'Liza Rivera', '+639161718192');
-
--- TRIP Table ; Contains the travel data
-CREATE TABLE IF NOT EXISTS trip (
-    trip_id SERIAL PRIMARY KEY,
-    driver_id INT REFERENCES driver(driver_id) ON DELETE CASCADE,
-    starting_location VARCHAR(255) NOT NULL,
-    end_location VARCHAR(255) NOT NULL,
-    available_seats INT CHECK (available_seats >= 0),
-    ride_distance NUMERIC(10,2),
+-- TRIP
+CREATE TABLE IF NOT EXISTS trips (
+    trip_id INT AUTO_INCREMENT PRIMARY KEY,
+    driver_id INT,
+    end_lat DECIMAL(10,8),
+    end_long DECIMAL(11,8),
+    start_lat DECIMAL(10,8),
+    start_long DECIMAL(11,8),
+    available_seats INT,
+    ride_distance DECIMAL(10,2),
     ride_status VARCHAR(50) DEFAULT 'scheduled',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (driver_id) REFERENCES driver(driver_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- Sample Data
-INSERT INTO trip (driver_id, starting_location, end_location, available_seats, ride_distance, ride_status) VALUES
-(1, 'Maryheights', 'University Main Gate', 3, 2.5, 'scheduled'),
-(2, 'Camp 7', 'Maryheights', 2, 3.8, 'scheduled');
-
--- BOOKINGS Table ; Contains the bookings data done by a user
+-- BOOKINGS
 CREATE TABLE IF NOT EXISTS bookings (
-    booking_id SERIAL PRIMARY KEY,
-    passenger_id INT REFERENCES "user"(user_id) ON DELETE CASCADE,
+    booking_id INT AUTO_INCREMENT PRIMARY KEY,
+    passenger_id INT,
     booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    pick_up_location VARCHAR(255),
-    drop_off_location VARCHAR(255),
+    end_lat DECIMAL(10,8),
+    end_long DECIMAL(11,8),
+    start_lat DECIMAL(10,8),
+    start_long DECIMAL(11,8),
     payment_type VARCHAR(50),
-    total_cost NUMERIC(10,2),
+    total_cost DECIMAL(10,2),
     booking_confirmation BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (passenger_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- Sample Data
-INSERT INTO bookings (passenger_id, pick_up_location, drop_off_location, payment_type, total_cost, booking_confirmation) VALUES
-(2, 'Gate 3', 'Main Gate', 'Cash', 50.00, TRUE),
-(2, 'Dorm 3', 'Camp 7', 'GCash', 75.00, TRUE);
-
--- TRIP_ASSIGNMENT Table ; Bridges the TRIP and BOOKING Tables for easier management of data 
+-- TRIP_ASSIGNMENT
 CREATE TABLE IF NOT EXISTS trip_assignment (
-    assignment_id SERIAL PRIMARY KEY,
-    booking_id INT REFERENCES bookings(booking_id) ON DELETE CASCADE,
-    trip_id INT REFERENCES trip(trip_id) ON DELETE CASCADE,
+    assignment_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT,
+    trip_id INT,
     seat_number INT,
     assignment_status VARCHAR(50) DEFAULT 'confirmed',
     payment_type VARCHAR(50),
-    total_cost NUMERIC(10,2),
+    total_cost DECIMAL(10,2),
     booking_confirmation BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (trip_id) REFERENCES trips(trip_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- Sample Data
-INSERT INTO trip_assignment (booking_id, trip_id, seat_number, assignment_status, payment_type, total_cost, booking_confirmation) VALUES
-(1, 1, 2, 'confirmed', 'Cash', 50.00, TRUE),
-(2, 2, 1, 'confirmed', 'GCash', 75.00, TRUE);
-
--- REVIEWS Table ; Contains the reviews of the users of the trip
+-- REVIEWS
 CREATE TABLE IF NOT EXISTS reviews (
-    review_id SERIAL PRIMARY KEY,
-    booking_id INT REFERENCES bookings(booking_id) ON DELETE CASCADE,
-    rating INT CHECK (rating BETWEEN 1 AND 5),
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT,
+    rating INT,
     comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
--- Sample Data
-INSERT INTO reviews (booking_id, rating, comment) VALUES
-(1, 5, 'Very comfortable ride!'),
-(2, 4, 'Smooth trip, friendly driver.');
+-- Indexes for faster geolocation queries (optional)
+CREATE INDEX idx_trips_start ON trips(start_lat, start_long);
+CREATE INDEX idx_trips_end ON trips(end_lat, end_long);
+CREATE INDEX idx_bookings_start ON bookings(start_lat, start_long);
+CREATE INDEX idx_bookings_end ON bookings(end_lat, end_long);
 
--- HISTORY Table ; Contains the history of a user
-CREATE TABLE IF NOT EXISTS history (
-    history_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES "user"(user_id) ON DELETE CASCADE,
-    status VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Sample Data (users must be inserted after users table exists)
+INSERT INTO users (first_name, middle_initial, last_name, birthdate, email, mobile_number, address_id, disabilities, employment_status, account_status, hashed_password) VALUES
+('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+9923232131', NULL, 'None', 'student', 'active', '$2y$10$'),
+('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+9982372372', NULL, 'None', 'student', 'active', '$2y$10$');
 
--- Sample Data
-INSERT INTO history (user_id, status) VALUES
-(1, 'Trip completed'),
-(2, 'Booking created'),
-(3, 'Driver approved');
+INSERT INTO driver (user_id, driver_license_image) VALUES
+(1, 'john_license.png');
+
+INSERT INTO vehicle (plate_number, driver_id, vehicle_model, seat_capacity, vehicle_status) VALUES
+('ABC-1234', 1, 'Toyota Vios 2018', 4, 'available');
+
+INSERT INTO trips (driver_id, start_lat, start_long, end_lat, end_long, available_seats, ride_distance, ride_status) VALUES
+(1, 16.4023, 120.5960, 16.4080, 120.5969, 3, 2.5, 'scheduled');
+
+INSERT INTO bookings (passenger_id, start_lat, start_long, end_lat, end_long, payment_type, total_cost, booking_confirmation) VALUES
+(2, 16.4023, 120.5960, 16.4080, 120.5969, 'Cash', 50.00, TRUE);
+
