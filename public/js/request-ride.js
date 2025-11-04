@@ -216,8 +216,18 @@
 
     // Handle ride request
     window.requestRide = function(rideId) {
-        // TODO: Implement actual ride request logic
-        alert(`Requesting ride ${rideId}. This feature will be implemented soon.`);
+        // Find the ride object
+        const ride = availableRides.find(r => r.id === rideId);
+        if (!ride) {
+            alert('Selected ride not found.');
+            return;
+        }
+
+        // Save selected ride to sessionStorage for the confirmation page
+        sessionStorage.setItem('selectedRide', JSON.stringify(ride));
+
+        // Navigate to confirmation page
+        window.location.href = 'ride-confirmation.html';
     };
 
     // Initialize everything when the page loads
