@@ -65,10 +65,10 @@ function testDatabaseConnection() {
             // Test query: Get sample data from key tables
             $sampleQueries = array(
                 'users' => 'SELECT user_id, first_name, last_name, email, account_status FROM "user" LIMIT 3',
-                'trips' => 'SELECT trip_id, driver_id, starting_location, end_location, available_seats FROM trip LIMIT 3',
+                'trips' => 'SELECT trip_id, driver_id, start_lat, start_long, end_lat, end_long, available_seats FROM trip LIMIT 3',
                 'drivers' => 'SELECT driver_id, user_id FROM driver LIMIT 3',
                 'vehicles' => 'SELECT plate_number, driver_id, vehicle_model, seat_capacity FROM vehicle LIMIT 3',
-                'bookings' => 'SELECT booking_id, passenger_id, pick_up_location, drop_off_location, total_cost FROM bookings LIMIT 3'
+                'bookings' => 'SELECT booking_id, passenger_id,  start_lat, start_long, end_lat, end_long, total_cost FROM bookings LIMIT 3'
             );
 
             foreach ($sampleQueries as $key => $query) {
@@ -82,9 +82,11 @@ function testDatabaseConnection() {
 
             // Test query: Check if foreign key relationships work
             $fkTest = "SELECT 
-                        t.trip_id, 
-                        t.starting_location, 
-                        t.end_location,
+                        t.trip_id,  
+                        t.start_loc,
+                        t.start_long,
+                        t.end_lat,
+                        t.end_long,
                         d.driver_id,
                         u.first_name || ' ' || u.last_name as driver_name,
                         v.vehicle_model,
