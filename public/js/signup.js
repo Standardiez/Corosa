@@ -121,7 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (resp && resp.success) {
                         // on success you might redirect to login or user dashboard
                         alert(resp.message || 'Account created');
-                        window.location.href = '/pages/index.html';
+                        // Redirect the user to the login page after successful account creation
+                        window.location.href = '/pages/login.html';
                     } else if (resp && resp.errors) {
                         // map server-side validation errors to form fields
                         Object.keys(resp.errors).forEach(f => setError(f, resp.errors[f]));
@@ -137,6 +138,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // Mock submission: show a friendly message and clear the form (in real app, POST to backend)
             alert('Account created (mock). In the final app this will submit to the server.');
             form.reset();
+            // After mock success, redirect user to the login page so they can sign in
+            window.location.href = '/pages/login.html';
         }
     });
 });
