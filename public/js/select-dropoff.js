@@ -71,7 +71,7 @@
         if (el) {
             const coordsText = fmtLatLng(coords);
             el.textContent = address ? `${address} (${coordsText})` : coordsText;
-            
+
             // Store the current selection
             currentLocation.address = address || coordsText;
             currentLocation.coords = coords;
@@ -92,7 +92,7 @@
                     // Store drop-off location in sessionStorage
                     sessionStorage.setItem('dropoffLocation', currentLocation.address);
                     sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
-                    
+
                     // Navigate to request-ride page
                     window.location.href = 'request-ride.html';
                 }
@@ -251,7 +251,7 @@
                     // Store drop-off location in sessionStorage
                     sessionStorage.setItem('dropoffLocation', currentLocation.address);
                     sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
-                    
+
                     // Navigate to request-ride page
                     window.location.href = 'request-ride.html';
                 }

@@ -1,6 +1,6 @@
 /*
   request-ride.js
-  
+
   This script handles:
   1. Loading and displaying the route map between pickup and drop-off points
   2. Fetching and displaying available rides
@@ -214,7 +214,7 @@
     // Initialize everything when the page loads
     function initialize() {
         loadLocations();
-        
+
         // Load Google Maps
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&callback=initMap`;
