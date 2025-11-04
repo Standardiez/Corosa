@@ -10,6 +10,12 @@
 (function () {
     'use strict';
 
+    // Store the current selected location and coordinates
+    let currentLocation = {
+        address: '',
+        coords: null
+    };
+
     // Default center for Baguio City
     const DEFAULT_CENTER = { lat: 16.4023, lng: 120.5960 };
 
@@ -65,11 +71,32 @@
         if (el) {
             const coordsText = fmtLatLng(coords);
             el.textContent = address ? `${address} (${coordsText})` : coordsText;
+            
+            // Store the current selection
+            currentLocation.address = address || coordsText;
+            currentLocation.coords = coords;
         }
 
         // Enable the next button when we have coordinates
         if (nextBtn) {
             nextBtn.disabled = false;
+        }
+    }
+
+    // Handle next button click
+    function setupNextButton() {
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                if (currentLocation.coords) {
+                    // Store drop-off location in sessionStorage
+                    sessionStorage.setItem('dropoffLocation', currentLocation.address);
+                    sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
+                    
+                    // Navigate to request-ride page
+                    window.location.href = 'request-ride.html';
+                }
+            });
         }
     }
 
@@ -138,7 +165,7 @@
 
         // Create a draggable marker in the center
         const marker = new google.maps.Marker({
-            position: DEFAULT_CENTER,
+            position: pickupCoords,
             map: map,
             draggable: true,
             title: 'Drag to choose drop-off point'
@@ -215,15 +242,34 @@
         }
     }
 
+    // Setup next button handler
+    function setupNextButton() {
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                if (currentLocation.coords) {
+                    // Store drop-off location in sessionStorage
+                    sessionStorage.setItem('dropoffLocation', currentLocation.address);
+                    sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
+                    
+                    // Navigate to request-ride page
+                    window.location.href = 'request-ride.html';
+                }
+            });
+        }
+    }
+
     // Start loading after DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             loadGoogleMaps();
             setupBackButton();
+            setupNextButton();
         });
     } else {
         loadGoogleMaps();
         setupBackButton();
+        setupNextButton();
     }
 
 })();
