@@ -124,25 +124,57 @@
         return '';
     }
 
+    // Get user's current location
+    async function getCurrentLocation() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error('Geolocation is not supported by your browser'));
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    resolve({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    });
+                },
+                error => {
+                    console.warn('Error getting location:', error.message);
+                    resolve(DEFAULT_CENTER); // Fallback to default center
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+        });
+    }
+
     // Initialize map once API is loaded
-    window.initMap = function () {
+    window.initMap = async function () {
         const mapEl = document.getElementById('map');
         if (!mapEl) return;
 
+        // Try to get user's location first
+        const initialCenter = await getCurrentLocation();
+
         // Create map
         const map = new google.maps.Map(mapEl, {
-            center: DEFAULT_CENTER,
-            zoom: 14,
+            center: initialCenter,
+            zoom: 16, // Closer zoom for current location
             mapTypeControl: false,
             streetViewControl: false,
         });
 
-        // Create a draggable marker in the center
+        // Create a draggable marker at the initial center
         const marker = new google.maps.Marker({
-            position: DEFAULT_CENTER,
+            position: initialCenter,
             map: map,
             draggable: true,
-            title: 'Drag to choose pickup point'
+            title: 'Drag to choose pickup point',
+            animation: google.maps.Animation.DROP // Add a drop animation
         });
 
         // Update readout initially
@@ -165,6 +197,24 @@
             const address = await getLocationDetails(latLng);
             setSelectedLocationInfo(latLng, address);
         });
+
+        // Setup location button
+        const locationBtn = document.getElementById('location-btn');
+        if (locationBtn) {
+            locationBtn.addEventListener('click', async function() {
+                try {
+                    const position = await getCurrentLocation();
+                    map.panTo(position);
+                    map.setZoom(18); // Zoom in closer when using current location
+                    marker.setPosition(position);
+                    const address = await getLocationDetails(position);
+                    setSelectedLocationInfo(position, address);
+                    marker.setAnimation(google.maps.Animation.DROP);
+                } catch (error) {
+                    alert('Could not get your location. Please make sure location services are enabled.');
+                }
+            });
+        }
     };
 
     // Dynamically load Google Maps JS API
