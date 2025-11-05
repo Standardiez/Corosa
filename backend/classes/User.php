@@ -3,7 +3,7 @@ require_once '../config/database.php';
 
 class User {
     private $conn;
-    private $table_name = "users";  // Changed from "user" to "users"
+    private $table_name = "users";
 
     public $user_id;
     public $first_name;
@@ -18,6 +18,14 @@ class User {
     public $account_status;
     public $created_at;
     public $hashed_password;
+    
+    // Properties for address
+    public $house_number;
+    public $street;
+    public $barangay;
+    
+    // Property for password
+    public $password;
 
     public function __construct($db) {
         $this->conn = $db;
@@ -35,17 +43,32 @@ class User {
 
         $stmt = $this->conn->prepare($query);
 
-        // Sanitize input data
+        // Sanitize input data - but preserve NULL values for optional fields
         $this->first_name = htmlspecialchars(strip_tags($this->first_name));
-        $this->middle_initial = htmlspecialchars(strip_tags($this->middle_initial));
+        $this->middle_initial = $this->middle_initial ? htmlspecialchars(strip_tags($this->middle_initial)) : null;
         $this->last_name = htmlspecialchars(strip_tags($this->last_name));
         $this->birthdate = htmlspecialchars(strip_tags($this->birthdate));
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->mobile_number = htmlspecialchars(strip_tags($this->mobile_number));
-        $this->disabilities = htmlspecialchars(strip_tags($this->disabilities));
+        $this->disabilities = $this->disabilities ? htmlspecialchars(strip_tags($this->disabilities)) : null;
         $this->employment_status = htmlspecialchars(strip_tags($this->employment_status));
         $this->account_status = htmlspecialchars(strip_tags($this->account_status));
-        $this->hashed_password = htmlspecialchars(strip_tags($this->hashed_password));
+        $this->password = htmlspecialchars(strip_tags($this->password));
+
+        // Create address first if house_number, street and barangay are provided
+        if ($this->house_number && $this->street && $this->barangay) {
+            require_once __DIR__ . '/Address.php';
+            $address = new Address($this->conn);
+            $address->address_unit = $this->house_number;
+            $address->address_street = $this->street;
+            $address->address_barangay = $this->barangay;
+            
+            if ($address->create()) {
+                $this->address_id = $address->address_id;
+            } else {
+                return false;
+            }
+        }
 
         // Bind values
         $stmt->bindParam(":first_name", $this->first_name);
@@ -58,12 +81,11 @@ class User {
         $stmt->bindParam(":disabilities", $this->disabilities);
         $stmt->bindParam(":employment_status", $this->employment_status);
         $stmt->bindParam(":account_status", $this->account_status);
-        $stmt->bindParam(":hashed_password", $this->hashed_password);
+        $stmt->bindParam(":hashed_password", $this->password);
 
         if($stmt->execute()) {
-            // PostgreSQL: Get the returned ID from RETURNING clause
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->user_id = $row['user_id'];
+            // Get the last inserted ID for MySQL
+            $this->user_id = $this->conn->lastInsertId();
             return true;
         }
         return false;
@@ -198,4 +220,3 @@ class User {
     }
 }
 ?>
-

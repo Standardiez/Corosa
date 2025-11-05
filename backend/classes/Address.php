@@ -18,10 +18,10 @@ class Address {
      * Create a new address
      */
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " 
-                  (address_street, address_barangay, address_unit) 
-                  VALUES (:address_street, :address_barangay, :address_unit)
-                  RETURNING address_id";
+    // Use a portable INSERT. PostgreSQL supports RETURNING but MySQL does not.
+    $query = "INSERT INTO " . $this->table_name . " 
+          (address_street, address_barangay, address_unit) 
+          VALUES (:address_street, :address_barangay, :address_unit)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -35,10 +35,20 @@ class Address {
         $stmt->bindParam(":address_barangay", $this->address_barangay);
         $stmt->bindParam(":address_unit", $this->address_unit);
 
-        if($stmt->execute()) {
-            // PostgreSQL: Get the returned ID from RETURNING clause
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->address_id = $row['address_id'];
+        if ($stmt->execute()) {
+            // Determine driver: PostgreSQL may return via RETURNING, MySQL uses lastInsertId
+            $driver = $this->conn->getAttribute(PDO::ATTR_DRIVER_NAME);
+            if ($driver === 'pgsql') {
+                // If using pgsql and RETURNING was used elsewhere, try to fetch
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row && isset($row['address_id'])) {
+                    $this->address_id = $row['address_id'];
+                }
+            } else {
+                // MySQL / SQLite: use lastInsertId
+                $this->address_id = $this->conn->lastInsertId();
+            }
+
             return true;
         }
         return false;

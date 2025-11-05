@@ -35,111 +35,171 @@
         - CORS / CSRF notes:
             * If the API is on a different origin, enable CORS with appropriate Access-Control-Allow-Origin.
             * For CSRF protection, consider issuing a cookie token or require an anti-CSRF token in a hidden input.
-
-    To connect: uncomment the fetch() block below and set the endpoint variable to match your API path.
 */
 
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('signupForm');
+// Validation patterns
+const patterns = {
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  mobile: /^09\d{9}$/
+};
 
-    const patterns = {
-        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        mobile: /^09\d{9}$/
-    };
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("signupForm");
+  console.log("Form element found:", form);
 
-    function setError(fieldName, message) {
-        const el = document.querySelector(`[data-error-for="${fieldName}"]`);
-        if (el) el.textContent = message || '';
+  if (!form) {
+    console.error("Signup form not found!");
+    return;
+  }
+
+  function setError(fieldName, message) {
+    const el = document.querySelector(`[data-error-for="${fieldName}"]`);
+    if (el) el.textContent = message || "";
+  }
+
+  function clearErrors() {
+    document
+      .querySelectorAll("[data-error-for]")
+      .forEach((e) => (e.textContent = ""));
+  }
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    console.log("Form submission started");
+    clearErrors();
+
+    const formData = new FormData(form);
+    let valid = true;
+
+    // Get all form values first
+    const firstName = formData.get("firstName")?.trim();
+    const middleInitial = formData.get("middleInitial")?.trim();
+    const lastName = formData.get("lastName")?.trim();
+    const birthdate = formData.get("birthdate");
+    const email = formData.get("email")?.trim();
+    const mobile = formData.get("mobile")?.trim();
+    const houseNumber = formData.get("houseNumber")?.trim();
+    const street = formData.get("street")?.trim();
+    const barangay = formData.get("barangay")?.trim();
+    const employment = formData.get("employment");
+    const disabilities = formData.get("disabilities");
+    const password = formData.get("password");
+    const confirmPassword = formData.get("confirmPassword");
+
+    // Validation
+    if (!firstName) {
+      setError("firstName", "First name is required");
+      valid = false;
+    }
+    if (!lastName) {
+      setError("lastName", "Last name is required");
+      valid = false;
+    }
+    if (!birthdate) {
+      setError("birthdate", "Please enter your birthdate");
+      valid = false;
     }
 
-    function clearErrors() {
-        document.querySelectorAll('[data-error-for]').forEach(e => e.textContent = '');
+    if (!email || !patterns.email.test(email)) {
+      setError("email", "Please enter a valid email");
+      valid = false;
+    }
+    if (!mobile || !patterns.mobile.test(mobile)) {
+      setError("mobile", "Enter a valid mobile number (09XXXXXXXXX)");
+      valid = false;
+    }
+    if (!houseNumber || !street || !barangay) {
+      setError("address", "Please complete your address");
+      valid = false;
+    }
+    if (!employment) {
+      setError("employment", "Please select your employment status");
+      valid = false;
     }
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearErrors();
+    if (!password || password.length < 8) {
+      setError("password", "Password must be at least 8 characters");
+      valid = false;
+    }
+    if (password !== confirmPassword) {
+      setError("confirmPassword", "Passwords do not match");
+      valid = false;
+    }
 
-        const data = new FormData(form);
-        const firstName = data.get('firstName').trim();
-        const lastName = data.get('lastName').trim();
-        const birthdate = data.get('birthdate');
-        const email = data.get('email').trim();
-        const mobile = data.get('mobile').trim();
-    const houseNumber = (data.get('houseNumber') || '').trim();
-    const street = (data.get('street') || '').trim();
-    const barangay = (data.get('barangay') || '').trim();
-        const employment = data.get('employment');
-        const password = data.get('password');
-        const confirmPassword = data.get('confirmPassword');
+    if (!valid) {
+      // focus on first error field if any
+      const firstError = document.querySelector("[data-error-for]:not(:empty)");
+      if (firstError) {
+        const name = firstError.getAttribute("data-error-for");
+        const input =
+          document.getElementById(name) || document.querySelector(`[name="${name}"]`);
+        if (input) input.focus();
+      }
+      return;
+    }
 
-        let valid = true;
-
-        if (!firstName) { setError('firstName', 'First name is required'); valid = false; }
-        if (!lastName) { setError('lastName', 'Last name is required'); valid = false; }
-        if (!birthdate) { setError('birthdate', 'Please enter your birthdate'); valid = false; }
-
-        if (!email || !patterns.email.test(email)) { setError('email', 'Please enter a valid email'); valid = false; }
-        if (!mobile || !patterns.mobile.test(mobile)) { setError('mobile', 'Enter a valid mobile number (09XXXXXXXXX)'); valid = false; }
-    if (!houseNumber || !street || !barangay) { setError('address', 'Please complete your address'); valid = false; }
-        if (!employment) { setError('employment', 'Please select your employment status'); valid = false; }
-
-        if (!password || password.length < 8) { setError('password', 'Password must be at least 8 characters'); valid = false; }
-        if (password !== confirmPassword) { setError('confirmPassword', 'Passwords do not match'); valid = false; }
-
-        if (!valid) {
-            // focus on first error field if any
-            const firstError = document.querySelector('[data-error-for]:not(:empty)');
-            if (firstError) {
-                const name = firstError.getAttribute('data-error-for');
-                const input = document.getElementById(name) || document.querySelector(`#${name}`);
-                if (input) input.focus();
-            }
-            return;
-        }
-
-        // Build a payload object for later integration
-        const payload = Object.fromEntries(data.entries());
-        console.log('Signup payload (mock):', payload);
-
-        /*
-           To enable real backend submission:
-           1) Set `useBackend` to true and update `endpoint` to match the server route.
-           2) Server should accept JSON (application/json) or form-encoded data.
-        */
-        const useBackend = false; // change to true to enable
-
-        if (useBackend) {
-            const endpoint = '/backend/api/users.php'; // adjust if your API path differs
-            fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-                .then(res => res.json())
-                .then(resp => {
-                    if (resp && resp.success) {
-                        // on success you might redirect to login or user dashboard
-                        alert(resp.message || 'Account created');
-                        // Redirect the user to the login page after successful account creation
-                        window.location.href = '/pages/login.html';
-                    } else if (resp && resp.errors) {
-                        // map server-side validation errors to form fields
-                        Object.keys(resp.errors).forEach(f => setError(f, resp.errors[f]));
-                    } else {
-                        alert('Unexpected server response');
-                    }
-                })
-                .catch(err => {
-                    console.error('Signup request failed', err);
-                    alert('Could not connect to the server. Please try again later.');
-                });
-        } else {
-            // Mock submission: show a friendly message and clear the form (in real app, POST to backend)
-            alert('Account created (mock). In the final app this will submit to the server.');
-            form.reset();
-            // After mock success, redirect user to the login page so they can sign in
-            window.location.href = '/pages/login.html';
-        }
+    // Debug log before submission
+    console.log("Form values before submission:", {
+      firstName,
+      middleInitial,
+      lastName,
+      birthdate,
+      email,
+      mobile,
+      houseNumber,
+      street,
+      barangay,
+      disabilities,
+      employment,
+      password: "***hidden***"
     });
+
+    try {
+      const response = await fetch("/Corosa/backend/api/users.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName,
+          middleInitial,
+          lastName,
+          birthdate,
+          email,
+          mobile,
+          houseNumber,
+          street,
+          barangay,
+          disabilities,
+          employment,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+      console.log("Server response:", result);
+
+      if (result.success) {
+        alert("Account created successfully!");
+        window.location.href = "../pages/login.html";
+      } else {
+        console.error("Server returned error:", result);
+        
+        // Handle validation errors from server
+        if (result.errors) {
+          for (const [field, message] of Object.entries(result.errors)) {
+            setError(field, message);
+          }
+        } else {
+          alert(
+            "Error: " +
+              (result.message || result.error || "Failed to create account")
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      alert("Network error during signup. Please try again.");
+    }
+  });
 });

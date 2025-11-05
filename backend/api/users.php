@@ -1,8 +1,37 @@
 <?php
 /**
  * Corosa API endpoint for Users
- * This file handles user-related operations with PostgreSQL
+ * This file handles user-related operations with MySQL
  */
+
+// Enable detailed error output for debugging
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Function to handle errors
+function handleError($message, $code = 500) {
+    header("Content-Type: application/json; charset=UTF-8");
+    http_response_code($code);
+    
+    $error = [
+        'success' => false,
+        'message' => $message,
+        'debug' => [
+            'file' => debug_backtrace()[0]['file'],
+            'line' => debug_backtrace()[0]['line'],
+            'post_data' => $_POST,
+            'raw_input' => file_get_contents('php://input')
+        ]
+    ];
+    
+    echo json_encode($error, JSON_PRETTY_PRINT);
+    exit;
+}
+
+// Set error handler
+set_error_handler(function($severity, $message, $file, $line) {
+    handleError("Server error: " . $message);
+});
 
 // Set headers for JSON response
 header("Content-Type: application/json; charset=UTF-8");
@@ -15,16 +44,114 @@ require_once '../config/database.php';
 require_once '../classes/User.php';
 
 // Initialize database connection
-$database = new Database();
-$db = $database->getConnection();
+try {
+    $database = new Database();
+    $db = $database->getConnection();
+    
+    if (!$db) {
+        handleError("Database connection failed");
+    }
 
-// Initialize User object
-$user = new User($db);
+    // Initialize User object
+    $user = new User($db);
+} catch (PDOException $e) {
+    handleError("Database error: " . $e->getMessage());
+} catch (Exception $e) {
+    handleError("Server error: " . $e->getMessage());
+}
 
 // Handle different HTTP methods
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch($method) {
+    case 'POST':
+        // Handle user registration
+        $raw_input = file_get_contents("php://input");
+        $data = json_decode($raw_input, true);
+        
+        if (!$data) {
+            handleError("Invalid JSON data received. Raw input: " . $raw_input);
+        }
+        
+        try {
+            // Log the received data for debugging
+            error_log("Received signup data: " . print_r($data, true));
+
+            // Validate required fields FIRST
+            $requiredFields = ['firstName', 'lastName', 'email', 'mobile', 'birthdate', 'houseNumber', 'street', 'barangay', 'employment', 'password'];
+            $errors = [];
+
+            foreach ($requiredFields as $field) {
+                if (empty($data[$field])) {
+                    $errors[$field] = ucfirst($field) . " is required";
+                }
+            }
+
+            // Check if email already exists
+            if (!empty($data['email'])) {
+                $checkUser = new User($db);
+                $checkUser->email = $data['email'];
+                if ($checkUser->getByEmail()) {
+                    $errors['email'] = "Email already registered";
+                }
+            }
+
+            // Validate email format
+            if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = "Invalid email format";
+            }
+
+            // Validate mobile number format (09XXXXXXXXX)
+            if (!empty($data['mobile']) && !preg_match("/^09\d{9}$/", $data['mobile'])) {
+                $errors['mobile'] = "Invalid mobile number format";
+            }
+
+            if (!empty($errors)) {
+                http_response_code(400);
+                echo json_encode([
+                    "success" => false,
+                    "errors" => $errors
+                ]);
+                exit;
+            }
+
+            // Set user properties ONCE - handle empty strings properly
+            $user->first_name = $data['firstName'];
+            $user->middle_initial = !empty($data['middleInitial']) ? $data['middleInitial'] : null;
+            $user->last_name = $data['lastName'];
+            $user->birthdate = $data['birthdate'];
+            $user->email = $data['email'];
+            $user->mobile_number = $data['mobile'];
+            $user->disabilities = !empty($data['disabilities']) ? $data['disabilities'] : null;
+            $user->employment_status = $data['employment'];
+            $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+            $user->account_status = 'active';
+            
+            // Set address properties
+            $user->house_number = $data['houseNumber'];
+            $user->street = $data['street'];
+            $user->barangay = $data['barangay'];
+
+            // Create the user (this will also create the address)
+            if ($user->create()) {
+                http_response_code(201);
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Account created successfully",
+                    "userId" => $user->user_id
+                ]);
+            } else {
+                http_response_code(500);
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Error creating user account"
+                ]);
+            }
+        } catch (Exception $e) {
+            handleError("Error during registration: " . $e->getMessage());
+        }
+        break;
+
     case 'GET':
         // Check if user_id is provided in query string
         if(isset($_GET['user_id'])) {
@@ -102,44 +229,6 @@ switch($method) {
         }
         break;
         
-    case 'POST':
-        // Create new user
-        $data = json_decode(file_get_contents("php://input"));
-        
-        if(!empty($data->first_name) && !empty($data->last_name) && !empty($data->email) && !empty($data->hashed_password)) {
-            $user->first_name = $data->first_name;
-            $user->middle_initial = $data->middle_initial ?? '';
-            $user->last_name = $data->last_name;
-            $user->birthdate = $data->birthdate ?? null;
-            $user->email = $data->email;
-            $user->mobile_number = $data->mobile_number ?? '';
-            $user->address_id = $data->address_id ?? null;
-            $user->disabilities = $data->disabilities ?? '';
-            $user->employment_status = $data->employment_status ?? 'student';
-            $user->account_status = $data->account_status ?? 'active';
-            // Hash plaintext password before storing
-            $user->hashed_password = password_hash($data->hashed_password, PASSWORD_BCRYPT);
-            
-            if($user->create()) {
-                echo json_encode(array(
-                    "success" => true,
-                    "message" => "User created successfully",
-                    "data" => array("user_id" => $user->user_id)
-                ));
-            } else {
-                echo json_encode(array(
-                    "success" => false,
-                    "message" => "Failed to create user"
-                ));
-            }
-        } else {
-            echo json_encode(array(
-                "success" => false,
-                "message" => "Missing required fields"
-            ));
-        }
-        break;
-        
     case 'PUT':
         // Update user
         $data = json_decode(file_get_contents("php://input"));
@@ -207,4 +296,3 @@ switch($method) {
         break;
 }
 ?>
-
