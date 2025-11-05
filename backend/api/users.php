@@ -77,88 +77,78 @@ switch($method) {
             // Log the received data for debugging
             error_log("Received signup data: " . print_r($data, true));
 
-            // Map frontend field names to User class properties
-            $user->first_name = $data['firstName'];
-        $user->middle_initial = $data['middleInitial'];
-        $user->last_name = $data['lastName'];
-        $user->birthdate = $data['birthdate'];
-        $user->email = $data['email'];
-        $user->mobile_number = $data['mobile'];
-        $user->house_number = $data['houseNumber'];
-        $user->street = $data['street'];
-        $user->barangay = $data['barangay'];
-        $user->disabilities = $data['disabilities'];
-        $user->employment_status = $data['employment'];
-        $user->account_status = 'active';
-        $user->hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
+            // Validate required fields FIRST
+            $requiredFields = ['firstName', 'lastName', 'email', 'mobile', 'birthdate', 'houseNumber', 'street', 'barangay', 'employment', 'password'];
+            $errors = [];
 
-        // Validate required fields
-        $requiredFields = ['firstName', 'lastName', 'email', 'mobile', 'birthdate', 'houseNumber', 'street', 'barangay', 'disabilities', 'employment', 'password'];
-        $errors = [];
-
-        foreach ($requiredFields as $field) {
-            if (empty($data[$field])) {
-                $errors[$field] = ucfirst($field) . " is required";
+            foreach ($requiredFields as $field) {
+                if (empty($data[$field])) {
+                    $errors[$field] = ucfirst($field) . " is required";
+                }
             }
-        }
 
-        // Check if email already exists
-        $checkUser = new User($db);
-        $checkUser->email = $data['email'];
-        if ($checkUser->getByEmail()) {
-            $errors['email'] = "Email already registered";
-        }
+            // Check if email already exists
+            if (!empty($data['email'])) {
+                $checkUser = new User($db);
+                $checkUser->email = $data['email'];
+                if ($checkUser->getByEmail()) {
+                    $errors['email'] = "Email already registered";
+                }
+            }
 
-        // Validate email format
-        if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = "Invalid email format";
-        }
+            // Validate email format
+            if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = "Invalid email format";
+            }
 
-        // Validate mobile number format (09XXXXXXXXX)
-        if (!empty($data['mobile']) && !preg_match("/^09\d{9}$/", $data['mobile'])) {
-            $errors['mobile'] = "Invalid mobile number format";
-        }
+            // Validate mobile number format (09XXXXXXXXX)
+            if (!empty($data['mobile']) && !preg_match("/^09\d{9}$/", $data['mobile'])) {
+                $errors['mobile'] = "Invalid mobile number format";
+            }
 
-        if (!empty($errors)) {
-            http_response_code(400);
-            echo json_encode([
-                "success" => false,
-                "errors" => $errors
-            ]);
-            exit;
-        }
+            if (!empty($errors)) {
+                http_response_code(400);
+                echo json_encode([
+                    "success" => false,
+                    "errors" => $errors
+                ]);
+                exit;
+            }
 
-        // Set user properties
-        $user->first_name = $data['firstName'];
-        $user->middle_initial = $data['middleInitial'] ?? null;
-        $user->last_name = $data['lastName'];
-        $user->birthdate = $data['birthdate'];
-        $user->email = $data['email'];
-        $user->mobile_number = $data['mobile'];
-        $user->disabilities = $data['disabilities'];
-        $user->employment_status = $data['employment'];
-        $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
-        $user->account_status = 'active';
-        
-        // Set address properties
-        $user->house_number = $data['houseNumber'];
-        $user->street = $data['street'];
-        $user->barangay = $data['barangay'];
+            // Set user properties ONCE - handle empty strings properly
+            $user->first_name = $data['firstName'];
+            $user->middle_initial = !empty($data['middleInitial']) ? $data['middleInitial'] : null;
+            $user->last_name = $data['lastName'];
+            $user->birthdate = $data['birthdate'];
+            $user->email = $data['email'];
+            $user->mobile_number = $data['mobile'];
+            $user->disabilities = !empty($data['disabilities']) ? $data['disabilities'] : null;
+            $user->employment_status = $data['employment'];
+            $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+            $user->account_status = 'active';
+            
+            // Set address properties
+            $user->house_number = $data['houseNumber'];
+            $user->street = $data['street'];
+            $user->barangay = $data['barangay'];
 
-        // Create the user (this will also create the address)
-        if ($user->create()) {
-            http_response_code(201);
-            echo json_encode([
-                "success" => true,
-                "message" => "Account created successfully",
-                "userId" => $user->user_id
-            ]);
-        } else {
-            http_response_code(500);
-            echo json_encode([
-                "success" => false,
-                "message" => "Error creating user account"
-            ]);
+            // Create the user (this will also create the address)
+            if ($user->create()) {
+                http_response_code(201);
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Account created successfully",
+                    "userId" => $user->user_id
+                ]);
+            } else {
+                http_response_code(500);
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Error creating user account"
+                ]);
+            }
+        } catch (Exception $e) {
+            handleError("Error during registration: " . $e->getMessage());
         }
         break;
 
@@ -239,8 +229,6 @@ switch($method) {
         }
         break;
         
-    // Remove duplicate POST case as it's handled above
-        
     case 'PUT':
         // Update user
         $data = json_decode(file_get_contents("php://input"));
@@ -308,4 +296,3 @@ switch($method) {
         break;
 }
 ?>
-
