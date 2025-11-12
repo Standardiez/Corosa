@@ -104,9 +104,19 @@ body {
 
 /* Logo Component */
 .logo {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
+    height: 3rem;
+    width: auto;
+    max-width: 200px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+img.logo {
+    height: 3rem;
+    width: auto;
+    max-width: 200px;
+    flex-shrink: 0;
+    display: block;
 }
 
 .logo-icon {
@@ -359,6 +369,15 @@ body {
     font-weight: 900;
     color: #000; /* big black bold Corosa */
     margin-bottom: var(--spacing-sm);
+}
+
+.hero-logo {
+    max-width: 500px;
+    width: 90%;
+    height: auto;
+    margin: 0 auto var(--spacing-md) auto;
+    display: block;
+    object-fit: contain;
 }
 
 .hero-tagline {
