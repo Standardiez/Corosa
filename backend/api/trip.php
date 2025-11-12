@@ -104,11 +104,11 @@ switch($method) {
                         v.vehicle_model,
                         v.plate_number,
                         v.seat_capacity
-                      FROM trip t
+                      FROM trips t
                       LEFT JOIN driver d ON t.driver_id = d.driver_id
-                      LEFT JOIN user u ON d.user_id = u.user_id
+                      LEFT JOIN users u ON d.user_id = u.user_id
                       LEFT JOIN vehicle v ON v.driver_id = d.driver_id
-                      WHERE t.ride_status = 'scheduled'
+                      WHERE t.ride_status IN ('available', 'scheduled')
                       ORDER BY t.created_at DESC";
             
             $stmt = $db->prepare($query);

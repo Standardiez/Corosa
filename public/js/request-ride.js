@@ -131,7 +131,7 @@
     var availableRides = [];
 
     function fetchAvailableRides() {
-        fetch('/backend/api/trip.php?action=getAvailableTrips')
+        fetch('/Corosa/backend/api/trip.php?action=getAvailableTrips')
             .then(response => response.json())
             .then(result => {
                 if (result.success && Array.isArray(result.data)) {

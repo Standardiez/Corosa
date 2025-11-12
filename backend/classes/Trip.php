@@ -130,14 +130,14 @@ class Trip {
             t.ride_status,
             t.created_at,
             u.first_name,
+            u.middle_initial,
             u.last_name,
             u.employment_status,
             v.vehicle_model,
-            v.vehicle_year,
             v.seat_capacity
         FROM trips t
         LEFT JOIN driver d ON t.driver_id = d.driver_id
-        LEFT JOIN user u ON d.user_id = u.user_id
+        LEFT JOIN users u ON d.user_id = u.user_id
         LEFT JOIN vehicle v ON v.driver_id = d.driver_id
         LEFT JOIN (
             SELECT trip_id, COUNT(*) AS confirmed_count
@@ -146,7 +146,7 @@ class Trip {
             GROUP BY trip_id
         ) ta ON t.trip_id = ta.trip_id
         WHERE COALESCE(ta.confirmed_count, 0) < t.available_seats
-        AND t.ride_status = 'available'
+        AND t.ride_status IN ('available', 'scheduled')
         ORDER BY t.created_at DESC";
 
         $stmt = $this->conn->prepare($query);
