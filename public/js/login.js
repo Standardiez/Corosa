@@ -61,7 +61,10 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((r) => r.json())
         .then((resp) => {
           if (resp && resp.success) {
-            // Redirect to select-pickup.html after successful login
+            if (resp.userId) {
+              sessionStorage.setItem("userId", resp.userId);
+            }
+            sessionStorage.setItem("userEmail", email);
             window.location.href = "select-pickup.html";
           } else {
             setError("password", resp.message || "Invalid credentials");

@@ -4,6 +4,7 @@ require_once '../config/database.php';
 class Bookings {
     private $conn;
     private $table_name = "bookings";
+    private $last_error;
 
     public $booking_id;
     public $passenger_id;
@@ -19,6 +20,11 @@ class Bookings {
 
     public function __construct($db) {
         $this->conn = $db;
+        $this->last_error = null;
+    }
+
+    public function getLastError() {
+        return $this->last_error;
     }
 
     /**
@@ -40,25 +46,29 @@ class Bookings {
         $this->start_long = htmlspecialchars(strip_tags($this->start_long));
         $this->end_lat = htmlspecialchars(strip_tags($this->end_lat));
         $this->end_long = htmlspecialchars(strip_tags($this->end_long));
-        $this->payment_type = htmlspecialchars(strip_tags($this->payment_type));
+        $this->payment_type = $this->payment_type !== null ? htmlspecialchars(strip_tags($this->payment_type)) : 'cash';
         $this->total_cost = htmlspecialchars(strip_tags($this->total_cost));
         $this->booking_confirmation = $this->booking_confirmation ? 1 : 0; // Convert to MySQL boolean
 
         // Bind values
-        $stmt->bindParam(":passenger_id", $this->passenger_id);
+        $stmt->bindParam(":passenger_id", $this->passenger_id, PDO::PARAM_INT);
         $stmt->bindParam(":booking_date", $this->booking_date);
         $stmt->bindParam(":start_lat", $this->start_lat);
         $stmt->bindParam(":start_long", $this->start_long);
+        $stmt->bindParam(":end_lat", $this->end_lat);
+        $stmt->bindParam(":end_long", $this->end_long);
         $stmt->bindParam(":payment_type", $this->payment_type);
         $stmt->bindParam(":total_cost", $this->total_cost);
         $stmt->bindParam(":booking_confirmation", $this->booking_confirmation, PDO::PARAM_BOOL);
 
         if($stmt->execute()) {
-            // PostgreSQL: Get the returned ID from RETURNING clause
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->booking_id = $row['booking_id'];
+            $this->booking_id = (int)$this->conn->lastInsertId();
+            $this->last_error = null;
             return true;
         }
+        $errorInfo = $stmt->errorInfo();
+        $this->last_error = $errorInfo[2] ?? 'Unknown database error';
+        error_log("Bookings::create failed: " . $this->last_error);
         return false;
     }
 

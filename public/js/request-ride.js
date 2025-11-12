@@ -7,7 +7,7 @@
   3. Handling ride request actions
 */
 
-(function() {
+(function () {
     'use strict';
 
     // Google Maps API Key
@@ -54,7 +54,7 @@
     }
 
     // Initialize map and route display
-    window.initMap = function() {
+    window.initMap = function () {
         const mapEl = document.getElementById('map');
         if (!mapEl) return;
 
@@ -131,14 +131,19 @@
     var availableRides = [];
 
     function fetchAvailableRides() {
+
+
         fetch('/Corosa/backend/api/trip.php?action=getAvailableTrips')
             .then(response => response.json())
             .then(result => {
                 if (result.success && Array.isArray(result.data)) {
                     availableRides = result.data.map(trip => ({
                         id: trip.trip_id,
+                        tripId: trip.trip_id,
+                        driverId: trip.driver_id,
                         driver: {
                             firstName: trip.first_name || '',
+                            middleInitial: trip.middle_initial || '',
                             lastName: trip.last_name || '',
                             employmentStatus: trip.employment_status || ''
                         },
@@ -147,7 +152,9 @@
                             year: trip.vehicle_year || '',
                             availableSeats: trip.available_seats,
                             totalCapacity: trip.seat_capacity
-                        }
+                        },
+                        rideStatus: trip.ride_status,
+                        createdAt: trip.created_at
                     }));
                     displayAvailableRides();
                 } else {
@@ -214,7 +221,7 @@
     }
 
     // Handle ride request
-    window.requestRide = function(rideId) {
+    window.requestRide = function (rideId) {
         // Find the ride object
         const ride = availableRides.find(r => r.id === rideId);
         if (!ride) {
@@ -224,6 +231,8 @@
 
         // Save selected ride to sessionStorage for the confirmation page
         sessionStorage.setItem('selectedRide', JSON.stringify(ride));
+        sessionStorage.setItem('selectedTripId', ride.tripId || ride.id);
+        sessionStorage.setItem('selectedTripCreatedAt', ride.createdAt || '');
 
         // Navigate to confirmation page
         window.location.href = 'ride-confirmation.html';

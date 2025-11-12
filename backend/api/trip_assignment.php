@@ -122,7 +122,8 @@ switch($method) {
             } else {
                 echo json_encode(array(
                     "success" => false,
-                    "message" => "Failed to create trip assignment"
+                    "message" => "Failed to create trip assignment",
+                    "debug" => $tripAssignment->getLastError()
                 ));
             }
         } else {

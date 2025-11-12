@@ -4,6 +4,7 @@ require_once '../config/database.php';
 class TripAssignment {
     private $conn;
     private $table_name = "trip_assignment";
+    private $last_error;
 
     public $assignment_id;
     public $booking_id;
@@ -17,6 +18,11 @@ class TripAssignment {
 
     public function __construct($db) {
         $this->conn = $db;
+        $this->last_error = null;
+    }
+
+    public function getLastError() {
+        return $this->last_error;
     }
 
     /**
@@ -27,36 +33,41 @@ class TripAssignment {
                   (booking_id, trip_id, seat_number, assignment_status, payment_type, 
                    total_cost, booking_confirmation) 
                   VALUES (:booking_id, :trip_id, :seat_number, :assignment_status, :payment_type, 
-                          :total_cost, :booking_confirmation)
-                  RETURNING assignment_id";
+                          :total_cost, :booking_confirmation)";
 
         $stmt = $this->conn->prepare($query);
 
         // Sanitize input data
         $this->booking_id = htmlspecialchars(strip_tags($this->booking_id));
         $this->trip_id = htmlspecialchars(strip_tags($this->trip_id));
-        $this->seat_number = htmlspecialchars(strip_tags($this->seat_number));
-        $this->assignment_status = htmlspecialchars(strip_tags($this->assignment_status));
-        $this->payment_type = htmlspecialchars(strip_tags($this->payment_type));
+        $this->seat_number = $this->seat_number !== null ? htmlspecialchars(strip_tags($this->seat_number)) : null;
+        $this->assignment_status = $this->assignment_status !== null ? htmlspecialchars(strip_tags($this->assignment_status)) : 'pending';
+        $this->payment_type = $this->payment_type !== null ? htmlspecialchars(strip_tags($this->payment_type)) : 'cash';
         $this->total_cost = htmlspecialchars(strip_tags($this->total_cost));
-        // Handle boolean for PostgreSQL
+        // Handle boolean
         $this->booking_confirmation = filter_var($this->booking_confirmation, FILTER_VALIDATE_BOOLEAN);
 
         // Bind values
-        $stmt->bindParam(":booking_id", $this->booking_id);
-        $stmt->bindParam(":trip_id", $this->trip_id);
-        $stmt->bindParam(":seat_number", $this->seat_number);
+        $stmt->bindParam(":booking_id", $this->booking_id, PDO::PARAM_INT);
+        $stmt->bindParam(":trip_id", $this->trip_id, PDO::PARAM_INT);
+        if($this->seat_number === null) {
+            $stmt->bindValue(":seat_number", null, PDO::PARAM_NULL);
+        } else {
+            $stmt->bindValue(":seat_number", $this->seat_number);
+        }
         $stmt->bindParam(":assignment_status", $this->assignment_status);
         $stmt->bindParam(":payment_type", $this->payment_type);
         $stmt->bindParam(":total_cost", $this->total_cost);
         $stmt->bindParam(":booking_confirmation", $this->booking_confirmation, PDO::PARAM_BOOL);
 
         if($stmt->execute()) {
-            // PostgreSQL: Get the returned ID from RETURNING clause
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->assignment_id = $row['assignment_id'];
+            $this->assignment_id = (int)$this->conn->lastInsertId();
+            $this->last_error = null;
             return true;
         }
+        $errorInfo = $stmt->errorInfo();
+        $this->last_error = $errorInfo[2] ?? 'Unknown database error';
+        error_log("TripAssignment::create failed: " . $this->last_error);
         return false;
     }
 
