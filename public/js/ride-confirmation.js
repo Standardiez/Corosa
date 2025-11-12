@@ -85,12 +85,11 @@
             confirmBtn.disabled = true;
             confirmBtn.textContent = 'Confirming...';
             setTimeout(function(){
-                // Clear selectedRide to prevent accidental re-submission
-                sessionStorage.removeItem('selectedRide');
-                alert('Ride confirmed! The driver will contact you shortly.');
-                // Redirect to home or bookings page
-                window.location.href = 'index.html';
-            }, 1200);
+                    // Mark booking as confirmed and navigate to live status
+                    sessionStorage.setItem('bookingConfirmed', 'true');
+                    alert('Ride confirmed! Opening live ride status...');
+                    window.location.href = 'ride-status.html';
+                }, 1200);
         });
     }
 
