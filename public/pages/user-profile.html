@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../styles/styles.css">
     <link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
 </head>
+
 <body>
     <header class="header">
         <div class="container header-content">
@@ -14,7 +16,8 @@
             <nav class="nav header-nav">
                 <a class="btn btn-outline" href="index.html">Home</a>
                 <a class="btn btn-outline" id="signup-link" href="signup.html">Create account</a>
-                <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
+                <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;"
+                    aria-label="User menu">
                     <i class='bx bx-user' style='color:#806600'></i>
                     <span id="user-initials" style="margin-left:0.5rem;"></span>
                 </button>
@@ -32,12 +35,33 @@
                 <h3 style="margin:0 0 var(--spacing-md) 0; color:var(--text-primary);">Personal Information</h3>
                 <div style="display:grid; gap:var(--spacing-md);">
                     <div class="profile-field">
-                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Full Name</label>
-                        <p id="full-name" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">First Name</label>
+                        <p id="first-name-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="first-name-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);" placeholder="First Name">
+                    </div>
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Middle Initial</label>
+                        <p id="middle-initial-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="middle-initial-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);" placeholder="Middle Initial"
+                            maxlength="3">
+                    </div>
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Last Name</label>
+                        <p id="last-name-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="last-name-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);" placeholder="Last Name">
                     </div>
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">Birthdate</label>
-                        <p id="birthdate" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="birthdate-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="date" id="birthdate-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);">
                     </div>
                 </div>
             </div>
@@ -48,11 +72,18 @@
                 <div style="display:grid; gap:var(--spacing-md);">
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">Email</label>
-                        <p id="email" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="email-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="email" id="email-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);" placeholder="Email" readonly>
                     </div>
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">Mobile Number</label>
-                        <p id="mobile" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="mobile-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="mobile-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);"
+                            placeholder="Mobile Number (09XXXXXXXXX)" pattern="^09\d{9}$">
                     </div>
                 </div>
             </div>
@@ -63,15 +94,24 @@
                 <div style="display:grid; gap:var(--spacing-md);">
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">House Number</label>
-                        <p id="house-number" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="house-number-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="house-number-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);" placeholder="House Number">
                     </div>
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">Street</label>
-                        <p id="street" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="street-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="street-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);" placeholder="Street">
                     </div>
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">Barangay</label>
-                        <p id="barangay" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="barangay-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="barangay-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);" placeholder="Barangay">
                     </div>
                 </div>
             </div>
@@ -82,20 +122,42 @@
                 <div style="display:grid; gap:var(--spacing-md);">
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">Employment Status</label>
-                        <p id="employment" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="employment-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <select id="employment-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);">
+                            <option value="">Select employment status</option>
+                            <option value="student">Student</option>
+                            <option value="faculty">Faculty</option>
+                            <option value="staff">Staff</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
                     <div class="profile-field">
                         <label class="text-secondary" style="font-size:var(--font-size-sm);">Disabilities (PWD)</label>
-                        <p id="disabilities" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <p id="disabilities-display" class="profile-display"
+                            style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                        <input type="text" id="disabilities-input" class="input profile-edit"
+                            style="display:none; margin-top:var(--spacing-sm);"
+                            placeholder="Disabilities (leave blank if none)">
                     </div>
                 </div>
             </div>
 
-            <!-- Edit Button -->
-            <div style="margin-top:var(--spacing-xl); padding-top:var(--spacing-lg); border-top: 1px solid var(--border-color, #e0e0e0);">
-                <button id="edit-profile-btn" class="btn btn-primary" style="width:100%;">
+            <!-- Action Buttons -->
+            <div
+                style="margin-top:var(--spacing-xl); padding-top:var(--spacing-lg); border-top: 1px solid var(--border-color, #e0e0e0); display:flex; gap:var(--spacing-md);">
+                <button id="edit-profile-btn" class="btn btn-primary" style="flex:1;">
                     <i class='bx bx-edit' style='margin-right:0.5rem;'></i>
                     Edit Profile
+                </button>
+                <button id="save-profile-btn" class="btn btn-primary" style="flex:1; display:none;">
+                    <i class='bx bx-save' style='margin-right:0.5rem;'></i>
+                    Save Changes
+                </button>
+                <button id="cancel-edit-btn" class="btn btn-outline" style="flex:1; display:none;">
+                    <i class='bx bx-x' style='margin-right:0.5rem;'></i>
+                    Cancel
                 </button>
             </div>
         </section>
@@ -104,4 +166,5 @@
     <script src="../js/header-auth.js"></script>
     <script src="../js/user-profile.js"></script>
 </body>
+
 </html>

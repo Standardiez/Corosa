@@ -2,6 +2,9 @@
     'use strict';
 
     const API_BASE = '/Corosa/backend/api';
+    let currentUserData = null;
+    let currentAddressData = null;
+    let isEditMode = false;
 
     function getStoredUser() {
         const localStr = localStorage.getItem('userData');
@@ -21,7 +24,18 @@
         try {
             localStorage.setItem('userData', JSON.stringify(merged));
         } catch (e) {
-            console.warn('Unable to persist merged user data', e);
+            console.warn('Unable to persist userData', e);
+        }
+        updateHeaderInitials(merged.firstName, merged.lastName);
+    }
+
+    function updateHeaderInitials(firstName, lastName) {
+        const initialsEl = document.getElementById('user-initials');
+        if (!initialsEl) return;
+        if (firstName && lastName) {
+            initialsEl.textContent = (firstName[0] + lastName[0]).toUpperCase();
+        } else {
+            initialsEl.textContent = '';
         }
     }
 
@@ -67,54 +81,155 @@
     }
 
     function populateProfile({ userData, addressData }) {
-        const fullNameEl = document.getElementById('full-name');
-        if (fullNameEl) {
-            const parts = [
-                safeText(userData.first_name, ''),
-                userData.middle_initial ? `${userData.middle_initial}.` : '',
-                safeText(userData.last_name, '')
-            ].filter(Boolean);
-            fullNameEl.textContent = parts.length ? parts.join(' ') : '—';
+        currentUserData = userData;
+        currentAddressData = addressData;
+
+        // Personal Information
+        document.getElementById('first-name-display').textContent = safeText(userData.first_name);
+        document.getElementById('middle-initial-display').textContent = safeText(userData.middle_initial);
+        document.getElementById('last-name-display').textContent = safeText(userData.last_name);
+        document.getElementById('birthdate-display').textContent = formatBirthdate(userData.birthdate);
+
+        // Contact Information
+        document.getElementById('email-display').textContent = safeText(userData.email);
+        document.getElementById('mobile-display').textContent = safeText(userData.mobile_number);
+
+        // Address
+        document.getElementById('house-number-display').textContent = safeText(addressData?.address_unit);
+        document.getElementById('street-display').textContent = safeText(addressData?.address_street);
+        document.getElementById('barangay-display').textContent = safeText(addressData?.address_barangay);
+
+        // Additional Information
+        document.getElementById('employment-display').textContent = safeText(userData.employment_status);
+        document.getElementById('disabilities-display').textContent = safeText(userData.disabilities, 'None');
+    }
+
+    function enterEditMode() {
+        isEditMode = true;
+
+        // Show edit inputs, hide display elements
+        document.querySelectorAll('.profile-display').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.profile-edit').forEach(el => el.style.display = 'block');
+
+        // Populate inputs with current values
+        if (currentUserData) {
+            document.getElementById('first-name-input').value = currentUserData.first_name || '';
+            document.getElementById('middle-initial-input').value = currentUserData.middle_initial || '';
+            document.getElementById('last-name-input').value = currentUserData.last_name || '';
+            document.getElementById('birthdate-input').value = currentUserData.birthdate || '';
+            document.getElementById('email-input').value = currentUserData.email || '';
+            document.getElementById('mobile-input').value = currentUserData.mobile_number || '';
+            document.getElementById('employment-input').value = currentUserData.employment_status || '';
+            document.getElementById('disabilities-input').value = currentUserData.disabilities || '';
         }
 
-        const birthdateEl = document.getElementById('birthdate');
-        if (birthdateEl) {
-            birthdateEl.textContent = formatBirthdate(userData.birthdate);
+        if (currentAddressData) {
+            document.getElementById('house-number-input').value = currentAddressData.address_unit || '';
+            document.getElementById('street-input').value = currentAddressData.address_street || '';
+            document.getElementById('barangay-input').value = currentAddressData.address_barangay || '';
         }
 
-        const emailEl = document.getElementById('email');
-        if (emailEl) {
-            emailEl.textContent = safeText(userData.email);
+        // Toggle buttons
+        document.getElementById('edit-profile-btn').style.display = 'none';
+        document.getElementById('save-profile-btn').style.display = 'block';
+        document.getElementById('cancel-edit-btn').style.display = 'block';
+    }
+
+    function exitEditMode() {
+        isEditMode = false;
+
+        // Show display elements, hide edit inputs
+        document.querySelectorAll('.profile-display').forEach(el => el.style.display = 'block');
+        document.querySelectorAll('.profile-edit').forEach(el => el.style.display = 'none');
+
+        // Toggle buttons
+        document.getElementById('edit-profile-btn').style.display = 'block';
+        document.getElementById('save-profile-btn').style.display = 'none';
+        document.getElementById('cancel-edit-btn').style.display = 'none';
+    }
+
+    async function saveProfileChanges() {
+        const userId = sessionStorage.getItem('userId') || getStoredUser()?.userId;
+        if (!userId) {
+            alert('User ID not found. Please log in again.');
+            return;
         }
 
-        const mobileEl = document.getElementById('mobile');
-        if (mobileEl) {
-            mobileEl.textContent = safeText(userData.mobile_number);
+        // Collect form data
+        const userUpdate = {
+            user_id: parseInt(userId),
+            first_name: document.getElementById('first-name-input').value.trim(),
+            middle_initial: document.getElementById('middle-initial-input').value.trim() || null,
+            last_name: document.getElementById('last-name-input').value.trim(),
+            birthdate: document.getElementById('birthdate-input').value || null,
+            mobile_number: document.getElementById('mobile-input').value.trim(),
+            employment_status: document.getElementById('employment-input').value.trim(),
+            disabilities: document.getElementById('disabilities-input').value.trim() || null,
+            address_id: currentUserData?.address_id || null
+        };
+
+        // Validate required fields
+        if (!userUpdate.first_name || !userUpdate.last_name) {
+            alert('First name and last name are required.');
+            return;
         }
 
-        const houseNumberEl = document.getElementById('house-number');
-        if (houseNumberEl) {
-            houseNumberEl.textContent = safeText(addressData?.address_unit);
+        // Validate mobile format if provided
+        if (userUpdate.mobile_number && !/^09\d{9}$/.test(userUpdate.mobile_number)) {
+            alert('Mobile number must be in format 09XXXXXXXXX');
+            return;
         }
 
-        const streetEl = document.getElementById('street');
-        if (streetEl) {
-            streetEl.textContent = safeText(addressData?.address_street);
-        }
+        const saveBtn = document.getElementById('save-profile-btn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class=\'bx bx-loader-alt bx-spin\' style=\'margin-right:0.5rem;\'></i>Saving...';
 
-        const barangayEl = document.getElementById('barangay');
-        if (barangayEl) {
-            barangayEl.textContent = safeText(addressData?.address_barangay);
-        }
+        try {
+            // Update user
+            const userResponse = await fetch(`${API_BASE}/users.php`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userUpdate)
+            });
 
-        const employmentEl = document.getElementById('employment');
-        if (employmentEl) {
-            employmentEl.textContent = safeText(userData.employment_status);
-        }
+            const userResult = await userResponse.json();
+            if (!userResult.success) {
+                throw new Error(userResult.message || 'Failed to update user');
+            }
 
-        const disabilitiesEl = document.getElementById('disabilities');
-        if (disabilitiesEl) {
-            disabilitiesEl.textContent = safeText(userData.disabilities, 'None');
+            // Update address if address_id exists
+            if (currentUserData?.address_id) {
+                const addressUpdate = {
+                    address_id: currentUserData.address_id,
+                    address_unit: document.getElementById('house-number-input').value.trim(),
+                    address_street: document.getElementById('street-input').value.trim(),
+                    address_barangay: document.getElementById('barangay-input').value.trim()
+                };
+
+                const addressResponse = await fetch(`${API_BASE}/address.php`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(addressUpdate)
+                });
+
+                const addressResult = await addressResponse.json();
+                if (!addressResult.success) {
+                    console.warn('Address update failed:', addressResult.message);
+                }
+            }
+
+            // Reload profile data to reflect changes
+            await loadProfileData();
+            exitEditMode();
+            alert('Profile updated successfully!');
+
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            alert('Failed to save changes: ' + error.message);
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
         }
     }
 
@@ -131,20 +246,16 @@
         try {
             const { userData, addressData } = await fetchUserProfile(userId);
             populateProfile({ userData, addressData });
-
             persistUserData({
                 userId,
-                email: userData.email || stored?.email || '',
-                firstName: userData.first_name || stored?.firstName || '',
-                middleInitial: userData.middle_initial || stored?.middleInitial || '',
-                lastName: userData.last_name || stored?.lastName || '',
-                birthdate: userData.birthdate || stored?.birthdate || '',
-                mobile: userData.mobile_number || stored?.mobile || '',
-                employment: userData.employment_status || stored?.employment || '',
-                disabilities: userData.disabilities || stored?.disabilities || '',
-                houseNumber: addressData?.address_unit || stored?.houseNumber || '',
-                street: addressData?.address_street || stored?.street || '',
-                barangay: addressData?.address_barangay || stored?.barangay || ''
+                email: userData.email || null,
+                firstName: userData.first_name || '',
+                middleInitial: userData.middle_initial || '',
+                lastName: userData.last_name || '',
+                birthdate: userData.birthdate || '',
+                mobile: userData.mobile_number || '',
+                employment: userData.employment_status || '',
+                disabilities: userData.disabilities || ''
             });
         } catch (error) {
             console.error('Failed to load profile data', error);
@@ -152,186 +263,29 @@
         }
     }
 
-    function handleEditProfile() {
-        const editBtn = document.getElementById('edit-profile-btn');
-        const isEditing = editBtn.textContent.includes('Edit');
-
-        if (isEditing) {
-            // Switch to edit mode
-            makeFieldsEditable();
-            editBtn.innerHTML = '<i class=\'bx bx-save\' style=\'margin-right:0.5rem;\'></i>Save Changes';
-            editBtn.classList.remove('btn-primary');
-            editBtn.classList.add('btn-accent');
-        } else {
-            // Save changes
-            saveProfileChanges();
-            makeFieldsReadOnly();
-            editBtn.innerHTML = '<i class=\'bx bx-edit\' style=\'margin-right:0.5rem;\'></i>Edit Profile';
-            editBtn.classList.remove('btn-accent');
-            editBtn.classList.add('btn-primary');
-        }
-    }
-
-    function makeFieldsEditable() {
-        const stored = getStoredUser();
-        if (!stored) return;
-
-        // Full Name fields
-        const fullNameEl = document.getElementById('full-name');
-        if (fullNameEl) {
-            const container = fullNameEl.parentElement;
-            fullNameEl.style.display = 'none';
-
-            const nameInputs = document.createElement('div');
-            nameInputs.style.display = 'grid';
-            nameInputs.style.gridTemplateColumns = '2fr 1fr 2fr';
-            nameInputs.style.gap = 'var(--spacing-sm)';
-            nameInputs.innerHTML = `
-                <input type="text" id="edit-firstName" class="input" placeholder="First Name" value="${stored.firstName || ''}" style="padding:var(--spacing-md);">
-                <input type="text" id="edit-middleInitial" class="input" placeholder="M.I." value="${stored.middleInitial || ''}" maxlength="2" style="padding:var(--spacing-md);">
-                <input type="text" id="edit-lastName" class="input" placeholder="Last Name" value="${stored.lastName || ''}" style="padding:var(--spacing-md);">
-            `;
-            container.appendChild(nameInputs);
-        }
-
-        // Birthdate
-        const birthdateEl = document.getElementById('birthdate');
-        if (birthdateEl) {
-            replaceWithInput(birthdateEl, 'edit-birthdate', 'date', stored.birthdate || '');
-        }
-
-        // Email
-        const emailEl = document.getElementById('email');
-        if (emailEl) {
-            replaceWithInput(emailEl, 'edit-email', 'email', stored.email || '');
-        }
-
-        // Mobile
-        const mobileEl = document.getElementById('mobile');
-        if (mobileEl) {
-            replaceWithInput(mobileEl, 'edit-mobile', 'tel', stored.mobile || '');
-        }
-
-        // House Number
-        const houseNumberEl = document.getElementById('house-number');
-        if (houseNumberEl) {
-            replaceWithInput(houseNumberEl, 'edit-houseNumber', 'text', stored.houseNumber || '');
-        }
-
-        // Street
-        const streetEl = document.getElementById('street');
-        if (streetEl) {
-            replaceWithInput(streetEl, 'edit-street', 'text', stored.street || '');
-        }
-
-        // Barangay
-        const barangayEl = document.getElementById('barangay');
-        if (barangayEl) {
-            replaceWithInput(barangayEl, 'edit-barangay', 'text', stored.barangay || '');
-        }
-
-        // Employment
-        const employmentEl = document.getElementById('employment');
-        if (employmentEl) {
-            replaceWithInput(employmentEl, 'edit-employment', 'text', stored.employment || '');
-        }
-
-        // Disabilities
-        const disabilitiesEl = document.getElementById('disabilities');
-        if (disabilitiesEl) {
-            replaceWithInput(disabilitiesEl, 'edit-disabilities', 'text', stored.disabilities || '');
-        }
-    }
-
-    function replaceWithInput(element, id, type, value) {
-        const container = element.parentElement;
-        element.style.display = 'none';
-
-        const input = document.createElement('input');
-        input.type = type;
-        input.id = id;
-        input.className = 'input';
-        input.value = value;
-        input.style.padding = 'var(--spacing-md)';
-        input.style.marginTop = 'var(--spacing-sm)';
-
-        container.appendChild(input);
-    }
-
-    function makeFieldsReadOnly() {
-        // Remove all edit inputs and show original elements
-        const editInputs = document.querySelectorAll('[id^="edit-"]');
-        editInputs.forEach(input => input.remove());
-
-        // Show original display elements
-        document.getElementById('full-name').style.display = 'block';
-        document.getElementById('birthdate').style.display = 'block';
-        document.getElementById('email').style.display = 'block';
-        document.getElementById('mobile').style.display = 'block';
-        document.getElementById('house-number').style.display = 'block';
-        document.getElementById('street').style.display = 'block';
-        document.getElementById('barangay').style.display = 'block';
-        document.getElementById('employment').style.display = 'block';
-        document.getElementById('disabilities').style.display = 'block';
-
-        // Remove name inputs container
-        const nameInputsDiv = document.querySelector('#full-name').parentElement.querySelector('div');
-        if (nameInputsDiv) nameInputsDiv.remove();
-    }
-
-    function saveProfileChanges() {
-        // Collect edited values
-        const updatedData = {
-            firstName: document.getElementById('edit-firstName')?.value || '',
-            middleInitial: document.getElementById('edit-middleInitial')?.value || '',
-            lastName: document.getElementById('edit-lastName')?.value || '',
-            birthdate: document.getElementById('edit-birthdate')?.value || '',
-            email: document.getElementById('edit-email')?.value || '',
-            mobile: document.getElementById('edit-mobile')?.value || '',
-            houseNumber: document.getElementById('edit-houseNumber')?.value || '',
-            street: document.getElementById('edit-street')?.value || '',
-            barangay: document.getElementById('edit-barangay')?.value || '',
-            employment: document.getElementById('edit-employment')?.value || '',
-            disabilities: document.getElementById('edit-disabilities')?.value || ''
-        };
-
-        // Update localStorage
-        persistUserData(updatedData);
-
-        // Update display fields
-        const fullNameEl = document.getElementById('full-name');
-        if (fullNameEl) {
-            const parts = [
-                updatedData.firstName,
-                updatedData.middleInitial ? `${updatedData.middleInitial}.` : '',
-                updatedData.lastName
-            ].filter(Boolean);
-            fullNameEl.textContent = parts.length ? parts.join(' ') : '—';
-        }
-
-        const birthdateEl = document.getElementById('birthdate');
-        if (birthdateEl) {
-            birthdateEl.textContent = formatBirthdate(updatedData.birthdate);
-        }
-
-        document.getElementById('email').textContent = safeText(updatedData.email);
-        document.getElementById('mobile').textContent = safeText(updatedData.mobile);
-        document.getElementById('house-number').textContent = safeText(updatedData.houseNumber);
-        document.getElementById('street').textContent = safeText(updatedData.street);
-        document.getElementById('barangay').textContent = safeText(updatedData.barangay);
-        document.getElementById('employment').textContent = safeText(updatedData.employment);
-        document.getElementById('disabilities').textContent = safeText(updatedData.disabilities, 'None');
-
-        // TODO: Your teammate will connect this to backend
-        console.log('Profile changes saved locally:', updatedData);
-        alert('Profile updated successfully! (Changes saved locally only)');
-    }
-
     function init() {
         loadProfileData();
+
+        // Edit button
         const editBtn = document.getElementById('edit-profile-btn');
         if (editBtn) {
-            editBtn.addEventListener('click', handleEditProfile);
+            editBtn.addEventListener('click', enterEditMode);
+        }
+
+        // Save button
+        const saveBtn = document.getElementById('save-profile-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', saveProfileChanges);
+        }
+
+        // Cancel button
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                exitEditMode();
+                // Reload to discard changes
+                loadProfileData();
+            });
         }
     }
 
