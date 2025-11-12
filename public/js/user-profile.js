@@ -181,7 +181,7 @@
         if (fullNameEl) {
             const container = fullNameEl.parentElement;
             fullNameEl.style.display = 'none';
-            
+
             const nameInputs = document.createElement('div');
             nameInputs.style.display = 'grid';
             nameInputs.style.gridTemplateColumns = '2fr 1fr 2fr';
@@ -246,7 +246,7 @@
     function replaceWithInput(element, id, type, value) {
         const container = element.parentElement;
         element.style.display = 'none';
-        
+
         const input = document.createElement('input');
         input.type = type;
         input.id = id;
@@ -254,7 +254,7 @@
         input.value = value;
         input.style.padding = 'var(--spacing-md)';
         input.style.marginTop = 'var(--spacing-sm)';
-        
+
         container.appendChild(input);
     }
 
