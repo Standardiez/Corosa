@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Profile — Corosa</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
+            <nav class="nav header-nav">
+                <a class="btn btn-outline" href="index.html">Home</a>
+                <a class="btn btn-outline" id="signup-link" href="signup.html">Create account</a>
+                <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
+                    <i class='bx bx-user' style='color:#806600'></i>
+                    <span id="user-initials" style="margin-left:0.5rem;"></span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top:var(--spacing-xl); padding-bottom:var(--spacing-xl);">
+        <section class="card" style="max-width: 800px; margin: 0 auto;">
+            <h1 style="margin:0 0 var(--spacing-sm) 0;">My Profile</h1>
+            <p class="text-muted" style="margin-bottom:var(--spacing-lg);">View and manage your account information</p>
+
+            <!-- Personal Information Section -->
+            <div style="margin-bottom:var(--spacing-lg);">
+                <h3 style="margin:0 0 var(--spacing-md) 0; color:var(--text-primary);">Personal Information</h3>
+                <div style="display:grid; gap:var(--spacing-md);">
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Full Name</label>
+                        <p id="full-name" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Birthdate</label>
+                        <p id="birthdate" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div style="margin-bottom:var(--spacing-lg);">
+                <h3 style="margin:0 0 var(--spacing-md) 0; color:var(--text-primary);">Contact Information</h3>
+                <div style="display:grid; gap:var(--spacing-md);">
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Email</label>
+                        <p id="email" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Mobile Number</label>
+                        <p id="mobile" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Information Section -->
+            <div style="margin-bottom:var(--spacing-lg);">
+                <h3 style="margin:0 0 var(--spacing-md) 0; color:var(--text-primary);">Address</h3>
+                <div style="display:grid; gap:var(--spacing-md);">
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">House Number</label>
+                        <p id="house-number" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Street</label>
+                        <p id="street" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Barangay</label>
+                        <p id="barangay" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information Section -->
+            <div style="margin-bottom:var(--spacing-lg);">
+                <h3 style="margin:0 0 var(--spacing-md) 0; color:var(--text-primary);">Additional Information</h3>
+                <div style="display:grid; gap:var(--spacing-md);">
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Employment Status</label>
+                        <p id="employment" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                    <div class="profile-field">
+                        <label class="text-secondary" style="font-size:var(--font-size-sm);">Disabilities (PWD)</label>
+                        <p id="disabilities" style="margin:var(--spacing-sm) 0 0 0; font-weight:var(--font-weight-medium);">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Button -->
+            <div style="margin-top:var(--spacing-xl); padding-top:var(--spacing-lg); border-top: 1px solid var(--border-color, #e0e0e0);">
+                <button id="edit-profile-btn" class="btn btn-primary" style="width:100%;">
+                    <i class='bx bx-edit' style='margin-right:0.5rem;'></i>
+                    Edit Profile
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="../js/header-auth.js"></script>
+    <script src="../js/user-profile.js"></script>
+</body>
+</html>

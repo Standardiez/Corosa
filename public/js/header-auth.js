@@ -51,8 +51,7 @@
         const menu = document.createElement('div');
         menu.className = 'user-dropdown-menu';
         menu.innerHTML = `
-            <a href="#profile">Profile</a>
-            <a href="#settings">Settings</a>
+            <a href="user-profile.html">Profile</a>
             <button id="logout-btn" class="logout-btn">Logout</button>
         `;
 
