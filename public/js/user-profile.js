@@ -153,7 +153,178 @@
     }
 
     function handleEditProfile() {
-        alert('Edit profile functionality coming soon!');
+        const editBtn = document.getElementById('edit-profile-btn');
+        const isEditing = editBtn.textContent.includes('Edit');
+
+        if (isEditing) {
+            // Switch to edit mode
+            makeFieldsEditable();
+            editBtn.innerHTML = '<i class=\'bx bx-save\' style=\'margin-right:0.5rem;\'></i>Save Changes';
+            editBtn.classList.remove('btn-primary');
+            editBtn.classList.add('btn-accent');
+        } else {
+            // Save changes
+            saveProfileChanges();
+            makeFieldsReadOnly();
+            editBtn.innerHTML = '<i class=\'bx bx-edit\' style=\'margin-right:0.5rem;\'></i>Edit Profile';
+            editBtn.classList.remove('btn-accent');
+            editBtn.classList.add('btn-primary');
+        }
+    }
+
+    function makeFieldsEditable() {
+        const stored = getStoredUser();
+        if (!stored) return;
+
+        // Full Name fields
+        const fullNameEl = document.getElementById('full-name');
+        if (fullNameEl) {
+            const container = fullNameEl.parentElement;
+            fullNameEl.style.display = 'none';
+            
+            const nameInputs = document.createElement('div');
+            nameInputs.style.display = 'grid';
+            nameInputs.style.gridTemplateColumns = '2fr 1fr 2fr';
+            nameInputs.style.gap = 'var(--spacing-sm)';
+            nameInputs.innerHTML = `
+                <input type="text" id="edit-firstName" class="input" placeholder="First Name" value="${stored.firstName || ''}" style="padding:var(--spacing-md);">
+                <input type="text" id="edit-middleInitial" class="input" placeholder="M.I." value="${stored.middleInitial || ''}" maxlength="2" style="padding:var(--spacing-md);">
+                <input type="text" id="edit-lastName" class="input" placeholder="Last Name" value="${stored.lastName || ''}" style="padding:var(--spacing-md);">
+            `;
+            container.appendChild(nameInputs);
+        }
+
+        // Birthdate
+        const birthdateEl = document.getElementById('birthdate');
+        if (birthdateEl) {
+            replaceWithInput(birthdateEl, 'edit-birthdate', 'date', stored.birthdate || '');
+        }
+
+        // Email
+        const emailEl = document.getElementById('email');
+        if (emailEl) {
+            replaceWithInput(emailEl, 'edit-email', 'email', stored.email || '');
+        }
+
+        // Mobile
+        const mobileEl = document.getElementById('mobile');
+        if (mobileEl) {
+            replaceWithInput(mobileEl, 'edit-mobile', 'tel', stored.mobile || '');
+        }
+
+        // House Number
+        const houseNumberEl = document.getElementById('house-number');
+        if (houseNumberEl) {
+            replaceWithInput(houseNumberEl, 'edit-houseNumber', 'text', stored.houseNumber || '');
+        }
+
+        // Street
+        const streetEl = document.getElementById('street');
+        if (streetEl) {
+            replaceWithInput(streetEl, 'edit-street', 'text', stored.street || '');
+        }
+
+        // Barangay
+        const barangayEl = document.getElementById('barangay');
+        if (barangayEl) {
+            replaceWithInput(barangayEl, 'edit-barangay', 'text', stored.barangay || '');
+        }
+
+        // Employment
+        const employmentEl = document.getElementById('employment');
+        if (employmentEl) {
+            replaceWithInput(employmentEl, 'edit-employment', 'text', stored.employment || '');
+        }
+
+        // Disabilities
+        const disabilitiesEl = document.getElementById('disabilities');
+        if (disabilitiesEl) {
+            replaceWithInput(disabilitiesEl, 'edit-disabilities', 'text', stored.disabilities || '');
+        }
+    }
+
+    function replaceWithInput(element, id, type, value) {
+        const container = element.parentElement;
+        element.style.display = 'none';
+        
+        const input = document.createElement('input');
+        input.type = type;
+        input.id = id;
+        input.className = 'input';
+        input.value = value;
+        input.style.padding = 'var(--spacing-md)';
+        input.style.marginTop = 'var(--spacing-sm)';
+        
+        container.appendChild(input);
+    }
+
+    function makeFieldsReadOnly() {
+        // Remove all edit inputs and show original elements
+        const editInputs = document.querySelectorAll('[id^="edit-"]');
+        editInputs.forEach(input => input.remove());
+
+        // Show original display elements
+        document.getElementById('full-name').style.display = 'block';
+        document.getElementById('birthdate').style.display = 'block';
+        document.getElementById('email').style.display = 'block';
+        document.getElementById('mobile').style.display = 'block';
+        document.getElementById('house-number').style.display = 'block';
+        document.getElementById('street').style.display = 'block';
+        document.getElementById('barangay').style.display = 'block';
+        document.getElementById('employment').style.display = 'block';
+        document.getElementById('disabilities').style.display = 'block';
+
+        // Remove name inputs container
+        const nameInputsDiv = document.querySelector('#full-name').parentElement.querySelector('div');
+        if (nameInputsDiv) nameInputsDiv.remove();
+    }
+
+    function saveProfileChanges() {
+        // Collect edited values
+        const updatedData = {
+            firstName: document.getElementById('edit-firstName')?.value || '',
+            middleInitial: document.getElementById('edit-middleInitial')?.value || '',
+            lastName: document.getElementById('edit-lastName')?.value || '',
+            birthdate: document.getElementById('edit-birthdate')?.value || '',
+            email: document.getElementById('edit-email')?.value || '',
+            mobile: document.getElementById('edit-mobile')?.value || '',
+            houseNumber: document.getElementById('edit-houseNumber')?.value || '',
+            street: document.getElementById('edit-street')?.value || '',
+            barangay: document.getElementById('edit-barangay')?.value || '',
+            employment: document.getElementById('edit-employment')?.value || '',
+            disabilities: document.getElementById('edit-disabilities')?.value || ''
+        };
+
+        // Update localStorage
+        persistUserData(updatedData);
+
+        // Update display fields
+        const fullNameEl = document.getElementById('full-name');
+        if (fullNameEl) {
+            const parts = [
+                updatedData.firstName,
+                updatedData.middleInitial ? `${updatedData.middleInitial}.` : '',
+                updatedData.lastName
+            ].filter(Boolean);
+            fullNameEl.textContent = parts.length ? parts.join(' ') : '—';
+        }
+
+        const birthdateEl = document.getElementById('birthdate');
+        if (birthdateEl) {
+            birthdateEl.textContent = formatBirthdate(updatedData.birthdate);
+        }
+
+        document.getElementById('email').textContent = safeText(updatedData.email);
+        document.getElementById('mobile').textContent = safeText(updatedData.mobile);
+        document.getElementById('house-number').textContent = safeText(updatedData.houseNumber);
+        document.getElementById('street').textContent = safeText(updatedData.street);
+        document.getElementById('barangay').textContent = safeText(updatedData.barangay);
+        document.getElementById('employment').textContent = safeText(updatedData.employment);
+        document.getElementById('disabilities').textContent = safeText(updatedData.disabilities, 'None');
+
+        // TODO: Your teammate will connect this to backend
+        console.log('Profile changes saved locally:', updatedData);
+        alert('Profile updated successfully! (Changes saved locally only)');
     }
 
     function init() {
