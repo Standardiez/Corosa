@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Corosa — Carpooling for SLU Maryheights</title>
 	<link rel="stylesheet" href="../styles/styles.css">
+	<link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
 	<header class="header">
@@ -12,7 +13,11 @@
 			<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
 			<nav class="nav header-nav">
 				<a class="btn btn-outline" href="#find">Find a ride</a>
-				<a class="btn btn-outline" href="login.html">Login</a>
+			<a class="btn btn-outline" id="signup-link" href="login.html">Login</a>
+			<button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
+				<i class='bx bx-user' style='color:#806600'></i>
+				<span id="user-initials" style="margin-left:0.5rem;"></span>
+			</button>
 			</nav>
 			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
 		</div>
@@ -40,6 +45,7 @@
 		// small script to show current year
 		document.getElementById('year').textContent = new Date().getFullYear();
 	</script>
+	<script src="../js/header-auth.js"></script>
 </body>
 </html>
 

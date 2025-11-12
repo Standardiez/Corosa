@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Confirm Ride — Corosa</title>
     <link rel="stylesheet" href="../styles/styles.css">
+    <link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <style>
         .confirm-card { max-width:900px; margin:0 auto; }
         .trip-summary { display:flex; gap:var(--spacing-md); margin-bottom:var(--spacing-md); }
@@ -22,7 +23,11 @@
             <img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
             <nav class="nav header-nav">
                 <a class="btn btn-outline" href="index.html">Home</a>
-                <a class="btn btn-outline" href="signup.html">Create account</a>
+                <a class="btn btn-outline" id="signup-link" href="signup.html">Create account</a>
+                <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
+                    <i class='bx bx-user' style='color:#806600'></i>
+                    <span id="user-initials" style="margin-left:0.5rem;"></span>
+                </button>
             </nav>
         </div>
     </header>
@@ -90,5 +95,6 @@
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
     <script src="../js/ride-confirmation.js"></script>
+        <script src="../js/header-auth.js"></script>
 </body>
 </html>

@@ -61,18 +61,35 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((r) => r.json())
         .then((resp) => {
           if (resp && resp.success) {
-            if (resp.userId) {
-              sessionStorage.setItem("userId", resp.userId);
+            // Save user data to localStorage for header-auth.js
+            const userData = {
+              userId: resp.userId || null,
+              email: email,
+              firstName: resp.firstName || 'User',
+              lastName: resp.lastName || '',
+              token: resp.token || null,
+            };
+            try {
+              localStorage.setItem('userData', JSON.stringify(userData));
+              if (resp.token) {
+                localStorage.setItem('userToken', resp.token);
+              }
+            } catch (e) {
+              console.warn('Could not write to localStorage', e);
             }
-            sessionStorage.setItem("userEmail", email);
-            window.location.href = "select-pickup.html";
+
+            if (resp.userId) {
+              sessionStorage.setItem('userId', resp.userId);
+            }
+            sessionStorage.setItem('userEmail', email);
+            window.location.href = 'select-pickup.html';
           } else {
-            setError("password", resp.message || "Invalid credentials");
+            setError('password', resp.message || 'Invalid credentials');
           }
         })
         .catch((err) => {
-          console.error("Login failed", err);
-          alert("Could not connect to the server.");
+          console.error('Login failed', err);
+          alert('Could not connect to the server.');
         });
     }
   });
