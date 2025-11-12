@@ -21,25 +21,26 @@ class Reviews {
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
                   (booking_id, rating, comment) 
-                  VALUES (:booking_id, :rating, :comment)
-                  RETURNING review_id";
+                  VALUES (:booking_id, :rating, :comment)";
 
         $stmt = $this->conn->prepare($query);
 
         // Sanitize input data
         $this->booking_id = htmlspecialchars(strip_tags($this->booking_id));
         $this->rating = htmlspecialchars(strip_tags($this->rating));
-        $this->comment = htmlspecialchars(strip_tags($this->comment));
+        $this->comment = $this->comment !== null ? htmlspecialchars(strip_tags($this->comment)) : null;
 
         // Bind values
         $stmt->bindParam(":booking_id", $this->booking_id);
         $stmt->bindParam(":rating", $this->rating);
-        $stmt->bindParam(":comment", $this->comment);
+        if($this->comment === null){
+            $stmt->bindValue(":comment", null, PDO::PARAM_NULL);
+        }else{
+            $stmt->bindParam(":comment", $this->comment);
+        }
 
         if($stmt->execute()) {
-            // PostgreSQL: Get the returned ID from RETURNING clause
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->review_id = $row['review_id'];
+            $this->review_id = (int)$this->conn->lastInsertId();
             return true;
         }
         return false;
@@ -70,9 +71,22 @@ class Reviews {
      * Get all reviews for a booking
      */
     public function getByBookingId() {
-        $query = "SELECT * FROM " . $this->table_name . " 
-                  WHERE booking_id = :booking_id 
-                  ORDER BY created_at DESC";
+        $query = "SELECT 
+                    r.review_id,
+                    r.booking_id,
+                    r.rating,
+                    r.comment,
+                    r.created_at,
+                    TRIM(CONCAT(
+                        u.first_name, ' ',
+                        COALESCE(NULLIF(CONCAT(u.middle_initial, '. '), '. '), ''),
+                        u.last_name
+                    )) AS reviewer_name
+                  FROM " . $this->table_name . " r
+                  LEFT JOIN bookings b ON r.booking_id = b.booking_id
+                  LEFT JOIN users u ON b.passenger_id = u.user_id
+                  WHERE r.booking_id = :booking_id 
+                  ORDER BY r.created_at DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":booking_id", $this->booking_id);
         $stmt->execute();
@@ -84,9 +98,21 @@ class Reviews {
      * Get all reviews
      */
     public function getAll() {
-        $query = "SELECT review_id, booking_id, rating, comment, created_at 
-                  FROM " . $this->table_name . " 
-                  ORDER BY created_at DESC";
+        $query = "SELECT 
+                    r.review_id,
+                    r.booking_id,
+                    r.rating,
+                    r.comment,
+                    r.created_at,
+                    TRIM(CONCAT(
+                        u.first_name, ' ',
+                        COALESCE(NULLIF(CONCAT(u.middle_initial, '. '), '. '), ''),
+                        u.last_name
+                    )) AS reviewer_name
+                  FROM " . $this->table_name . " r
+                  LEFT JOIN bookings b ON r.booking_id = b.booking_id
+                  LEFT JOIN users u ON b.passenger_id = u.user_id
+                  ORDER BY r.created_at DESC";
         
         $stmt = $this->conn->prepare($query);
         $stmt->execute();

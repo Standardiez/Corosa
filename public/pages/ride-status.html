@@ -1,475 +1,260 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Ride Details - Post ride — Carosa</title>
-	<link rel="stylesheet" href="../styles/styles.css">
-	<style>
-		.page-container {
-			max-width: 800px;
-			margin: var(--spacing-xl) auto;
-			padding: 0 var(--spacing-md);
-		}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ride Status — Corosa</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <style>
+        .status-card { max-width:980px; margin:0 auto; }
+        .stages { display:flex; gap:var(--spacing-lg); align-items:center; justify-content:space-between; margin-bottom:var(--spacing-md); }
+        .stage { display:flex; flex-direction:column; align-items:center; gap:var(--spacing-xs); flex:1; }
+        .stage .circle { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; }
+        .stage.pending .circle { background:var(--color-secondary); color:var(--color-muted-foreground); border:1px solid var(--color-border); }
+        .stage.active .circle { background:var(--color-primary); color:var(--color-primary-foreground); }
+        .stage.done .circle { background:var(--color-accent); color:var(--color-primary-foreground); }
+        .map-area { width:100%; height:360px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:var(--spacing-md); }
+        .summary { display:flex; gap:var(--spacing-md); margin-bottom:var(--spacing-md); }
+        .summary .block { flex:1; background:var(--color-secondary); padding:var(--spacing-md); border-radius:var(--radius-md); }
+        .driver-mini { display:flex; gap:var(--spacing-md); align-items:center; padding:var(--spacing-sm); border-radius:var(--radius-md); border:1px solid var(--color-border); background:var(--color-background); }
+        .driver-avatar { width:48px; height:48px; border-radius:50%; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; color:var(--color-muted-foreground); }
 
-		.page-header {
-			margin-bottom: var(--spacing-xl);
-		}
-
-		.page-header h1 {
-			margin: 0 0 var(--spacing-xs) 0;
-			font-size: 2rem;
-			font-weight: 700;
-		}
-
-		.page-header p {
-			margin: 0;
-			color: var(--text-secondary);
-		}
-
-		.info-card {
-			background: var(--bg-card);
-			border-radius: var(--radius-md);
-			padding: var(--spacing-lg);
-			margin-bottom: var(--spacing-md);
-			box-shadow: var(--shadow-sm);
-			border: 1px solid #e5e7eb;
-		}
-
-		.info-card h2 {
-			margin: 0 0 var(--spacing-md) 0;
-			font-size: 1.25rem;
-			font-weight: 600;
-			color: var(--text-primary);
-		}
-
-		.driver-section {
-			display: flex;
-			align-items: center;
-			gap: var(--spacing-md);
-		}
-
-		.driver-avatar {
-			width: 60px;
-			height: 60px;
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			border-radius: 50%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 1.75rem;
-			flex-shrink: 0;
-		}
-
-		.driver-info {
-			flex: 1;
-		}
-
-		.driver-info h3 {
-			margin: 0 0 var(--spacing-xs) 0;
-			font-size: 1.125rem;
-			font-weight: 600;
-		}
-
-		.driver-meta {
-			display: flex;
-			flex-wrap: wrap;
-			gap: var(--spacing-sm);
-			align-items: center;
-		}
-
-		.btn-view-reviews {
-			margin-top: var(--spacing-sm);
-			padding: 0.35rem 0.9rem;
-			font-size: 0.9rem;
-			font-weight: 500;
-			background: var(--bg-secondary);
-			color: var(--text-primary);
-			border: 1px solid #d1d5db;
-			border-radius: var(--radius-sm);
-			cursor: pointer;
-			transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-		}
-
-		.btn-view-reviews:hover {
-			background: #f3f4f6;
-		}
-
-		.badge {
-			display: inline-flex;
-			align-items: center;
-			padding: 0.25rem 0.75rem;
-			background: #fef3c7;
-			color: #92400e;
-			border-radius: var(--radius-sm);
-			font-size: 0.875rem;
-			font-weight: 500;
-		}
-
-		.vehicle-info {
-			color: var(--text-secondary);
-			font-size: 0.875rem;
-		}
-
-		.info-row {
-			display: flex;
-			justify-content: space-between;
-			padding: var(--spacing-sm) 0;
-			border-bottom: 1px solid #f3f4f6;
-		}
-
-		.info-row:last-child {
-			border-bottom: none;
-		}
-
-		.info-label {
-			color: var(--text-secondary);
-			font-weight: 500;
-		}
-
-		.info-value {
-			color: var(--text-primary);
-			font-weight: 600;
-		}
-
-		.rating-section {
-			text-align: center;
-		}
-
-		.star-container {
-			display: flex;
-			justify-content: center;
-			gap: var(--spacing-sm);
-			margin-top: var(--spacing-md);
-		}
-
-		.star-btn {
-			background: none;
-			border: none;
-			font-size: 2rem;
-			color: #d1d5db;
-			cursor: pointer;
-			transition: all 0.2s;
-			padding: 0.25rem;
-		}
-
-		.star-btn:hover {
-			transform: scale(1.2);
-		}
-
-		.star-btn.active {
-			color: #fbbf24;
-		}
-
-		.comment-section {
-			margin-top: var(--spacing-lg);
-			display: flex;
-			flex-direction: column;
-			gap: var(--spacing-sm);
-			align-items: stretch;
-		}
-
-		.comment-label {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			font-size: 0.95rem;
-			font-weight: 500;
-			color: var(--text-primary);
-		}
-
-		.comment-textarea {
-			min-height: 120px;
-			padding: var(--spacing-sm);
-			border-radius: var(--radius-sm);
-			border: 1px solid #d1d5db;
-			font-family: inherit;
-			font-size: 1rem;
-			color: #000;
-			resize: vertical;
-		}
-
-		.comment-textarea:focus {
-			outline: 2px solid var(--primary-color, #2563eb);
-			outline-offset: 2px;
-		}
-
-		.comment-meta {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			font-size: 0.875rem;
-			color: var(--text-secondary);
-		}
-
-		.status-message {
-			margin-top: var(--spacing-md);
-			text-align: center;
-			font-weight: 500;
-		}
-
-		.status-message.success {
-			color: #047857;
-		}
-
-		.status-message.error {
-			color: #b91c1c;
-		}
-
-		.reviews-panel {
-			margin-top: var(--spacing-md);
-			background: var(--bg-card);
-			border: 1px solid #d1d5db;
-			border-radius: var(--radius-md);
-			box-shadow: var(--shadow-xs, rgba(15, 23, 42, 0.06) 0px 4px 12px);
-			display: none;
-		}
-
-		.reviews-panel.active {
-			display: block;
-		}
-
-		.reviews-panel header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: var(--spacing-md);
-			border-bottom: 1px solid #e5e7eb;
-		}
-
-		.reviews-panel header h3 {
-			margin: 0;
-			font-size: 1.1rem;
-			font-weight: 600;
-		}
-
-		.reviews-panel .reviews-body {
-			max-height: 320px;
-			overflow-y: auto;
-		}
-
-		.review-item {
-			padding: var(--spacing-md);
-			border-bottom: 1px solid #f1f5f9;
-		}
-
-		.review-item:last-child {
-			border-bottom: none;
-		}
-
-		.review-rating {
-			display: flex;
-			align-items: center;
-			gap: 0.35rem;
-			font-weight: 600;
-			color: #f59e0b;
-			margin-bottom: 0.35rem;
-		}
-
-		.review-meta {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			font-size: 0.85rem;
-			color: var(--text-secondary);
-			margin-bottom: 0.35rem;
-		}
-
-		.review-comment {
-			margin: 0;
-			font-size: 0.95rem;
-			line-height: 1.4;
-		}
-
-		.empty-state {
-			padding: var(--spacing-lg);
-			text-align: center;
-			color: var(--text-secondary);
-		}
-
-		.sr-only {
-			position: absolute;
-			width: 1px;
-			height: 1px;
-			padding: 0;
-			margin: -1px;
-			overflow: hidden;
-			clip: rect(0, 0, 0, 0);
-			white-space: nowrap;
-			border: 0;
-		}
-
-		.action-section {
-			display: flex;
-			gap: var(--spacing-md);
-			margin-top: var(--spacing-lg);
-		}
-
-		.action-section .btn {
-			flex: 1;
-			padding: var(--spacing-md);
-			font-weight: 600;
-			border-radius: var(--radius-md);
-			cursor: pointer;
-			transition: all 0.2s;
-		}
-
-		.btn-report {
-			background: #fee2e2;
-			color: #991b1b;
-			border: 1px solid #fecaca;
-		}
-
-		.btn-report:hover {
-			background: #fecaca;
-		}
-
-		.btn-back {
-			background: var(--bg-secondary);
-			color: var(--text-primary);
-			border: 1px solid #e5e7eb;
-		}
-
-		.btn-back:hover {
-			background: #f3f4f6;
-		}
-
-		.placeholder-text {
-			color: var(--text-secondary);
-			font-style: italic;
-			text-align: center;
-			padding: var(--spacing-md);
-		}
-	</style>
+        .rate-review-section { margin-top:var(--spacing-xl); }
+        .rate-review-section .rate-review-container { max-width:800px; margin:0 auto; padding:0 var(--spacing-md); }
+        .rate-review-section .page-header { margin-bottom:var(--spacing-xl); }
+        .rate-review-section .page-header h1 { margin:0 0 var(--spacing-xs) 0; font-size:2rem; font-weight:700; }
+        .rate-review-section .page-header p { margin:0; color:var(--text-secondary); }
+        .rate-review-section .info-card { background:var(--bg-card); border-radius:var(--radius-md); padding:var(--spacing-lg); margin-bottom:var(--spacing-md); box-shadow:var(--shadow-sm); border:1px solid #e5e7eb; }
+        .rate-review-section .info-card h2 { margin:0 0 var(--spacing-md) 0; font-size:1.25rem; font-weight:600; color:var(--text-primary); }
+        .rate-review-section .driver-section { display:flex; align-items:center; gap:var(--spacing-md); }
+        .rate-review-section .driver-avatar { width:60px; height:60px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.75rem; flex-shrink:0; color:#fff; }
+        .rate-review-section .driver-info { flex:1; }
+        .rate-review-section .driver-info h3 { margin:0 0 var(--spacing-xs) 0; font-size:1.125rem; font-weight:600; }
+        .rate-review-section .driver-meta { display:flex; flex-wrap:wrap; gap:var(--spacing-sm); align-items:center; }
+        .rate-review-section .btn-view-reviews { margin-top:var(--spacing-sm); padding:0.35rem 0.9rem; font-size:0.9rem; font-weight:500; background:var(--bg-secondary); color:var(--text-primary); border:1px solid #d1d5db; border-radius:var(--radius-sm); cursor:pointer; transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+        .rate-review-section .btn-view-reviews:hover { background:#f3f4f6; }
+        .rate-review-section .badge { display:inline-flex; align-items:center; padding:0.25rem 0.75rem; background:#fef3c7; color:#92400e; border-radius:var(--radius-sm); font-size:0.875rem; font-weight:500; }
+        .rate-review-section .vehicle-info { color:var(--text-secondary); font-size:0.875rem; }
+        .rate-review-section .info-row { display:flex; justify-content:space-between; padding:var(--spacing-sm) 0; border-bottom:1px solid #f3f4f6; }
+        .rate-review-section .info-row:last-child { border-bottom:none; }
+        .rate-review-section .info-label { color:var(--text-secondary); font-weight:500; }
+        .rate-review-section .info-value { color:var(--text-primary); font-weight:600; }
+        .rate-review-section .rating-section { text-align:center; }
+        .rate-review-section .star-container { display:flex; justify-content:center; gap:var(--spacing-sm); margin-top:var(--spacing-md); }
+        .rate-review-section .star-btn { background:none; border:none; font-size:2rem; color:#d1d5db; cursor:pointer; transition:all 0.2s; padding:0.25rem; }
+        .rate-review-section .star-btn:hover { transform:scale(1.2); }
+        .rate-review-section .star-btn.active { color:#fbbf24; }
+        .rate-review-section .comment-section { margin-top:var(--spacing-lg); display:flex; flex-direction:column; gap:var(--spacing-sm); align-items:stretch; }
+        .rate-review-section .comment-label { display:flex; justify-content:space-between; align-items:center; font-size:0.95rem; font-weight:500; color:var(--text-primary); }
+        .rate-review-section .comment-textarea { min-height:120px; padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid #d1d5db; font-family:inherit; font-size:1rem; color:#000; resize:vertical; }
+        .rate-review-section .comment-textarea:focus { outline:2px solid var(--primary-color, #2563eb); outline-offset:2px; }
+        .rate-review-section .comment-meta { display:flex; justify-content:space-between; align-items:center; font-size:0.875rem; color:var(--text-secondary); }
+        .rate-review-section .status-message { margin-top:var(--spacing-md); text-align:center; font-weight:500; }
+        .rate-review-section .status-message.success { color:#047857; }
+        .rate-review-section .status-message.error { color:#b91c1c; }
+        .rate-review-section .reviews-panel { margin-top:var(--spacing-md); background:var(--bg-card); border:1px solid #d1d5db; border-radius:var(--radius-md); box-shadow:var(--shadow-xs, rgba(15,23,42,0.06) 0px 4px 12px); display:none; }
+        .rate-review-section .reviews-panel.active { display:block; }
+        .rate-review-section .reviews-panel header { display:flex; justify-content:space-between; align-items:center; padding:var(--spacing-md); border-bottom:1px solid #e5e7eb; }
+        .rate-review-section .reviews-panel header h3 { margin:0; font-size:1.1rem; font-weight:600; }
+        .rate-review-section .reviews-panel .reviews-body { max-height:320px; overflow-y:auto; }
+        .rate-review-section .review-item { padding:var(--spacing-md); border-bottom:1px solid #f1f5f9; }
+        .rate-review-section .review-item:last-child { border-bottom:none; }
+        .rate-review-section .review-rating { display:flex; align-items:center; gap:0.35rem; font-weight:600; color:#f59e0b; margin-bottom:0.35rem; }
+        .rate-review-section .review-meta { display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.35rem; }
+        .rate-review-section .review-comment { margin:0; font-size:0.95rem; line-height:1.4; }
+        .rate-review-section .empty-state { padding:var(--spacing-lg); text-align:center; color:var(--text-secondary); }
+        .rate-review-section .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+        .rate-review-section .action-section { display:flex; gap:var(--spacing-md); margin-top:var(--spacing-lg); }
+        .rate-review-section .action-section .btn { flex:1; padding:var(--spacing-md); font-weight:600; border-radius:var(--radius-md); cursor:pointer; transition:all 0.2s; }
+        .rate-review-section .btn-report { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+        .rate-review-section .btn-report:hover { background:#fecaca; }
+        .rate-review-section .btn-back { background:var(--bg-secondary); color:var(--text-primary); border:1px solid #e5e7eb; }
+        .rate-review-section .btn-back:hover { background:#f3f4f6; }
+        .rate-review-section .placeholder-text { color:var(--text-secondary); font-style:italic; text-align:center; padding:var(--spacing-md); }
+    </style>
 </head>
 <body>
-	<header class="header">
-		<div class="container header-content">
-			<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
-			<nav class="nav header-nav">
-				<a class="btn btn-primary" href="#find">Find Ride</a>
-				<a class="btn btn-outline" href="#offer">Offer Ride</a>
-				<a class="btn btn-outline" href="#rides">My Rides</a>
-			</nav>
-			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
-		</div>
-	</header>
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1 style="font-size:1rem;">Corosa</h1>
+                </div>
+            </div>
+            <nav class="nav header-nav">
+                <a class="btn btn-outline" href="index.html">Home</a>
+                <a class="btn btn-outline" href="signup.html">Create account</a>
+            </nav>
+        </div>
+    </header>
 
-	<main>
-		<div class="page-container" data-booking-id="">
-			<!-- Page Header -->
-			<div class="page-header">
-				<h1>Ride Details</h1>
-				<p>Review your completed ride information</p>
-			</div>
+    <main class="container status-card" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
+        <section class="card">
+            <h2 style="margin:0 0 var(--spacing-sm) 0">Ride status</h2>
+            <p class="text-muted">Track your ride in real time.</p>
 
-			<!-- Driver Information Card -->
-			<div class="info-card">
-				<h2>Driver Information</h2>
-				<div class="driver-section">
-					<div class="driver-avatar">🚗</div>
-					<div class="driver-info">
-						<h3>Steven Valdez</h3>
-						<div class="driver-meta">
-							<span class="badge">⭐ 4.8 Rating</span>
-							<span class="vehicle-info">🚙 Toyota Innova • 4 Seater</span>
-						</div>
-						<button class="btn-view-reviews" type="button" data-driver-id="1">View Reviews</button>
-					</div>
-				</div>
-				<div class="reviews-panel" id="driverReviews" aria-live="polite" aria-expanded="false">
-					<header>
-						<h3>Driver Reviews</h3>
-						<button class="btn btn-outline btn-close-reviews" type="button">Close</button>
-					</header>
-					<div class="reviews-body">
-						<div class="empty-state">No reviews found yet.</div>
-					</div>
-				</div>
-			</div>
+            <div class="stages" id="stages">
+                <div class="stage" id="stage-1">
+                    <div class="circle">1</div>
+                    <div class="text-muted">Driver en route</div>
+                </div>
+                <div class="stage" id="stage-2">
+                    <div class="circle">2</div>
+                    <div class="text-muted">Onboard — heading to drop-off</div>
+                </div>
+                <div class="stage" id="stage-3">
+                    <div class="circle">3</div>
+                    <div class="text-muted">Completed</div>
+                </div>
+            </div>
 
-			<!-- Route Details Card -->
-			<div class="info-card">
-				<h2>Route Details</h2>
-				<div class="info-row">
-					<span class="info-label">Pickup Location</span>
-					<span class="info-value">SLU Maryheights Gate</span>
-				</div>
-				<div class="info-row">
-					<span class="info-label">Drop-off Location</span>
-					<span class="info-value">Baguio City Center</span>
-				</div>
-				<div class="info-row">
-					<span class="info-label">Date & Time</span>
-					<span class="info-value">Nov 12, 2025 • 3:00 PM</span>
-				</div>
-				<div class="info-row">
-					<span class="info-label">Distance</span>
-					<span class="info-value">8.5 km</span>
-				</div>
-			</div>
+            <div id="map" class="map-area">Loading map…</div>
 
-			<!-- Payment Details Card -->
-			<div class="info-card">
-				<h2>Payment Details</h2>
-				<div class="info-row">
-					<span class="info-label">Fare</span>
-					<span class="info-value">₱50.00</span>
-				</div>
-				<div class="info-row">
-					<span class="info-label">Service Fee</span>
-					<span class="info-value">₱5.00</span>
-				</div>
-				<div class="info-row">
-					<span class="info-label">Payment Method</span>
-					<span class="info-value">Cash</span>
-				</div>
-				<div class="info-row" style="padding-top: var(--spacing-md); margin-top: var(--spacing-sm); border-top: 2px solid #e5e7eb;">
-					<span class="info-label" style="font-size: 1.125rem;">Total Paid</span>
-					<span class="info-value" style="font-size: 1.25rem; color: #059669;">₱55.00</span>
-				</div>
-			</div>
+            <div class="summary">
+                <div class="block">
+                    <small class="text-muted">Pickup</small>
+                    <div id="pickup-location">Loading...</div>
+                </div>
+                <div class="block">
+                    <small class="text-muted">Drop-off</small>
+                    <div id="dropoff-location">Loading...</div>
+                </div>
+            </div>
 
-			<!-- Rating Card -->
-			<div class="info-card">
-				<div class="rating-section">
-					<h2>Rate Your Experience</h2>
-					<p style="color: var(--text-secondary); margin: var(--spacing-sm) 0;">How was your ride with Steven?</p>
-					<div class="star-container">
-						<button class="star-btn" data-rating="1" aria-label="1 star">★</button>
-						<button class="star-btn" data-rating="2" aria-label="2 stars">★</button>
-						<button class="star-btn" data-rating="3" aria-label="3 stars">★</button>
-						<button class="star-btn" data-rating="4" aria-label="4 stars">★</button>
-						<button class="star-btn" data-rating="5" aria-label="5 stars">★</button>
-					</div>
-					<div class="comment-section">
-						<label for="reviewComment" class="comment-label">
-							Comment
-							<span id="commentCounter">0 / 500</span>
-						</label>
-						<textarea id="reviewComment" class="comment-textarea" maxlength="500"
-							placeholder="Share more about your ride experience..."></textarea>
-						<div class="comment-meta">
-							<span>Comments help the community choose safe and reliable rides.</span>
-							<button class="btn btn-primary btn-submit-review" type="button">Submit Review</button>
-						</div>
-					</div>
-					<div class="status-message" id="reviewStatus" role="status" aria-live="polite"></div>
-				</div>
-			</div>
+            <div class="driver-mini" id="driver-mini">
+                <div class="driver-avatar" id="driver-avatar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 8h-16v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div style="flex:1">
+                    <div id="driver-name" style="font-weight:700">Loading...</div>
+                    <div id="driver-employment" class="text-muted"></div>
+                </div>
+                <div style="text-align:right">
+                    <div class="text-muted">Seats</div>
+                    <div id="driver-capacity" style="font-weight:700">—</div>
+                </div>
+            </div>
 
-			<!-- Action Buttons -->
-			<div class="action-section">
-				<button class="btn btn-report">Report an Issue</button>
-				<button class="btn btn-back" onclick="window.location.href='select-pickup.html'">Back to Rides</button>
-			</div>
-		</div>
-	</main>
+        </section>
 
-	<footer class="container" style="padding:var(--spacing-lg) 0; text-align:center; color:var(--text-muted); margin-top:var(--spacing-xl);">
-		<small>&copy; <span id="year"></span> Carosa — SLU Maryheights</small>
-	</footer>
+        <section class="card rate-review-section" aria-labelledby="rate-review-title">
+            <div class="rate-review-container" data-booking-id="" data-driver-id="">
+                <div class="page-header">
+                    <h1 id="rate-review-title">Ride Details</h1>
+                    <p>Review your completed ride information</p>
+                </div>
 
-	<script src="../js/rate-and-review.js"></script>
+                <div class="info-card">
+                    <h2>Driver Information</h2>
+                    <div class="driver-section">
+                        <div class="driver-avatar" id="rate-driver-avatar" aria-hidden="true">🚗</div>
+                        <div class="driver-info">
+                            <h3 id="rate-driver-name">Driver name</h3>
+                            <div class="driver-meta">
+                                <span class="badge" id="rate-driver-rating">⭐ — Rating</span>
+                                <span class="vehicle-info" id="rate-vehicle-info">Vehicle details</span>
+                            </div>
+                            <button class="btn-view-reviews" type="button" data-driver-id="">View Reviews</button>
+                        </div>
+                    </div>
+                    <div class="reviews-panel" id="driverReviews" aria-live="polite" aria-expanded="false">
+                        <header>
+                            <h3>Driver Reviews</h3>
+                            <button class="btn btn-outline btn-close-reviews" type="button">Close</button>
+                        </header>
+                        <div class="reviews-body">
+                            <div class="empty-state">No reviews found yet.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h2>Route Details</h2>
+                    <div class="info-row">
+                        <span class="info-label">Pickup Location</span>
+                        <span class="info-value" id="rate-pickup-location">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Drop-off Location</span>
+                        <span class="info-value" id="rate-dropoff-location">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date &amp; Time</span>
+                        <span class="info-value" id="rate-date-time">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Distance</span>
+                        <span class="info-value" id="rate-distance">—</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h2>Payment Details</h2>
+                    <div class="info-row">
+                        <span class="info-label">Fare</span>
+                        <span class="info-value" id="rate-fare">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Service Fee</span>
+                        <span class="info-value" id="rate-service-fee">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Payment Method</span>
+                        <span class="info-value" id="rate-payment-method">—</span>
+                    </div>
+                    <div class="info-row" style="padding-top: var(--spacing-md); margin-top: var(--spacing-sm); border-top: 2px solid #e5e7eb;">
+                        <span class="info-label" style="font-size: 1.125rem;">Total Paid</span>
+                        <span class="info-value" id="rate-total-paid" style="font-size: 1.25rem; color: #059669;">—</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="rating-section">
+                        <h2>Rate Your Experience</h2>
+                        <p id="rate-experience-text" style="color: var(--text-secondary); margin: var(--spacing-sm) 0;">How was your ride?</p>
+                        <div class="star-container" role="radiogroup" aria-label="Rate your experience from 1 to 5 stars">
+                            <button class="star-btn" data-rating="1" aria-label="1 star">★</button>
+                            <button class="star-btn" data-rating="2" aria-label="2 stars">★</button>
+                            <button class="star-btn" data-rating="3" aria-label="3 stars">★</button>
+                            <button class="star-btn" data-rating="4" aria-label="4 stars">★</button>
+                            <button class="star-btn" data-rating="5" aria-label="5 stars">★</button>
+                        </div>
+                        <div class="comment-section">
+                            <label for="reviewComment" class="comment-label">
+                                Comment
+                                <span id="commentCounter">0 / 500</span>
+                            </label>
+                            <textarea id="reviewComment" class="comment-textarea" maxlength="500"
+                                placeholder="Share more about your ride experience..."></textarea>
+                            <div class="comment-meta">
+                                <span>Comments help the community choose safe and reliable rides.</span>
+                                <button class="btn btn-primary btn-submit-review" type="button">Submit Review</button>
+                            </div>
+                        </div>
+                        <div class="status-message" id="reviewStatus" role="status" aria-live="polite"></div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button class="btn btn-report" type="button">Report an Issue</button>
+                    <button class="btn btn-back" type="button" data-action="back">Back to Rides</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
+        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script src="../js/ride-status.js"></script>
 </body>
 </html>
