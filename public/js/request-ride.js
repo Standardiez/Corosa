@@ -154,7 +154,8 @@
                             totalCapacity: trip.seat_capacity
                         },
                         rideStatus: trip.ride_status,
-                        createdAt: trip.created_at
+                        createdAt: trip.created_at,
+                        confirmedCount: trip.confirmed_count ? Number(trip.confirmed_count) : 0
                     }));
                     displayAvailableRides();
                 } else {
@@ -190,15 +191,20 @@
             <div class="vehicle-row" style="margin-top:var(--spacing-sm);">
                 <div>${ride.vehicle.model} ${ride.vehicle.year}</div>
                 <div style="width:1px; height:16px; background:var(--color-border);"></div>
-                <div class="capacity"><span>${ride.vehicle.availableSeats}/${ride.vehicle.totalCapacity}</span> seats</div>
+                <div class="capacity"><span>${Math.max(ride.vehicle.availableSeats - ride.confirmedCount, 0)}/${ride.vehicle.totalCapacity}</span> seats left</div>
             </div>`;
 
         const actionCol = document.createElement('div');
         actionCol.className = 'request-col';
         const btn = document.createElement('button');
         btn.className = 'btn btn-primary';
-        btn.textContent = 'Request Ride';
-        btn.addEventListener('click', () => requestRide(ride.id));
+        btn.textContent = ride.vehicle.availableSeats - ride.confirmedCount > 0 ? 'Request Ride' : 'Fully Booked';
+        btn.disabled = (ride.vehicle.availableSeats - ride.confirmedCount) <= 0;
+        if (btn.disabled) {
+            btn.classList.add('btn-disabled');
+        } else {
+            btn.addEventListener('click', () => requestRide(ride.id));
+        }
         actionCol.appendChild(btn);
 
         card.appendChild(avatar);

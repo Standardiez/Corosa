@@ -145,8 +145,8 @@ class Trip {
             WHERE assignment_status = 'confirmed'
             GROUP BY trip_id
         ) ta ON t.trip_id = ta.trip_id
-        WHERE COALESCE(ta.confirmed_count, 0) < t.available_seats
-        AND t.ride_status IN ('available', 'scheduled')
+        WHERE t.ride_status IN ('available', 'scheduled')
+        AND t.available_seats > 0
         ORDER BY t.created_at DESC";
 
         $stmt = $this->conn->prepare($query);
