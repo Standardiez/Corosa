@@ -63,6 +63,24 @@ class TripAssignment {
         if($stmt->execute()) {
             $this->assignment_id = (int)$this->conn->lastInsertId();
             $this->last_error = null;
+
+            // Decrement available seats for the associated trip when booking is confirmed
+            if ($this->booking_confirmation) {
+                try {
+                    $updateQuery = "UPDATE trips 
+                                    SET available_seats = CASE 
+                                        WHEN available_seats > 0 THEN available_seats - 1 
+                                        ELSE 0 
+                                    END 
+                                    WHERE trip_id = :trip_id";
+                    $updateStmt = $this->conn->prepare($updateQuery);
+                    $updateStmt->bindParam(":trip_id", $this->trip_id, PDO::PARAM_INT);
+                    $updateStmt->execute();
+                } catch (Exception $e) {
+                    error_log("TripAssignment::create seat decrement failed: " . $e->getMessage());
+                }
+            }
+
             return true;
         }
         $errorInfo = $stmt->errorInfo();
