@@ -22,26 +22,26 @@
 			font-weight: 700;
 		}
 
-		.page-header p {
-			margin: 0;
-			color: var(--text-secondary);
-		}
+			.page-header p {
+				margin: 0;
+				color: var(--color-muted-foreground);
+			}
 
-		.info-card {
-			background: var(--bg-card);
-			border-radius: var(--radius-md);
-			padding: var(--spacing-lg);
-			margin-bottom: var(--spacing-md);
-			box-shadow: var(--shadow-sm);
-			border: 1px solid #e5e7eb;
-		}
+			.info-card {
+				background-color: var(--color-background);
+				border-radius: var(--radius-md);
+				padding: var(--spacing-lg);
+				margin-bottom: var(--spacing-md);
+				box-shadow: var(--shadow-sm);
+				border: 1px solid var(--color-border);
+			}
 
-		.info-card h2 {
-			margin: 0 0 var(--spacing-md) 0;
-			font-size: 1.25rem;
-			font-weight: 600;
-			color: var(--text-primary);
-		}
+			.info-card h2 {
+				margin: 0 0 var(--spacing-md) 0;
+				font-size: 1.25rem;
+				font-weight: 600;
+				color: var(--color-foreground);
+			}
 
 		.driver-section {
 			display: flex;
@@ -89,10 +89,10 @@
 			font-weight: 500;
 		}
 
-		.vehicle-info {
-			color: var(--text-secondary);
-			font-size: 0.875rem;
-		}
+			.vehicle-info {
+				color: var(--color-muted-foreground);
+				font-size: 0.875rem;
+			}
 
 		.info-row {
 			display: flex;
@@ -105,15 +105,15 @@
 			border-bottom: none;
 		}
 
-		.info-label {
-			color: var(--text-secondary);
-			font-weight: 500;
-		}
+			.info-label {
+				color: var(--color-muted-foreground);
+				font-weight: 500;
+			}
 
-		.info-value {
-			color: var(--text-primary);
-			font-weight: 600;
-		}
+			.info-value {
+				color: var(--color-foreground);
+				font-weight: 600;
+			}
 
 		.rating-section {
 			text-align: center;
@@ -169,22 +169,40 @@
 			background: #fecaca;
 		}
 
-		.btn-back {
-			background: var(--bg-secondary);
-			color: var(--text-primary);
-			border: 1px solid #e5e7eb;
-		}
+			.btn-back {
+				background: var(--color-secondary);
+				color: var(--color-foreground);
+				border: 1px solid var(--color-border);
+			}
 
 		.btn-back:hover {
 			background: #f3f4f6;
 		}
 
-		.placeholder-text {
-			color: var(--text-secondary);
-			font-style: italic;
-			text-align: center;
-			padding: var(--spacing-md);
-		}
+			.placeholder-text {
+				color: var(--color-muted-foreground);
+				font-style: italic;
+				text-align: center;
+				padding: var(--spacing-md);
+			}
+
+			/* Comment box styling: improved contrast and focus outline */
+			#driver-comments {
+				width: 100%;
+				min-height: 100px;
+				padding: 10px;
+				border: 1px solid var(--color-border);
+				border-radius: 8px;
+				background-color: var(--color-background);
+				box-shadow: 0 1px 2px rgba(2,6,23,0.04);
+				transition: box-shadow 0.15s ease, outline 0.15s ease;
+			}
+
+			#driver-comments:focus {
+				outline: 3px solid rgba(42,157,143,0.12); /* subtle brand-colored focus ring */
+				outline-offset: 2px;
+				box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+			}
 	</style>
 </head>
 <body>
@@ -192,19 +210,18 @@
 		<div class="container header-content">
 			<div class="logo">
 				<div class="logo-icon" aria-hidden="true">
+					<!-- small mark, could be replaced with an SVG later -->
 					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 						<path d="M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 					</svg>
 				</div>
 				<div class="logo-text">
-					<h1 style="font-size:1rem;">Carosa</h1>
-					<p style="font-size:0.75rem; color:var(--text-secondary); margin:0;">Maryheights Carpooling</p>
+					<h1 style="font-size:1rem;">Corosa</h1>
 				</div>
 			</div>
 			<nav class="nav header-nav">
-				<a class="btn btn-primary" href="#find">Find Ride</a>
-				<a class="btn btn-outline" href="#offer">Offer Ride</a>
-				<a class="btn btn-outline" href="#rides">My Rides</a>
+				<a class="btn btn-outline" href="#find">Find a ride</a>
+				<a class="btn btn-outline" href="login.html">Login</a>
 			</nav>
 			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
 		</div>
@@ -279,13 +296,18 @@
 			<div class="info-card">
 				<div class="rating-section">
 					<h2>Rate Your Experience</h2>
-					<p style="color: var(--text-secondary); margin: var(--spacing-sm) 0;">How was your ride with Steven?</p>
+					<p style="color: var(--color-muted-foreground); margin: var(--spacing-sm) 0;">How was your ride with Steven?</p>
 					<div class="star-container">
 						<button class="star-btn" data-rating="1" aria-label="1 star">★</button>
 						<button class="star-btn" data-rating="2" aria-label="2 stars">★</button>
 						<button class="star-btn" data-rating="3" aria-label="3 stars">★</button>
 						<button class="star-btn" data-rating="4" aria-label="4 stars">★</button>
 						<button class="star-btn" data-rating="5" aria-label="5 stars">★</button>
+					</div>
+					<!-- Optional comment box for feedback about the driver -->
+					<div style="margin-top:var(--spacing-md);">
+						<label for="driver-comments" style="display:block;font-weight:600;margin-bottom:0.5rem;color:var(--color-muted-foreground);">Comments (optional)</label>
+						<textarea id="driver-comments" placeholder="Add details about your experience or report an issue (optional)"></textarea>
 					</div>
 				</div>
 			</div>
@@ -298,7 +320,7 @@
 		</div>
 	</main>
 
-	<footer class="container" style="padding:var(--spacing-lg) 0; text-align:center; color:var(--text-muted); margin-top:var(--spacing-xl);">
+	<footer class="container" style="padding:var(--spacing-lg) 0; text-align:center; color:var(--color-muted-foreground); margin-top:var(--spacing-xl);">
 		<small>&copy; <span id="year"></span> Carosa — SLU Maryheights</small>
 	</footer>
 
