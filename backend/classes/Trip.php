@@ -115,6 +115,46 @@ class Trip {
     }
 
     /**
+     * Get trips with available seats
+     */
+     public function getTripAvailableTripData() {
+        $query = "SELECT 
+            t.trip_id,
+            t.driver_id,
+            t.start_lat,
+            t.start_long,
+            t.end_lat,
+            t.end_long,
+            t.available_seats,
+            t.ride_distance,
+            t.ride_status,
+            t.created_at,
+            u.first_name,
+            u.last_name,
+            u.employment_status,
+            v.vehicle_model,
+            v.vehicle_year,
+            v.seat_capacity
+        FROM trips t
+        LEFT JOIN driver d ON t.driver_id = d.driver_id
+        LEFT JOIN user u ON d.user_id = u.user_id
+        LEFT JOIN vehicle v ON v.driver_id = d.driver_id
+        LEFT JOIN (
+            SELECT trip_id, COUNT(*) AS confirmed_count
+            FROM trip_assignment
+            WHERE assignment_status = 'confirmed'
+            GROUP BY trip_id
+        ) ta ON t.trip_id = ta.trip_id
+        WHERE COALESCE(ta.confirmed_count, 0) < t.available_seats
+        AND t.ride_status = 'available'
+        ORDER BY t.created_at DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    /**
      * Update trip information
      */
     public function update() {
