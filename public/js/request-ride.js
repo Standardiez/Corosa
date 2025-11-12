@@ -128,37 +128,36 @@
     };
 
     // Example available rides data - Replace with actual API call
-    const availableRides = [
-        {
-            id: 1,
-            driver: {
-                firstName: 'Juan',
-                lastName: 'Dela Cruz',
-                employmentStatus: 'SLU Faculty'
-            },
-            vehicle: {
-                model: 'Toyota Vios',
-                year: '2020',
-                availableSeats: 3,
-                totalCapacity: 4
-            }
-        },
-        {
-            id: 2,
-            driver: {
-                firstName: 'Maria',
-                lastName: 'Santos',
-                employmentStatus: 'SLU Staff'
-            },
-            vehicle: {
-                model: 'Honda City',
-                year: '2021',
-                availableSeats: 2,
-                totalCapacity: 4
-            }
-        }
-        // Add more sample rides as needed
-    ];
+    var availableRides = [];
+
+    function fetchAvailableRides() {
+        fetch('/backend/api/trip.php?action=getAvailableTrips')
+            .then(response => response.json())
+            .then(result => {
+                if (result.success && Array.isArray(result.data)) {
+                    availableRides = result.data.map(trip => ({
+                        id: trip.trip_id,
+                        driver: {
+                            firstName: trip.first_name || '',
+                            lastName: trip.last_name || '',
+                            employmentStatus: trip.employment_status || ''
+                        },
+                        vehicle: {
+                            model: trip.vehicle_model || '',
+                            year: trip.vehicle_year || '',
+                            availableSeats: trip.available_seats,
+                            totalCapacity: trip.seat_capacity
+                        }
+                    }));
+                    displayAvailableRides();
+                } else {
+                    console.error(result.message || 'No rides found');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching available rides:', error);
+            });
+    }
 
     // Create DOM element for a ride card
     function createRideCard(ride) {
@@ -241,8 +240,8 @@
         script.defer = true;
         document.head.appendChild(script);
 
-        // Display available rides
-        displayAvailableRides();
+        // Fetch and display available rides from backend
+        fetchAvailableRides();
     }
 
     // Start loading after DOM is ready
