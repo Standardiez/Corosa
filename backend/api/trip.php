@@ -26,8 +26,21 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch($method) {
     case 'GET':
+        // Get available trips with driver and vehicle info
+        if (isset($_GET['action']) && $_GET['action'] === 'getAvailableTrips') {
+            $stmt = $trip->getTripAvailableTripData();
+            $trips = array();
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $trips[] = $row;
+            }
+            echo json_encode(array(
+                "success" => true,
+                "message" => "Available trips retrieved successfully",
+                "data" => $trips
+            ));
+        }
         // Check if trip_id is provided in query string
-        if(isset($_GET['trip_id'])) {
+        else if(isset($_GET['trip_id'])) {
             // Get trip by ID
             $trip->trip_id = $_GET['trip_id'];
             
