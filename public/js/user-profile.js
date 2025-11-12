@@ -4,7 +4,7 @@
     // Load user profile data on page load
     function loadProfileData() {
         const userDataStr = localStorage.getItem('userData');
-        
+
         if (!userDataStr) {
             // No user logged in, redirect to login
             window.location.href = 'login.html';
@@ -13,7 +13,7 @@
 
         try {
             const userData = JSON.parse(userDataStr);
-            
+
             // Populate full name
             const fullNameEl = document.getElementById('full-name');
             if (fullNameEl) {
@@ -28,10 +28,10 @@
             const birthdateEl = document.getElementById('birthdate');
             if (birthdateEl && userData.birthdate) {
                 const date = new Date(userData.birthdate);
-                birthdateEl.textContent = date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                birthdateEl.textContent = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                 });
             }
 
