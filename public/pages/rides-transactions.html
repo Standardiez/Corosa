@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard — Corosa</title>
+    <title>Rides & Transactions — Corosa</title>
 
     <link rel="stylesheet" href="../styles/styles.css">
     <link href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css" rel="stylesheet">
@@ -36,32 +36,31 @@
             <aside class="sidebar">
                 <a href="user-management.html">User Management</a>
                 <a href="vehicle-management.html">Vehicle Management</a>
-                <a href="rides-transactions.html">Rides & Transactions</a>
+                <a href="rides-transactions.html" class="active">Rides & Transactions</a>
                 <a href="reports-complaints.html">Reports & Complaints</a>
             </aside>
 
-            <!-- Dashboard -->
+            <!-- Main Content -->
             <section class="dashboard-section">
-                <h1>Dashboard Overview</h1>
+                <h2>Active and Completed Rides</h2>
 
-                <div class="dashboard-grid">
-
-                    <div class="dashboard-card wide">
-                        <h2>Rides and transactions</h2>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <h2>Pending user verification</h2>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <h2>Pending vehicle verification</h2>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <h2>Reports and complaints</h2>
-                    </div>
-
+                <div class="table-container card" style="padding: var(--spacing-md); margin-top: var(--spacing-md); overflow-x:auto;">
+                    <table class="table" id="ridesTable">
+                        <thead>
+                            <tr>
+                                <th>Ride ID</th>
+                                <th>Driver</th>
+                                <th>Passenger</th>
+                                <th>Route</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ridesTableBody">
+                            <!-- Rows populated by JS -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -69,16 +68,13 @@
 
     </main>
 
-    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
+    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center;">
         <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
-    <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
+    <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 
+    <script src="../js/rides-transactions.js"></script>
     <script src="../js/header-auth.js"></script>
-    <script src="../js/admin-dashboard.js"></script>
-
 </body>
 </html>
