@@ -137,7 +137,7 @@ switch($method) {
             $trip->end_location = $data->end_location;
             $trip->available_seats = $data->available_seats ?? 0;
             $trip->ride_distance = $data->ride_distance ?? 0;
-            $trip->ride_status = $data->ride_status ?? 'pending';
+            $trip->ride_status = $data->ride_status ?? 'available';
             
             if($trip->create()) {
                 echo json_encode(array(

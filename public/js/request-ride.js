@@ -127,13 +127,14 @@
         });
     };
 
-    // Example available rides data - Replace with actual API call
+    
     var availableRides = [];
-
+    // node.js function
     function fetchAvailableRides() {
+        const url = 'http://localhost:3000/api/trips?action=getAvailableTrips&_=' + Date.now();
+        console.log('Refreshing available rides...');
 
-
-        fetch('/Corosa/backend/api/trip.php?action=getAvailableTrips')
+        fetch(url, { cache: 'no-store' })
             .then(response => response.json())
             .then(result => {
                 if (result.success && Array.isArray(result.data)) {
@@ -156,6 +157,7 @@
                         rideStatus: trip.ride_status,
                         createdAt: trip.created_at
                     }));
+                    console.log('Available rides count:', availableRides.length);
                     displayAvailableRides();
                 } else {
                     console.error(result.message || 'No rides found');
@@ -256,6 +258,9 @@
 
         // Fetch and display available rides from backend
         fetchAvailableRides();
+
+        // Refresh available rides every 1 second
+        setInterval(fetchAvailableRides, 1000);
     }
 
     // Start loading after DOM is ready
