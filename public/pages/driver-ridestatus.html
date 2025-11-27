@@ -1,494 +1,475 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Ride Status — Corosa</title>
-    <link rel="stylesheet" href="../styles/styles.css">
     <link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
-</head>
-<style>
-        .status-card {
-            max-width: 980px;
+    <style>
+        :root {
+            --color-primary: #dc2626;
+            --color-secondary: #f3f4f6;
+            --color-border: #e5e7eb;
+            --color-muted-foreground: #6b7280;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f9fafb;
+            color: #111827;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--color-border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #374151;
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-outline:hover {
+            background: var(--color-secondary);
+        }
+
+        .user-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .status-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .status-header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-container {
+            margin: 3rem 0;
         }
 
         .stages {
             display: flex;
-            gap: var(--spacing-lg);
             align-items: center;
             justify-content: space-between;
-            margin-bottom: var(--spacing-md);
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: var(--color-border);
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #22c55e;
+            transition: width 0.5s ease;
+            border-radius: 3px;
         }
 
         .stage {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: var(--spacing-xs);
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
             flex: 1;
         }
 
-        .stage .circle {
+        .stage-circle {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 600;
+            background: white;
+            border: 3px solid var(--color-border);
+            transition: all 0.3s;
         }
 
-        .stage.pending .circle {
-            background: var(--color-secondary);
+        .stage.completed .stage-circle {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: white;
+        }
+
+        .stage.active .stage-circle {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+        }
+
+        .stage-label {
+            font-size: 0.75rem;
             color: var(--color-muted-foreground);
-            border: 1px solid var(--color-border);
+            text-align: center;
+            max-width: 120px;
         }
 
-        .stage.active .circle {
-            background: var(--color-primary);
-            color: var(--color-primary-foreground);
-        }
-
-        .stage.done .circle {
-            background: var(--color-accent);
-            color: var(--color-primary-foreground);
-        }
-
-        .map-area {
-            width: 100%;
-            height: 360px;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .summary {
-            display: flex;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-        }
-
-        .summary .block {
-            flex: 1;
+        .booking-details {
             background: var(--color-secondary);
-            padding: var(--spacing-md);
             border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 2rem 0;
         }
 
-        .driver-mini {
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: center;
-            padding: var(--spacing-sm);
+        .booking-details h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .booking-subtitle {
+            color: var(--color-muted-foreground);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .driver-info {
+            background: white;
             border-radius: var(--radius-md);
-            border: 1px solid var(--color-border);
-            background: var(--color-background);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .driver-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--color-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--color-muted-foreground);
-        }
-
-        .rate-review-section {
-            margin-top: var(--spacing-xl);
-        }
-
-        .rate-review-section .rate-review-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-md);
-        }
-
-        .rate-review-section .page-header {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .rate-review-section .page-header h1 {
-            margin: 0 0 var(--spacing-xs) 0;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .rate-review-section .page-header p {
-            margin: 0;
-            color: var(--text-secondary);
-        }
-
-        .rate-review-section .info-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-md);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid #e5e7eb;
-        }
-
-        .rate-review-section .info-card h2 {
-            margin: 0 0 var(--spacing-md) 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .rate-review-section .driver-section {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .rate-review-section .driver-avatar {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
-            flex-shrink: 0;
-            color: #fff;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
-        .rate-review-section .driver-info {
-            flex: 1;
-        }
-
-        .rate-review-section .driver-info h3 {
-            margin: 0 0 var(--spacing-xs) 0;
+        .driver-details h3 {
             font-size: 1.125rem;
-            font-weight: 600;
+            margin-bottom: 0.25rem;
         }
 
-        .rate-review-section .driver-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-sm);
-            align-items: center;
-        }
-
-        .rate-review-section .btn-view-reviews {
-            margin-top: var(--spacing-sm);
-            padding: 0.35rem 0.9rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid #d1d5db;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-        }
-
-        .rate-review-section .btn-view-reviews:hover {
-            background: #f3f4f6;
-        }
-
-        .rate-review-section .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            background: #fef3c7;
-            color: #92400e;
-            border-radius: var(--radius-sm);
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .rate-review-section .vehicle-info {
-            color: var(--text-secondary);
+        .driver-meta {
+            color: var(--color-muted-foreground);
             font-size: 0.875rem;
         }
 
-        .rate-review-section .info-row {
+        .info-row {
             display: flex;
-            justify-content: space-between;
-            padding: var(--spacing-sm) 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .rate-review-section .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .rate-review-section .info-label {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .rate-review-section .info-value {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .rate-review-section .rating-section {
-            text-align: center;
-        }
-
-        .rate-review-section .star-container {
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-sm);
-            margin-top: var(--spacing-md);
-        }
-
-        .rate-review-section .star-btn {
-            background: none;
-            border: none;
-            font-size: 2rem;
-            color: #d1d5db;
-            cursor: pointer;
-            transition: all 0.2s;
-            padding: 0.25rem;
-        }
-
-        .rate-review-section .star-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .rate-review-section .star-btn.active {
-            color: #fbbf24;
-        }
-
-        .rate-review-section .comment-section {
-            margin-top: var(--spacing-lg);
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
-            align-items: stretch;
-        }
-
-        .rate-review-section .comment-label {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .rate-review-section .comment-textarea {
-            min-height: 120px;
-            padding: var(--spacing-sm);
-            border-radius: var(--radius-sm);
-            border: 1px solid #d1d5db;
-            font-family: inherit;
-            font-size: 1rem;
-            color: #000;
-            resize: vertical;
-        }
-
-        .rate-review-section .comment-textarea:focus {
-            outline: 2px solid var(--primary-color, #2563eb);
-            outline-offset: 2px;
-        }
-
-        .rate-review-section .comment-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .rate-review-section .status-message {
-            margin-top: var(--spacing-md);
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .rate-review-section .status-message.success {
-            color: #047857;
-        }
-
-        .rate-review-section .status-message.error {
-            color: #b91c1c;
-        }
-
-        .rate-review-section .reviews-panel {
-            margin-top: var(--spacing-md);
-            background: var(--bg-card);
-            border: 1px solid #d1d5db;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-xs, rgba(15, 23, 42, 0.06) 0px 4px 12px);
-            display: none;
-        }
-
-        .rate-review-section .reviews-panel.active {
-            display: block;
-        }
-
-        .rate-review-section .reviews-panel header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-md);
+            gap: 0.5rem;
+            padding: 0.75rem 0;
             border-bottom: 1px solid #e5e7eb;
         }
 
-        .rate-review-section .reviews-panel header h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .rate-review-section .reviews-panel .reviews-body {
-            max-height: 320px;
-            overflow-y: auto;
-        }
-
-        .rate-review-section .review-item {
-            padding: var(--spacing-md);
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .rate-review-section .review-item:last-child {
+        .info-row:last-child {
             border-bottom: none;
         }
 
-        .rate-review-section .review-rating {
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-            font-weight: 600;
-            color: #f59e0b;
-            margin-bottom: 0.35rem;
+        .info-row i {
+            color: var(--color-primary);
+            font-size: 1.25rem;
         }
 
-        .rate-review-section .review-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.35rem;
+        .info-text {
+            color: #374151;
+            font-size: 0.9rem;
         }
 
-        .rate-review-section .review-comment {
-            margin: 0;
-            font-size: 0.95rem;
-            line-height: 1.4;
+        .date-text {
+            color: var(--color-muted-foreground);
+            font-size: 0.875rem;
+            text-align: right;
+            margin-top: 1rem;
         }
 
-        .rate-review-section .empty-state {
-            padding: var(--spacing-lg);
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        .rate-review-section .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        .rate-review-section .action-section {
-            display: flex;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-lg);
-        }
-
-        .rate-review-section .action-section .btn {
-            flex: 1;
-            padding: var(--spacing-md);
-            font-weight: 600;
+        .rate-btn {
+            width: 100%;
+            background: var(--color-primary);
+            color: white;
+            padding: 0.875rem;
             border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background 0.2s;
         }
 
-        .rate-review-section .btn-report {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+        .rate-btn:hover {
+            background: #b91c1c;
         }
 
-        .rate-review-section .btn-report:hover {
-            background: #fecaca;
-        }
-
-        .rate-review-section .btn-back {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid #e5e7eb;
-        }
-
-        .rate-review-section .btn-back:hover {
-            background: #f3f4f6;
-        }
-
-        .rate-review-section .placeholder-text {
-            color: var(--text-secondary);
-            font-style: italic;
+        .footer {
             text-align: center;
-            padding: var(--spacing-md);
+            padding: 2rem 0;
+            color: var(--color-muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .stages {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .progress-line {
+                top: 0;
+                left: 20px;
+                width: 3px;
+                height: 100%;
+                right: auto;
+            }
+
+            .stage {
+                flex-direction: row;
+                width: 100%;
+            }
+
+            .stage-label {
+                text-align: left;
+                max-width: none;
+            }
         }
     </style>
+</head>
 
 <body>
     <header class="header">
         <div class="container header-content">
-            <img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
-            <nav class="nav header-nav">
-                <a class="btn btn-primary" href="#find">Find Ride</a>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 40px; height: 40px; background: var(--color-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>
+                <span style="font-weight: 600; font-size: 1.25rem;">Corosa</span>
+            </div>
+            <nav class="nav">
+                <a class="btn btn-outline" href="#find">Find Ride</a>
                 <a class="btn btn-outline" href="#offer">Offer Ride</a>
-                <a class="btn btn-outline" id="signup-link" href="#rides">My Rides</a>
-                <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;"
-                    aria-label="User menu">
-                    <i class='bx bx-user' style='color:#806600'></i>
-                    <span id="user-initials" style="margin-left:0.5rem;"></span>
+                <a class="btn btn-outline" href="#rides">My Rides</a>
+                <button class="btn btn-outline user-menu-btn">
+                    <i class='bx bx-user'></i>
                 </button>
             </nav>
-            <button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
         </div>
     </header>
 
-    <main class="container status-card" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
-        <section class="card">
-            <h2 style="margin:0 0 var(--spacing-sm) 0">Ride status</h2>
-            <p class="text-muted">Track your ride in real time.</p>
+    <main class="container main-content">
+        <div class="status-card">
+            <div class="status-header">
+                <h1>Ride Status</h1>
+            </div>
 
-            <div class="stages" id="stages">
-                <div class="stage" id="stage-1">
-                    <div class="circle">1</div>
-                    <div class="text-muted">Driver en route</div>
-                </div>
-                <div class="stage" id="stage-2">
-                    <div class="circle">2</div>
-                    <div class="text-muted">Onboard — heading to drop-off</div>
-                </div>
-                <div class="stage" id="stage-3">
-                    <div class="circle">3</div>
-                    <div class="text-muted">Completed</div>
+            <div class="progress-container">
+                <div class="stages">
+                    <div class="progress-line">
+                        <div class="progress-line-fill" id="progress-fill" style="width: 50%"></div>
+                    </div>
+                    
+                    <div class="stage completed">
+                        <div class="stage-circle">
+                            <i class='bx bx-check' style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div class="stage-label">Waiting for driver</div>
+                    </div>
+                    
+                    <div class="stage active">
+                        <div class="stage-circle">
+                            <i class='bx bx-check' style="font-size: 1.25rem;"></i>
+                        </div>
+                        <div class="stage-label">Driver is on the way</div>
+                    </div>
+                    
+                    <div class="stage">
+                        <div class="stage-circle">3</div>
+                        <div class="stage-label">Ride in progress</div>
+                    </div>
+                    
+                    <div class="stage">
+                        <div class="stage-circle">4</div>
+                        <div class="stage-label">Dropping you off</div>
+                    </div>
+                    
+                    <div class="stage">
+                        <div class="stage-circle">5</div>
+                        <div class="stage-label">Arrived at destination</div>
+                    </div>
                 </div>
             </div>
 
+            <div class="booking-details">
+                <h2>Booking Details</h2>
+                <p class="booking-subtitle">All set up. Sit comfortably. Thank you for choosing Corosa!</p>
+
+                <div class="driver-info">
+                    <div class="driver-avatar">MV</div>
+                    <div class="driver-details">
+                        <h3>Marvin Valdez</h3>
+                        <p class="driver-meta">Honda Civic | White</p>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: var(--radius-md); padding: 1rem;">
+                    <div class="info-row">
+                        <i class='bx bxs-map'></i>
+                        <span class="info-text">Carryway Corosa</span>
+                    </div>
+                    <div class="info-row">
+                        <i class='bx bxs-map-pin'></i>
+                        <span class="info-text">Main Campus</span>
+                    </div>
+                </div>
+
+                <p class="date-text">October 18, 2025</p>
+
+                <button class="rate-btn" id="update-status-btn">Update Status</button>
             </div>
-        </section>
+        </div>
     </main>
 
-    <footer class="container"
-        style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
-        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    <footer class="footer">
+        <p>&copy; <span id="year"></span> Corosa — SLU Maryheights</p>
     </footer>
 
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-   <!-- <script src="../js/ride-status.js"></script>-->
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
 
+        // Simulate ride progress
+        let currentStage = 2;
+        
+        function updateProgress() {
+            const stages = document.querySelectorAll('.stage');
+            const progressFill = document.getElementById('progress-fill');
+            
+            // Update stage classes
+            stages.forEach((stage, index) => {
+                stage.classList.remove('completed', 'active');
+                if (index < currentStage - 1) {
+                    stage.classList.add('completed');
+                } else if (index === currentStage - 1) {
+                    stage.classList.add('active');
+                }
+            });
+            
+            // Update progress bar
+            const progress = ((currentStage - 1) / (stages.length - 1)) * 100;
+            progressFill.style.width = progress + '%';
+            
+            // Update button text based on stage
+            const updateBtn = document.getElementById('update-status-btn');
+            if (currentStage >= 5) {
+                updateBtn.textContent = 'Rate';
+                updateBtn.style.background = '#22c55e';
+            } else {
+                updateBtn.textContent = 'Update Status';
+                updateBtn.style.background = 'var(--color-primary)';
+            }
+        }
+
+        // Update status when button is clicked
+        document.getElementById('update-status-btn').addEventListener('click', function() {
+            if (currentStage < 5) {
+                currentStage++;
+                updateProgress();
+            } else {
+                // Show rating interface or redirect
+                alert('Ride completed! Opening rating page...');
+            }
+        });
+
+        updateProgress();
+    </script>
 </body>
-
 </html>
