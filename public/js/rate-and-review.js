@@ -3,7 +3,7 @@
 
     const API_ENDPOINT = "../../backend/api/reviews.php";
     const TRIPS_ENDPOINT = "../../backend/api/trip.php";
-    const ASSIGNMENTS_ENDPOINT = "../../backend/api/trip_assignment.php";
+    const ASSIGNMENTS_ENDPOINT = "http://localhost:3000/api/trip-assignments";
 
     const pageContainer = document.querySelector(".page-container");
     const starContainer = document.querySelector(".star-container");
@@ -134,7 +134,6 @@
                     commentInput.setAttribute("disabled", "true");
                 }
 
-                // Reset cached reviews so the user can refresh to see the newly added entry
                 driverReviewsCache = null;
                 reviewsLoaded = false;
                 if (reviewsPanel?.classList.contains("active") && viewReviewsBtn?.dataset?.driverId) {

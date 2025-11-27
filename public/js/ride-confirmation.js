@@ -16,7 +16,8 @@
  *
  * DEPENDENCIES:
  * - sessionStorage data from previous pages (select-pickup, select-dropoff, request-ride)
- * - Backend APIs: /api/bookings.php, /api/trip_assignment.php
+ * - Backend APIs: Node.js (http://localhost:3000/api/bookings, /api/trip-assignments)
+ *   - Fallback: PHP (/api/bookings.php, /api/trip_assignment.php)
  * - ride-confirmation.html (UI structure)
  *
  * NEXT PAGE: ride-status.html (after successful confirmation)
@@ -395,12 +396,19 @@
              * EXPECTED RESPONSE (error):
              * { success: false, message: "Missing required fields..." }
              */
-            const bookingResponse = await fetch('/Corosa/backend/api/bookings.php', {
+            // Using Node.js API endpoint (can be switched back to PHP if needed)
+            console.log('🚀 Calling Node.js API: POST http://localhost:3000/api/bookings');
+            console.log('📦 Booking payload:', bookingPayload);
+            
+            const bookingResponse = await fetch('http://localhost:3000/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingPayload)
             });
+            
+            console.log('📡 Booking response status:', bookingResponse.status);
             const bookingResult = await bookingResponse.json();
+            console.log('✅ Booking result:', bookingResult);
 
             // Check if booking creation was successful
             if (!bookingResult.success) {
@@ -468,12 +476,19 @@
              * - Prevents overbooking (more passengers than seats)
              * - Updates in real-time so next user sees reduced availability
              */
-            const assignmentResponse = await fetch('/Corosa/backend/api/trip_assignment.php', {
+            // Using Node.js API endpoint (can be switched back to PHP if needed)
+            console.log('🚀 Calling Node.js API: POST http://localhost:3000/api/trip-assignments');
+            console.log('📦 Assignment payload:', tripAssignmentPayload);
+            
+            const assignmentResponse = await fetch('http://localhost:3000/api/trip-assignments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(tripAssignmentPayload)
             });
+            
+            console.log('📡 Assignment response status:', assignmentResponse.status);
             const assignmentResult = await assignmentResponse.json();
+            console.log('✅ Assignment result:', assignmentResult);
 
             // Check if assignment creation was successful
             if (!assignmentResult.success) {

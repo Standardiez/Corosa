@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: corosa_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: corosa_db
+      MYSQL_USER: corosa_user
+      MYSQL_PASSWORD: corosa_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - corosa_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js API Server
+  node-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: corosa_node_api
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: corosa_user
+      DB_PASSWORD: corosa_password
+      DB_NAME: corosa_db
+      PORT: 3000
+      CORS_ORIGIN: "http://localhost"  # For frontend access
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - corosa_network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PHP/Apache Server (for remaining PHP endpoints)
+  php-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    container_name: corosa_php_api
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: corosa_user
+      DB_PASSWORD: corosa_password
+      DB_NAME: corosa_db
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - corosa_network
+    volumes:
+      - ./backend:/var/www/html/backend
+      - ./public:/var/www/html/public
+    restart: unless-stopped
+
+  # Redis (optional - for caching and job queues)
+  redis:
+    image: redis:7-alpine
+    container_name: corosa_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - corosa_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  corosa_network:
+    driver: bridge
+
