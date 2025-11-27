@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Ride Details - Post ride — Carosa</title>
+	<link rel="stylesheet" href="../styles/styles.css">
+	<link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
+	<style>
+		.page-container {
+			max-width: 800px;
+			margin: var(--spacing-xl) auto;
+			padding: 0 var(--spacing-md);
+		}
+
+		.page-header {
+			margin-bottom: var(--spacing-xl);
+		}
+
+		.page-header h1 {
+			margin: 0 0 var(--spacing-xs) 0;
+			font-size: 2rem;
+			font-weight: 700;
+		}
+
+			.page-header p {
+				margin: 0;
+				color: var(--color-muted-foreground);
+			}
+
+			.info-card {
+				background-color: var(--color-background);
+				border-radius: var(--radius-md);
+				padding: var(--spacing-lg);
+				margin-bottom: var(--spacing-md);
+				box-shadow: var(--shadow-sm);
+				border: 1px solid var(--color-border);
+			}
+
+			.info-card h2 {
+				margin: 0 0 var(--spacing-md) 0;
+				font-size: 1.25rem;
+				font-weight: 600;
+				color: var(--color-foreground);
+			}
+
+		.driver-section {
+			display: flex;
+			align-items: center;
+			gap: var(--spacing-md);
+		}
+
+		.driver-avatar {
+			width: 60px;
+			height: 60px;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.75rem;
+			flex-shrink: 0;
+		}
+
+		.driver-info {
+			flex: 1;
+		}
+
+		.driver-info h3 {
+			margin: 0 0 var(--spacing-xs) 0;
+			font-size: 1.125rem;
+			font-weight: 600;
+		}
+
+		.driver-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--spacing-sm);
+			align-items: center;
+		}
+
+		.badge {
+			display: inline-flex;
+			align-items: center;
+			padding: 0.25rem 0.75rem;
+			background: #fef3c7;
+			color: #92400e;
+			border-radius: var(--radius-sm);
+			font-size: 0.875rem;
+			font-weight: 500;
+		}
+
+			.vehicle-info {
+				color: var(--color-muted-foreground);
+				font-size: 0.875rem;
+			}
+
+		.info-row {
+			display: flex;
+			justify-content: space-between;
+			padding: var(--spacing-sm) 0;
+			border-bottom: 1px solid #f3f4f6;
+		}
+
+		.info-row:last-child {
+			border-bottom: none;
+		}
+
+			.info-label {
+				color: var(--color-muted-foreground);
+				font-weight: 500;
+			}
+
+			.info-value {
+				color: var(--color-foreground);
+				font-weight: 600;
+			}
+
+		.rating-section {
+			text-align: center;
+		}
+
+		.star-container {
+			display: flex;
+			justify-content: center;
+			gap: var(--spacing-sm);
+			margin-top: var(--spacing-md);
+		}
+
+		.star-btn {
+			background: none;
+			border: none;
+			font-size: 2rem;
+			color: #d1d5db;
+			cursor: pointer;
+			transition: all 0.2s;
+			padding: 0.25rem;
+		}
+
+		.star-btn:hover {
+			transform: scale(1.2);
+		}
+
+		.star-btn.active {
+			color: #fbbf24;
+		}
+
+		.action-section {
+			display: flex;
+			gap: var(--spacing-md);
+			margin-top: var(--spacing-lg);
+		}
+
+		.action-section .btn {
+			flex: 1;
+			padding: var(--spacing-md);
+			font-weight: 600;
+			border-radius: var(--radius-md);
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+
+		.btn-report {
+			background: #fee2e2;
+			color: #991b1b;
+			border: 1px solid #fecaca;
+		}
+
+		.btn-report:hover {
+			background: #fecaca;
+		}
+
+			.btn-back {
+				background: var(--color-secondary);
+				color: var(--color-foreground);
+				border: 1px solid var(--color-border);
+			}
+
+		.btn-back:hover {
+			background: #f3f4f6;
+		}
+
+			.placeholder-text {
+				color: var(--color-muted-foreground);
+				font-style: italic;
+				text-align: center;
+				padding: var(--spacing-md);
+			}
+
+			/* Comment box styling: improved contrast and focus outline */
+			#driver-comments {
+				width: 100%;
+				min-height: 100px;
+				padding: 10px;
+				border: 1px solid var(--color-border);
+				border-radius: 8px;
+				background-color: var(--color-background);
+				box-shadow: 0 1px 2px rgba(2,6,23,0.04);
+				transition: box-shadow 0.15s ease, outline 0.15s ease;
+			}
+
+			#driver-comments:focus {
+				outline: 3px solid rgba(42,157,143,0.12); /* subtle brand-colored focus ring */
+				outline-offset: 2px;
+				box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+			}
+	</style>
+</head>
+<body>
+	<header class="header">
+		<div class="container header-content">
+			<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
+			<nav class="nav header-nav">
+				<a class="btn btn-outline" href="#find">Find a ride</a>
+			<a class="btn btn-outline" id="signup-link" href="login.html">Login</a>
+			<button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
+				<i class='bx bx-user' style='color:#806600'></i>
+				<span id="user-initials" style="margin-left:0.5rem;"></span>
+			</button>
+			</nav>
+			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
+		</div>
+	</header>
+
+	<main>
+		<div class="page-container">
+			<!-- Page Header -->
+			<div class="page-header">
+				<h1>Ride Details</h1>
+				<p>Review your completed ride information</p>
+			</div>
+
+			<!-- Driver Information Card -->
+			<div class="info-card">
+				<h2>Driver Information</h2>
+				<div class="driver-section">
+					<div class="driver-avatar">🚗</div>
+					<div class="driver-info">
+						<h3>Steven Valdez</h3>
+						<div class="driver-meta">
+							<span class="badge">⭐ 4.8 Rating</span>
+							<span class="vehicle-info">🚙 Toyota Innova • 4 Seater</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Route Details Card -->
+			<div class="info-card">
+				<h2>Route Details</h2>
+				<div class="info-row">
+					<span class="info-label">Pickup Location</span>
+					<span class="info-value">SLU Maryheights Gate</span>
+				</div>
+				<div class="info-row">
+					<span class="info-label">Drop-off Location</span>
+					<span class="info-value">Baguio City Center</span>
+				</div>
+				<div class="info-row">
+					<span class="info-label">Date & Time</span>
+					<span class="info-value">Nov 12, 2025 • 3:00 PM</span>
+				</div>
+				<div class="info-row">
+					<span class="info-label">Distance</span>
+					<span class="info-value">8.5 km</span>
+				</div>
+			</div>
+
+			<!-- Payment Details Card -->
+			<div class="info-card">
+				<h2>Payment Details</h2>
+				<div class="info-row">
+					<span class="info-label">Fare</span>
+					<span class="info-value">₱50.00</span>
+				</div>
+				<div class="info-row">
+					<span class="info-label">Service Fee</span>
+					<span class="info-value">₱5.00</span>
+				</div>
+				<div class="info-row">
+					<span class="info-label">Payment Method</span>
+					<span class="info-value">Cash</span>
+				</div>
+				<div class="info-row" style="padding-top: var(--spacing-md); margin-top: var(--spacing-sm); border-top: 2px solid #e5e7eb;">
+					<span class="info-label" style="font-size: 1.125rem;">Total Paid</span>
+					<span class="info-value" style="font-size: 1.25rem; color: #059669;">₱55.00</span>
+				</div>
+			</div>
+
+			<!-- Rating Card -->
+			<div class="info-card">
+				<div class="rating-section">
+					<h2>Rate Your Experience</h2>
+					<p style="color: var(--color-muted-foreground); margin: var(--spacing-sm) 0;">How was your ride with Steven?</p>
+					<div class="star-container">
+						<button class="star-btn" data-rating="1" aria-label="1 star">★</button>
+						<button class="star-btn" data-rating="2" aria-label="2 stars">★</button>
+						<button class="star-btn" data-rating="3" aria-label="3 stars">★</button>
+						<button class="star-btn" data-rating="4" aria-label="4 stars">★</button>
+						<button class="star-btn" data-rating="5" aria-label="5 stars">★</button>
+					</div>
+					<!-- Optional comment box for feedback about the driver -->
+					<div style="margin-top:var(--spacing-md);">
+						<label for="driver-comments" style="display:block;font-weight:600;margin-bottom:0.5rem;color:var(--color-muted-foreground);">Comments (optional)</label>
+						<textarea id="driver-comments" placeholder="Add details about your experience or report an issue (optional)"></textarea>
+					</div>
+				</div>
+			</div>
+
+			<!-- Action Buttons -->
+			<div class="action-section">
+				<button class="btn btn-report">Report an Issue</button>
+				<button class="btn btn-back" onclick="window.history.back()">Back to Rides</button>
+			</div>
+		</div>
+	</main>
+
+	<footer class="container" style="padding:var(--spacing-lg) 0; text-align:center; color:var(--color-muted-foreground); margin-top:var(--spacing-xl);">
+		<small>&copy; <span id="year"></span> Carosa — SLU Maryheights</small>
+	</footer>
+
+	<script>
+		// Current year
+		document.getElementById('year').textContent = new Date().getFullYear();
+
+		// Star rating functionality
+		const starButtons = document.querySelectorAll('.star-btn');
+		let selectedRating = 0;
+
+		starButtons.forEach(star => {
+			star.addEventListener('click', function() {
+				selectedRating = parseInt(this.dataset.rating);
+				updateStars();
+				// You can add an API call here to save the rating
+				console.log('Rating selected:', selectedRating);
+			});
+
+			star.addEventListener('mouseenter', function() {
+				const hoverRating = parseInt(this.dataset.rating);
+				highlightStars(hoverRating);
+			});
+		});
+
+		document.querySelector('.star-container').addEventListener('mouseleave', function() {
+			updateStars();
+		});
+
+		function updateStars() {
+			starButtons.forEach((star, index) => {
+				if (index < selectedRating) {
+					star.classList.add('active');
+				} else {
+					star.classList.remove('active');
+				}
+			});
+		}
+
+		function highlightStars(rating) {
+			starButtons.forEach((star, index) => {
+				if (index < rating) {
+					star.style.color = '#fbbf24';
+				} else {
+					star.style.color = '#d1d5db';
+				}
+			});
+		}
+
+		// Report issue handler
+		document.querySelector('.btn-report').addEventListener('click', function() {
+			alert('Report issue functionality would be implemented here.');
+		});
+	</script>
+	<script src="../js/header-auth.js"></script>
+</body>
+</html>

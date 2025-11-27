@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Welcome — Carosa</title>
+    <!-- Boxicons for icons -->
+	   <link rel="stylesheet" href="../styles/styles.css">
+    <link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <!-- Used text fallback if image fails to load -->
+            <div class="logo-wrapper">
+                <img src="../assets/corosa-logo.png" alt="Carosa" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <!-- Fallback text logo using design system classes -->
+                <span style="display:none; font-weight:700; font-size:1.5rem; color:var(--color-primary);">CAROSA</span>
+            </div>
+
+            <nav class="nav header-nav">
+                <a class="btn btn-outline" href="#find">Find a ride</a>
+                <a class="btn btn-outline" id="signup-link" href="login.html">Login</a>
+                <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
+                    <i class='bx bx-user'></i>
+                    <span id="user-initials" style="margin-left:0.5rem;"></span>
+                </button>
+            </nav>
+            <button class="mobile-menu" aria-label="Open menu">☰</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Welcome to Carosa!</h1>
+                <p>What would you like to do today?</p>
+            </div>
+
+            <!-- Role Selection Card -->
+            <!-- Using .card from your style.css -->
+            <div class="card">
+                <div class="action-section">
+                    <button class="btn-role btn-driver" onclick="window.history.back()">
+                        <i class='bx bx-car'></i>
+                        Driver
+                    </button>
+                    <button class="btn-role btn-passenger" onclick="window.history.back()">
+                        <i class='bx bx-user'></i>
+                        Passenger
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="container">
+        <small>&copy; <span id="year"></span> Carosa — SLU Maryheights</small>
+    </footer>
+
+    <script>
+        // Current year
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    <script src="../js/header-auth.js"></script>
+</body>
+</html>
