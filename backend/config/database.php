@@ -5,13 +5,21 @@
  */
 
 class Database {
-    // Database connection settings
-    private $host = 'localhost';     // MySQL server address
-    private $port = '3306';         // MySQL default port
-    private $db_name = 'corosa_db'; // database name
-    private $username = 'root';      // MySQL default username
-    private $password = '';          // MySQL default password (usually blank in WAMP)
+    // Database connection settings (can be overridden via environment variables)
+    private $host;
+    private $port;
+    private $db_name;
+    private $username;
+    private $password;
     private $conn;
+
+    public function __construct() {
+        $this->host = 'localhost';
+        $this->port = '3306';
+        $this->db_name = 'corosa_db';
+        $this->username = 'root';
+        $this->password = '';
+    }
 
     /**
      * Check if MySQL server is running
@@ -41,6 +49,13 @@ class Database {
         $this->conn = null;
 
         try {
+            // Allow container/host overrides
+            $this->host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: $this->host ?? 'localhost';
+            $this->port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: $this->port ?? '3306';
+            $this->db_name = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: $this->db_name ?? 'corosa_db';
+            $this->username = $_ENV['DB_USER'] ?? getenv('DB_USER') ?: $this->username ?? 'root';
+            $this->password = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?: $this->password ?? '';
+
             // Check if MySQL is running
             if (!$this->isMySQLRunning()) {
                 throw new PDOException("MySQL server is not running");

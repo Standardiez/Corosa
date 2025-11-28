@@ -37,6 +37,15 @@
             * For CSRF protection, consider issuing a cookie token or require an anti-CSRF token in a hidden input.
 */
 
+const APP_BASE_PATH = window.location.pathname.startsWith('/Corosa/') || window.location.pathname === '/Corosa'
+  ? '/Corosa'
+  : '';
+const PHP_API_BASE = `${window.location.origin.replace(/\/$/, '')}${APP_BASE_PATH}/backend/api`;
+
+function buildPhpEndpoint(path) {
+  return `${PHP_API_BASE}/${path.replace(/^\/+/, '')}`;
+}
+
 // Validation patterns
 const patterns = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -155,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     try {
-      const response = await fetch("/Corosa/backend/api/users.php", {
+      const response = await fetch(buildPhpEndpoint("users.php"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

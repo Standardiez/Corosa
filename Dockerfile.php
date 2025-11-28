@@ -20,6 +20,12 @@ RUN chown -R www-data:www-data /var/www/html
 # Apache configuration
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
+    DirectoryIndex pages/index.html index.php index.html\n\
+    Alias /backend /var/www/html/backend\n\
+    <Directory /var/www/html/backend>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\

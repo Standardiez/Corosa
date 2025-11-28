@@ -63,6 +63,15 @@
 // ============================================================================
 // DOMContentLoaded ensures all HTML elements exist before we try to access them
 // Think of it as: "Don't start the show until all actors are on stage"
+const APP_BASE_PATH = window.location.pathname.startsWith('/Corosa/') || window.location.pathname === '/Corosa'
+  ? '/Corosa'
+  : '';
+const PHP_API_BASE = `${window.location.origin.replace(/\/$/, '')}${APP_BASE_PATH}/backend/api`;
+
+function buildPhpEndpoint(path) {
+  return `${PHP_API_BASE}/${path.replace(/^\/+/, '')}`;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
 
   // Get reference to the login form element from the HTML
@@ -161,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (useBackend) {
       // API endpoint URL (adjust based on your server setup)
       // For WAMP: http://localhost/Corosa/backend/api/login.php
-      const endpoint = "/Corosa/backend/api/login.php";
+      const endpoint = buildPhpEndpoint("login.php");
 
       // ======================================================================
       // FETCH API: Modern way to make HTTP requests in JavaScript

@@ -89,6 +89,11 @@ require_once '../classes/User.php';
 // file_get_contents('php://input') reads raw POST data
 // This is necessary because we're receiving JSON (not standard form data)
 $raw_input = file_get_contents('php://input');
+if ($raw_input === false) {
+    error_log('login.php: Failed to read php://input');
+} else {
+    error_log('login.php: raw input => ' . $raw_input);
+}
 
 // json_decode() converts JSON string to PHP associative array
 // Second parameter 'true' means return array (not object)
@@ -96,6 +101,7 @@ $data = json_decode($raw_input, true);
 
 // Validate that we received valid JSON
 if (!$data) {
+    error_log('login.php: json_decode failed with error ' . json_last_error_msg());
     echo json_encode([ 'success' => false, 'message' => 'Invalid JSON' ]);
     exit;  // Stop execution - don't process invalid requests
 }

@@ -1,7 +1,10 @@
 (function () {
     'use strict';
 
-    const API_BASE = '/Corosa/backend/api';
+    const APP_BASE_PATH = window.location.pathname.startsWith('/Corosa/') || window.location.pathname === '/Corosa'
+        ? '/Corosa'
+        : '';
+    const API_BASE = `${window.location.origin.replace(/\/$/, '')}${APP_BASE_PATH}/backend/api`;
     let currentUserData = null;
     let currentAddressData = null;
     let isEditMode = false;

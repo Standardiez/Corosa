@@ -1,0 +1,9 @@
+Options -Indexes
+DirectoryIndex pages/index.html index.php index.html
+
+RewriteEngine On
+# Serve HTML pages from /pages when requested at root
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([A-Za-z0-9_-]+\.html)$ pages/$1 [L]
+

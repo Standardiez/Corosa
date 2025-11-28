@@ -1,20 +1,20 @@
 # Use official Node.js image
-FROM node:18
+FROM node:18-alpine
 
 # Set working directory inside container
 WORKDIR /usr/src/app
 
 # Copy package files first (helps with caching)
-COPY package*.json ./
+COPY backend/package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --production
 
 # Copy the rest of your source code
-COPY . .
+COPY backend/ ./
 
 # Expose the port your Node app uses
 EXPOSE 3000
 
 # Start the app
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

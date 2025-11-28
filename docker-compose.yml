@@ -11,7 +11,7 @@ services:
       MYSQL_USER: corosa_user
       MYSQL_PASSWORD: corosa_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
@@ -37,7 +37,7 @@ services:
       DB_PASSWORD: corosa_password
       DB_NAME: corosa_db
       PORT: 3000
-      CORS_ORIGIN: "http://localhost"  # For frontend access
+      CORS_ORIGIN: "http://localhost:8080,http://localhost"  # Allow Docker frontend + direct calls
     ports:
       - "3000:3000"
     depends_on:

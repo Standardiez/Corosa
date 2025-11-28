@@ -6,9 +6,16 @@ const cors = require("cors");
 */
 const app = express();
 
-// Enable CORS - works for both WAMP (localhost) and Docker setups
+// Enable CORS - allow comma-separated list of origins
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost").split(",").map(origin => origin.trim());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost",  // Configurable for Docker
+    origin: function(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        console.warn(`Blocked CORS origin: ${origin}`);
+        return callback(new Error("Origin not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }));
