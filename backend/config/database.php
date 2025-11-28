@@ -14,11 +14,11 @@ class Database {
     private $conn;
 
     public function __construct() {
-        $this->host = 'localhost';
-        $this->port = '3306';
-        $this->db_name = 'corosa_db';
-        $this->username = 'root';
-        $this->password = '';
+        $this->host = getenv('DB_HOST') ?: 'mysql';
+        $this->port = getenv('DB_PORT') ?: '3306';
+        $this->db_name = getenv('DB_NAME') ?: 'corosa_db';
+        $this->username = getenv('DB_USER') ?: 'corosa_user';
+        $this->password = getenv('DB_PASSWORD') ?: 'corosa_password';
     }
 
     /**
@@ -26,13 +26,18 @@ class Database {
      * @return bool
      */
     private function isMySQLRunning() {
+        $host = $this->host ?: "mysql";
+        $port = $this->port ?: 3306;
+
         try {
-            $socket = @fsockopen($this->host, $this->port, $errno, $errstr, 5);
+            $socket = @fsockopen($host, $port, $errno, $errstr, 2);
+
             if ($socket) {
                 fclose($socket);
                 return true;
             }
             return false;
+
         } catch (Exception $e) {
             return false;
         }

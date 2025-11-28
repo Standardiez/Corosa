@@ -5,8 +5,9 @@
  */
 
 // Enable detailed error output for debugging
-ini_set('display_errors', 1);
+ob_start();
 error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Function to handle errors
 function handleError($message, $code = 500) {
@@ -135,6 +136,14 @@ switch($method) {
             // Create the user (this will also create the address)
             if ($user->create()) {
                 http_response_code(201);
+
+                // Debug log for PHP container logs
+                error_log("Returning signup response: " . json_encode([
+                    "success" => true,
+                    "message" => "Account created successfully",
+                    "userId" => $user->user_id
+                ]));
+
                 echo json_encode([
                     "success" => true,
                     "message" => "Account created successfully",
@@ -142,6 +151,12 @@ switch($method) {
                 ]);
             } else {
                 http_response_code(500);
+
+                error_log("Returning signup response: " . json_encode([
+                    "success" => false,
+                    "message" => "Error creating user account"
+                ]));
+
                 echo json_encode([
                     "success" => false,
                     "message" => "Error creating user account"
