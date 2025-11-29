@@ -10,31 +10,46 @@
 <body>
 	<header class="header">
 		<div class="container header-content">
-			<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
+			<div class="logo-wrapper">
+				<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+				<!-- Fallback text logo using design system classes -->
+				<span style="display:none; font-weight:700; font-size:1.5rem; color:var(--color-primary);">COROSA</span>
+			</div>
 			<nav class="nav header-nav">
-				<a class="btn btn-outline" href="#find">Find a ride</a>
-			<a class="btn btn-outline" id="signup-link" href="login.html">Login</a>
-			<button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
-				<i class='bx bx-user' style='color:#806600'></i>
-				<span id="user-initials" style="margin-left:0.5rem;"></span>
-			</button>
+				<a class="btn btn-outline" href="#book-ride">Book a Ride</a>
+				<a class="btn btn-outline" href="#offer-ride">Offer a Ride</a>
+				<a class="btn btn-outline" id="signup-link" href="login.html">Login</a>
+				<button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
+					<i class='bx bx-user' style='color:#806600'></i>
+					<span id="user-initials" style="margin-left:0.5rem;"></span>
+				</button>
 			</nav>
 			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
 		</div>
 	</header>
 
 	<main>
-		<section class="hero">
-			<div class="container hero-inner">
-				<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="hero-logo">
-				<p class="hero-tagline">Carpooling by and for SLU Maryheights.</p>
+		<div class="page-container">
+			<!-- Page Header -->
+			<div class="page-header">
+				<h1>Welcome to Corosa!</h1>
+				<p>What would you like to do today?</p>
+			</div>
 
-				<div class="hero-ctas" style="margin-top:var(--spacing-lg);">
-					<a id="find" class="btn btn-primary" href="select-pickup.html">Find Ride</a>
-					<a id="create" class="btn btn-accent" href="signup.html" style="margin-left:var(--spacing-md);">Create account</a>
+			<!-- Role Selection Card -->
+			<div class="card">
+				<div class="action-section">
+					<button class="btn-role btn-passenger" id="book-ride-btn">
+						<i class='bx bx-user'></i>
+						Book a Ride
+					</button>
+					<button class="btn-role btn-driver" id="offer-ride-btn">
+						<i class='bx bx-car'></i>
+						Offer a Ride
+					</button>
 				</div>
 			</div>
-		</section>
+		</div>
 	</main>
 
 	<footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
@@ -44,6 +59,17 @@
 	<script>
 		// small script to show current year
 		document.getElementById('year').textContent = new Date().getFullYear();
+
+		// Handle role selection buttons
+		document.getElementById('book-ride-btn').addEventListener('click', function() {
+			// Redirect to passenger side (landing page)
+			window.location.href = 'landing-page.html';
+		});
+
+		document.getElementById('offer-ride-btn').addEventListener('click', function() {
+			// Redirect to driver side
+			window.location.href = 'driver-Homepage.html';
+		});
 	</script>
 	<script src="../js/header-auth.js"></script>
 </body>
