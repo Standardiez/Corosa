@@ -27,7 +27,7 @@ services:
   node-api:
     build:
       context: .
-      dockerfile: Dockerfile.node
+      dockerfile: Dockerfile.nodejs
     container_name: corosa_node_api
     environment:
       NODE_ENV: production
@@ -60,7 +60,7 @@ services:
   php-api:
     build:
       context: .
-      dockerfile: Dockerfile.php
+      dockerfile: Dockerfile.apache
     container_name: corosa_php_api
     environment:
       DB_HOST: mysql

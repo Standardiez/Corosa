@@ -1,17 +1,36 @@
-# Use official PHP + Apache image
-FROM php:8.2-apache
+# PHP Backend Dockerfile (for remaining PHP endpoints)
+FROM php:8.3-apache
 
-# Enable required PHP extensions
+# Install MySQL PDO extension
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Enable Apache rewrite module (optional but good for routing)
+# Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copy your PHP project into the Apache root directory
-COPY . /var/www/html/
+# Set working directory
+WORKDIR /var/www/html
 
-# Give correct permissions
+# Copy PHP files
+COPY backend/ /var/www/html/backend/
+COPY public/ /var/www/html/public/
+
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Expose port 80
+# Apache configuration
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    DirectoryIndex pages/index.html index.php index.html\n\
+    Alias /backend /var/www/html/backend\n\
+    <Directory /var/www/html/backend>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
 EXPOSE 80
+
