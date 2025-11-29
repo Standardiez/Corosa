@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carosa - Driver Requests</title>
+    <link href='https://cdn.boxicons.com/2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        /* --- CAROSA DESIGN SYSTEM (Integrated for this page) --- */
+        :root {
+            /* Colors */
+            --primary: #4F46E5;
+            --primary-dark: #4338ca;
+            --primary-light: #e0e7ff;
+            --background: #f3f4f6;
+            --background-alt: #ffffff;
+            --background-hover: #f9fafb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --accent: #8b5cf6;
+            
+            /* Status Colors */
+            --success: #10b981;
+            --success-dark: #059669;
+            --error: #ef4444;
+            --error-dark: #dc2626;
+            --warning: #f59e0b;
+
+            /* Spacing */
+            --spacing-xl: 3rem;
+            --spacing-lg: 2rem;
+            --spacing-md: 1rem;
+            --spacing-sm: 0.5rem;
+            --spacing-xs: 0.25rem;
+
+            /* Typography */
+            --font-size-3xl: 2.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-xl: 1.25rem;
+            --font-size-lg: 1.125rem;
+            --font-size-base: 1rem;
+            --font-size-sm: 0.875rem;
+
+            --radius-lg: 0.75rem;
+            --radius-md: 0.375rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding-bottom: var(--spacing-xl);
+        }
+
+        /* HEADER (Adapted from your snippet) */
+        .header {
+            background: var(--background-alt);
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--primary-light);
+            margin-bottom: var(--spacing-lg);
+        }
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--spacing-md);
+        }
+        .logo { font-weight: 800; font-size: var(--font-size-xl); color: var(--primary); text-decoration: none; }
+        .user-menu-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: var(--spacing-sm); }
+
+        /* MAIN LAYOUT */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        h1 {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        /* REQUEST CARD COMPONENT */
+        .request-card {
+            background: var(--background-alt);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--background);
+        }
+
+        /* PASSENGER PROFILE */
+        .passenger-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        .avatar {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .passenger-details h3 { font-size: var(--font-size-lg); font-weight: 600; }
+        .rating { color: var(--warning); font-size: var(--font-size-sm); display: flex; align-items: center; gap: 4px; }
+
+        /* TRIP DETAILS VISUALIZATION */
+        .trip-route {
+            position: relative;
+            padding-left: var(--spacing-lg);
+            margin: var(--spacing-md) 0;
+        }
+        .route-line {
+            position: absolute;
+            left: 7px;
+            top: 10px;
+            bottom: 30px;
+            width: 2px;
+            background: var(--text-muted);
+            opacity: 0.3;
+        }
+        .location-point {
+            position: relative;
+            margin-bottom: var(--spacing-md);
+        }
+        .dot {
+            position: absolute;
+            left: -24px;
+            top: 4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+        .dot.pickup { background: var(--primary); border: 2px solid var(--background-alt); box-shadow: 0 0 0 2px var(--primary); }
+        .dot.dropoff { background: var(--accent); border: 2px solid var(--background-alt); box-shadow: 0 0 0 2px var(--accent); }
+        
+        .location-label { font-size: var(--font-size-sm); color: var(--text-secondary); }
+        .location-name { font-weight: 500; color: var(--text-primary); }
+
+        /* INFO BADGES (Fare, Seats) */
+        .trip-stats {
+            display: flex;
+            gap: var(--spacing-md);
+            background: var(--background);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-md);
+        }
+        .stat-item { flex: 1; text-align: center; }
+        .stat-label { font-size: var(--font-size-sm); color: var(--text-secondary); display: block; }
+        .stat-value { font-size: var(--font-size-lg); font-weight: 700; color: var(--text-primary); }
+        .stat-value.price { color: var(--primary); }
+
+        /* ACTION BUTTONS */
+        .action-row {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        .btn {
+            flex: 1;
+            padding: var(--spacing-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-decline {
+            background-color: transparent;
+            border: 2px solid var(--error);
+            color: var(--error);
+        }
+        .btn-decline:hover { background-color: #fee2e2; }
+
+        .btn-accept {
+            background-color: var(--success);
+            color: white;
+        }
+        .btn-accept:hover { background-color: var(--success-dark); }
+
+        /* ANIMATIONS FOR INTERACTION */
+        .removed {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .accepted {
+            border-color: var(--success);
+            background-color: #ecfdf5;
+        }
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-muted);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">Carosa Driver</a>
+            <button class="user-menu-btn">
+                <i class='bx bxs-user-circle' style='font-size: 2rem; color: var(--primary);'></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>Incoming Requests <span style="font-size: 0.5em; background: var(--error); color: white; padding: 2px 8px; border-radius: 12px; vertical-align: middle;">2</span></h1>
+
+        <!-- RIDE REQUEST CARD 1 -->
+        <article class="request-card" id="request-001">
+            <div class="request-header">
+                <div class="passenger-profile">
+                    <div class="avatar"><i class='bx bx-user'></i></div>
+                    <div class="passenger-details">
+                        <h3>Juan Dela Cruz</h3>
+                        <div class="rating">
+                            <i class='bx bxs-star'></i> 4.8 • <span style="color: var(--text-secondary);">Verified</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: var(--font-size-sm); color: var(--text-muted);">2 mins ago</span>
+                </div>
+            </div>
+
+            <div class="trip-route">
+                <div class="route-line"></div>
+                <div class="location-point">
+                    <div class="dot pickup"></div>
+                    <div class="location-label">Pickup (1.2km away)</div>
+                    <div class="location-name">SM City Baguio, Upper Session Rd</div>
+                </div>
+                <div class="location-point">
+                    <div class="dot dropoff"></div>
+                    <div class="location-label">Drop-off (5.4km trip)</div>
+                    <div class="location-name">Bakakeng Norte/Sur Barangay Hall</div>
+                </div>
+            </div>
+
+            <div class="trip-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Fare</span>
+                    <span class="stat-value price">₱145.00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Passengers</span>
+                    <span class="stat-value"><i class='bx bx-user'></i> 2</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Payment</span>
+                    <span class="stat-value" style="font-size: var(--font-size-base); padding-top: 4px;">Cash</span>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn btn-decline" onclick="handleDecline('request-001')">
+                    <i class='bx bx-x'></i> Decline
+                </button>
+                <button class="btn btn-accept" onclick="handleAccept('request-001')">
+                    <i class='bx bx-check'></i> Accept Ride
+                </button>
+            </div>
+        </article>
+
+        <!-- RIDE REQUEST CARD 2 -->
+        <article class="request-card" id="request-002">
+            <div class="request-header">
+                <div class="passenger-profile">
+                    <div class="avatar"><i class='bx bx-face'></i></div>
+                    <div class="passenger-details">
+                        <h3>Maria Clara</h3>
+                        <div class="rating">
+                            <i class='bx bxs-star'></i> 5.0 • <span style="color: var(--text-secondary);">Student</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: var(--font-size-sm); color: var(--text-muted);">Just now</span>
+                </div>
+            </div>
+
+            <div class="trip-route">
+                <div class="route-line"></div>
+                <div class="location-point">
+                    <div class="dot pickup"></div>
+                    <div class="location-label">Pickup (0.5km away)</div>
+                    <div class="location-name">SLU Main Gate, Bonifacio St.</div>
+                </div>
+                <div class="location-point">
+                    <div class="dot dropoff"></div>
+                    <div class="location-label">Drop-off (3.2km trip)</div>
+                    <div class="location-name">Camp John Hay Manor</div>
+                </div>
+            </div>
+
+            <div class="trip-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Fare</span>
+                    <span class="stat-value price">₱95.00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Passengers</span>
+                    <span class="stat-value"><i class='bx bx-user'></i> 1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Payment</span>
+                    <span class="stat-value" style="font-size: var(--font-size-base); padding-top: 4px;">Card</span>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn btn-decline" onclick="handleDecline('request-002')">
+                    <i class='bx bx-x'></i> Decline
+                </button>
+                <button class="btn btn-accept" onclick="handleAccept('request-002')">
+                    <i class='bx bx-check'></i> Accept Ride
+                </button>
+            </div>
+        </article>
+
+        <div id="empty-state" class="empty-state">
+            <i class='bx bx-car' style='font-size: 4rem; color: var(--text-muted); margin-bottom: var(--spacing-md);'></i>
+            <h2>No pending requests</h2>
+            <p>You're all caught up! Waiting for new passengers...</p>
+        </div>
+
+    </main>
+
+    <footer class="container" style="text-align: center; color: var(--text-muted); padding-top: var(--spacing-lg);">
+        <small>&copy; <span id="year"></span> Corosa — Driver Partner Portal</small>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        function handleDecline(cardId) {
+            const card = document.getElementById(cardId);
+            if (confirm("Are you sure you want to decline this passenger?")) {
+                // Animation for removal
+                card.style.transform = 'translateX(-100%)';
+                card.style.opacity = '0';
+                
+                setTimeout(() => {
+                    card.remove();
+                    checkEmptyState();
+                }, 300);
+            }
+        }
+
+        function handleAccept(cardId) {
+            const card = document.getElementById(cardId);
+            const buttons = card.querySelector('.action-row');
+            
+            // Change UI to indicate success
+            card.style.backgroundColor = '#ecfdf5'; // light green
+            card.style.borderColor = 'var(--success)';
+            
+            buttons.innerHTML = `
+                <div style="width: 100%; text-align: center; color: var(--success-dark); font-weight: bold; padding: var(--spacing-md);">
+                    <i class='bx bx-check-circle'></i> Request Accepted! Redirecting...
+                </div>
+            `;
+
+            // Simulate navigation to navigation/map view
+            setTimeout(() => {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.remove();
+                    checkEmptyState();
+                    // In real app: window.location.href = 'navigation.html';
+                }, 300);
+            }, 1500);
+        }
+
+        function checkEmptyState() {
+            const cards = document.querySelectorAll('.request-card');
+            if (cards.length === 0) {
+                document.getElementById('empty-state').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
