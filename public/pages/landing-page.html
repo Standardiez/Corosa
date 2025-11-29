@@ -1,50 +1,85 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Corosa — Carpooling for SLU Maryheights</title>
-	<link rel="stylesheet" href="../styles/styles.css">
-	<link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
-</head>
-<body>
-	<header class="header">
-		<div class="container header-content">
-			<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
-			<nav class="nav header-nav">
-				<a class="btn btn-outline" href="#find">Find a ride</a>
-			<a class="btn btn-outline" id="signup-link" href="login.html">Login</a>
-			<button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
-				<i class='bx bx-user' style='color:#806600'></i>
-				<span id="user-initials" style="margin-left:0.5rem;"></span>
-			</button>
-			</nav>
-			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
-		</div>
-	</header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Corosa — Carpooling for SLU Maryheights</title>
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-content">
+        <img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="#find">Find a ride</a>
+          <a class="btn btn-outline" id="signup-link" href="login.html"
+            >Login</a
+          >
+          <button
+            class="btn btn-outline user-menu-btn"
+            id="user-menu-btn"
+            style="display: none"
+            aria-label="User menu"
+          >
+            <i class="bx bx-user" style="color: #806600"></i>
+            <span id="user-initials" style="margin-left: 0.5rem"></span>
+          </button>
+        </nav>
+        <button
+          class="btn mobile-menu"
+          aria-label="Open menu"
+          style="display: none"
+        >
+          ☰
+        </button>
+      </div>
+    </header>
 
-	<main>
-		<section class="hero">
-			<div class="container hero-inner">
-				<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="hero-logo">
-				<p class="hero-tagline">Carpooling by and for SLU Maryheights.</p>
+    <main>
+      <section class="hero">
+        <div class="container hero-inner">
+          <img
+            src="../assets/corosa-logo.png"
+            alt="Corosa Logo"
+            class="hero-logo"
+          />
+          <p class="hero-tagline">Carpooling by and for SLU Maryheights.</p>
 
-				<div class="hero-ctas" style="margin-top:var(--spacing-lg);">
-					<a id="find" class="btn btn-primary" href="select-pickup.html">Find Ride</a>
-					<a id="create" class="btn btn-accent" href="signup.html" style="margin-left:var(--spacing-md);">Create account</a>
-				</div>
-			</div>
-		</section>
-	</main>
+          <div class="hero-ctas" style="margin-top: var(--spacing-lg)">
+            <a id="find" class="btn btn-primary" href="select-pickup.html"
+              >Find Ride</a
+            >
+            <a
+              id="create"
+              class="btn btn-accent"
+              href="signup.html"
+              style="margin-left: var(--spacing-md)"
+              >Create account</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
 
-	<footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
-		<small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
-	</footer>
+    <footer
+      class="container"
+      style="
+        padding: var(--spacing-md) 0;
+        text-align: center;
+        color: var(--color-muted-foreground);
+      "
+    >
+      <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
 
-	<script>
-		// small script to show current year
-		document.getElementById('year').textContent = new Date().getFullYear();
-	</script>
-	<script src="../js/header-auth.js"></script>
-</body>
+    <script>
+      // small script to show current year
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+    <script src="../js/header-auth.js"></script>
+  </body>
 </html>

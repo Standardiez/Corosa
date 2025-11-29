@@ -1,77 +1,116 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Corosa — Carpooling for SLU Maryheights</title>
-	<link rel="stylesheet" href="../styles/styles.css">
-	<link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
-</head>
-<body>
-	<header class="header">
-		<div class="container header-content">
-			<div class="logo-wrapper">
-				<img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-				<!-- Fallback text logo using design system classes -->
-				<span style="display:none; font-weight:700; font-size:1.5rem; color:var(--color-primary);">COROSA</span>
-			</div>
-			<nav class="nav header-nav">
-				<a class="btn btn-outline" href="#book-ride">Book a Ride</a>
-				<a class="btn btn-outline" href="#offer-ride">Offer a Ride</a>
-				<a class="btn btn-outline" id="signup-link" href="login.html">Login</a>
-				<button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
-					<i class='bx bx-user' style='color:#806600'></i>
-					<span id="user-initials" style="margin-left:0.5rem;"></span>
-				</button>
-			</nav>
-			<button class="btn mobile-menu" aria-label="Open menu" style="display:none;">☰</button>
-		</div>
-	</header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Corosa — Carpooling for SLU Maryheights</title>
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-content">
+        <div class="logo-wrapper">
+          <img
+            src="../assets/corosa-logo.png"
+            alt="Corosa Logo"
+            class="logo"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"
+          />
+          <!-- Fallback text logo using design system classes -->
+          <span
+            style="
+              display: none;
+              font-weight: 700;
+              font-size: 1.5rem;
+              color: var(--color-primary);
+            "
+            >COROSA</span
+          >
+        </div>
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="#book-ride">Book a Ride</a>
+          <a class="btn btn-outline" href="#offer-ride">Offer a Ride</a>
+          <a class="btn btn-outline" id="signup-link" href="login.html"
+            >Login</a
+          >
+          <button
+            class="btn btn-outline user-menu-btn"
+            id="user-menu-btn"
+            style="display: none"
+            aria-label="User menu"
+          >
+            <i class="bx bx-user" style="color: #806600"></i>
+            <span id="user-initials" style="margin-left: 0.5rem"></span>
+          </button>
+        </nav>
+        <button
+          class="btn mobile-menu"
+          aria-label="Open menu"
+          style="display: none"
+        >
+          ☰
+        </button>
+      </div>
+    </header>
 
-	<main>
-		<div class="page-container">
-			<!-- Page Header -->
-			<div class="page-header">
-				<h1>Welcome to Corosa!</h1>
-				<p>What would you like to do today?</p>
-			</div>
+    <main>
+      <div class="page-container">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1>Welcome to Corosa!</h1>
+          <p>What would you like to do today?</p>
+        </div>
 
-			<!-- Role Selection Card -->
-			<div class="card">
-				<div class="action-section">
-					<button class="btn-role btn-passenger" id="book-ride-btn">
-						<i class='bx bx-user'></i>
-						Book a Ride
-					</button>
-					<button class="btn-role btn-driver" id="offer-ride-btn">
-						<i class='bx bx-car'></i>
-						Offer a Ride
-					</button>
-				</div>
-			</div>
-		</div>
-	</main>
+        <!-- Role Selection Card -->
+        <div class="card">
+          <div class="action-section">
+            <button class="btn-role btn-passenger" id="book-ride-btn">
+              <i class="bx bx-user"></i>
+              Book a Ride
+            </button>
+            <button class="btn-role btn-driver" id="offer-ride-btn">
+              <i class="bx bx-car"></i>
+              Offer a Ride
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
 
-	<footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
-		<small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
-	</footer>
+    <footer
+      class="container"
+      style="
+        padding: var(--spacing-md) 0;
+        text-align: center;
+        color: var(--color-muted-foreground);
+      "
+    >
+      <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
 
-	<script>
-		// small script to show current year
-		document.getElementById('year').textContent = new Date().getFullYear();
+    <script>
+      // small script to show current year
+      document.getElementById("year").textContent = new Date().getFullYear();
 
-		// Handle role selection buttons
-		document.getElementById('book-ride-btn').addEventListener('click', function() {
-			// Redirect to passenger side (landing page)
-			window.location.href = 'landing-page.html';
-		});
+      // Handle role selection buttons
+      document
+        .getElementById("book-ride-btn")
+        .addEventListener("click", function () {
+          // Redirect to passenger side (landing page)
+          window.location.href = "landing-page.html";
+        });
 
-		document.getElementById('offer-ride-btn').addEventListener('click', function() {
-			// Redirect to driver side
-			window.location.href = 'driver-Homepage.html';
-		});
-	</script>
-	<script src="../js/header-auth.js"></script>
-</body>
+      document
+        .getElementById("offer-ride-btn")
+        .addEventListener("click", function () {
+          // Redirect to driver side
+          window.location.href = "driver-Homepage.html";
+        });
+    </script>
+    <script src="../js/header-auth.js"></script>
+  </body>
 </html>
-
