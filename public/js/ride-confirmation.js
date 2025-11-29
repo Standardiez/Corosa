@@ -17,7 +17,7 @@
  * DEPENDENCIES:
  * - sessionStorage data from previous pages (select-pickup, select-dropoff, request-ride)
  * - Backend APIs: Node.js (http://localhost:3000/api/bookings, /api/trip-assignments)
- *   - Fallback: PHP (/api/bookings.php, /api/trip_assignment.php)
+ *   - Fallback: PHP (/api/bookings.php, /api/trip_assignment.js)
  * - ride-confirmation.html (UI structure)
  *
  * NEXT PAGE: ride-status.html (after successful confirmation)
@@ -285,12 +285,12 @@
      *
      * PROCESS OVERVIEW (Two-Phase Database Operation):
      * Phase 1: Create booking record
-     *   - POST to /api/bookings.php
+     *   - POST to /api/bookings.js
      *   - Store passenger trip details (coords, payment, cost)
      *   - Returns booking_id
      *
      * Phase 2: Create trip assignment record
-     *   - POST to /api/trip_assignment.php
+     *   - POST to /api/trip_assignment.js
      *   - Link booking to specific trip/driver
      *   - Automatically decrements available seats in trips table
      *   - Returns assignment_id
