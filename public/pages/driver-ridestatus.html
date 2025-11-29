@@ -1,475 +1,427 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Ride Status — Corosa</title>
-    <link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --color-primary: #dc2626;
-            --color-secondary: #f3f4f6;
-            --color-border: #e5e7eb;
-            --color-muted-foreground: #6b7280;
-            --spacing-xs: 0.25rem;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
-            --spacing-lg: 1.5rem;
-            --spacing-xl: 2rem;
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-        }
+      /* Driver-specific overrides for ride status tracking */
+      .status-card {
+        max-width: 900px;
+        margin: var(--spacing-lg) auto;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      .status-header {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #f9fafb;
-            color: #111827;
-        }
+      .status-header h1 {
+        font-size: var(--font-size-2xl);
+        font-weight: 700;
+        margin-bottom: var(--spacing-sm);
+      }
 
-        .header {
-            background: white;
-            border-bottom: 1px solid var(--color-border);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+      .progress-container {
+        margin: var(--spacing-xl) 0;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+      .stages {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: var(--spacing-md);
+        gap: var(--spacing-lg);
+      }
 
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+      .progress-line {
+        position: absolute;
+        top: 20px;
+        left: 5%;
+        right: 5%;
+        height: 2px;
+        background: var(--color-border);
+        z-index: 0;
+      }
 
-        .logo {
-            height: 40px;
-        }
+      .progress-line-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: #10b981;
+        transition: width 0.5s ease;
+        border-radius: 2px;
+      }
 
-        .nav {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
+      .stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+        position: relative;
+        z-index: 1;
+        flex: 1;
+      }
 
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-        }
+      .stage-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        background: var(--color-background);
+        border: 2px solid var(--color-border);
+        transition: all 0.3s;
+        color: var(--color-muted-foreground);
+      }
 
-        .btn-primary {
-            background: var(--color-primary);
-            color: white;
-        }
+      .stage.completed .stage-circle {
+        background: #10b981;
+        border-color: #10b981;
+        color: white;
+      }
 
-        .btn-outline {
-            background: white;
-            color: #374151;
-            border: 1px solid var(--color-border);
-        }
+      .stage.active .stage-circle {
+        background: #10b981;
+        border-color: #10b981;
+        color: white;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+      }
 
-        .btn-outline:hover {
-            background: var(--color-secondary);
-        }
+      .stage-label {
+        font-size: var(--font-size-xs);
+        color: var(--color-muted-foreground);
+        text-align: center;
+        max-width: 120px;
+      }
 
-        .user-menu-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .booking-details {
+        background: var(--color-secondary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin: var(--spacing-lg) 0;
+      }
 
-        .main-content {
-            padding: 2rem 0;
-        }
+      .booking-details h2 {
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--spacing-sm);
+      }
 
-        .status-card {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
+      .booking-subtitle {
+        color: var(--color-muted-foreground);
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--spacing-lg);
+      }
 
-        .status-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+      .driver-info {
+        background: var(--color-background);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+      }
 
-        .status-header h1 {
-            font-size: 1.875rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
+      .driver-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--color-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-muted-foreground);
+        font-size: var(--font-size-lg);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
 
-        .progress-container {
-            margin: 3rem 0;
-        }
+      .driver-details h3 {
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--spacing-xs);
+      }
 
+      .driver-meta {
+        color: var(--color-muted-foreground);
+        font-size: var(--font-size-sm);
+      }
+
+      .info-row {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) 0;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .info-row:last-child {
+        border-bottom: none;
+      }
+
+      .info-row i {
+        color: var(--color-primary);
+        font-size: var(--font-size-lg);
+      }
+
+      .info-text {
+        color: var(--color-foreground);
+        font-size: var(--font-size-sm);
+      }
+
+      .date-text {
+        color: var(--color-muted-foreground);
+        font-size: var(--font-size-sm);
+        text-align: right;
+        margin-top: var(--spacing-lg);
+      }
+
+      .btn-status {
+        width: 100%;
+        background: var(--color-primary);
+        color: var(--color-primary-foreground);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-status:hover {
+        background: hsl(0, 100%, 35%);
+      }
+
+      .btn-status.completed {
+        background: #10b981;
+      }
+
+      .btn-status.completed:hover {
+        background: #059669;
+      }
+
+      @media (max-width: 768px) {
         .stages {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            margin-bottom: 1rem;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: var(--spacing-lg);
         }
 
         .progress-line {
-            position: absolute;
-            top: 20px;
-            left: 5%;
-            right: 5%;
-            height: 3px;
-            background: var(--color-border);
-            z-index: 0;
-        }
-
-        .progress-line-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: #22c55e;
-            transition: width 0.5s ease;
-            border-radius: 3px;
+          top: 0;
+          left: 20px;
+          width: 2px;
+          height: 100%;
+          right: auto;
         }
 
         .stage {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
-            flex: 1;
-        }
-
-        .stage-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            background: white;
-            border: 3px solid var(--color-border);
-            transition: all 0.3s;
-        }
-
-        .stage.completed .stage-circle {
-            background: #22c55e;
-            border-color: #22c55e;
-            color: white;
-        }
-
-        .stage.active .stage-circle {
-            background: #22c55e;
-            border-color: #22c55e;
-            color: white;
-            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+          flex-direction: row;
+          width: 100%;
         }
 
         .stage-label {
-            font-size: 0.75rem;
-            color: var(--color-muted-foreground);
-            text-align: center;
-            max-width: 120px;
+          text-align: left;
+          max-width: none;
         }
 
-        .booking-details {
-            background: var(--color-secondary);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            margin: 2rem 0;
+        .status-card {
+          margin: var(--spacing-md) auto;
         }
-
-        .booking-details h2 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .booking-subtitle {
-            color: var(--color-muted-foreground);
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .driver-info {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .driver-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .driver-details h3 {
-            font-size: 1.125rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .driver-meta {
-            color: var(--color-muted-foreground);
-            font-size: 0.875rem;
-        }
-
-        .info-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-row i {
-            color: var(--color-primary);
-            font-size: 1.25rem;
-        }
-
-        .info-text {
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .date-text {
-            color: var(--color-muted-foreground);
-            font-size: 0.875rem;
-            text-align: right;
-            margin-top: 1rem;
-        }
-
-        .rate-btn {
-            width: 100%;
-            background: var(--color-primary);
-            color: white;
-            padding: 0.875rem;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .rate-btn:hover {
-            background: #b91c1c;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            color: var(--color-muted-foreground);
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 768px) {
-            .stages {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1.5rem;
-            }
-
-            .progress-line {
-                top: 0;
-                left: 20px;
-                width: 3px;
-                height: 100%;
-                right: auto;
-            }
-
-            .stage {
-                flex-direction: row;
-                width: 100%;
-            }
-
-            .stage-label {
-                text-align: left;
-                max-width: none;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <header class="header">
-        <div class="container header-content">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <div style="width: 40px; height: 40px; background: var(--color-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>
-                <span style="font-weight: 600; font-size: 1.25rem;">Corosa</span>
-            </div>
-            <nav class="nav">
-                <a class="btn btn-outline" href="#find">Find Ride</a>
-                <a class="btn btn-outline" href="#offer">Offer Ride</a>
-                <a class="btn btn-outline" href="#rides">My Rides</a>
-                <button class="btn btn-outline user-menu-btn">
-                    <i class='bx bx-user'></i>
-                </button>
-            </nav>
-        </div>
+      <div class="container header-content">
+        <img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="index.html">Back</a>
+          <a class="btn btn-outline" href="#rides">My Rides</a>
+          <button
+            class="btn btn-outline user-menu-btn"
+            id="user-menu-btn"
+            style="display: none"
+          >
+            <i class="bx bx-user"></i>
+            <span
+              id="user-initials"
+              style="margin-left: var(--spacing-sm)"
+            ></span>
+          </button>
+        </nav>
+        <button
+          class="btn mobile-menu"
+          aria-label="Open menu"
+          style="display: none"
+        >
+          ☰
+        </button>
+      </div>
     </header>
 
-    <main class="container main-content">
-        <div class="status-card">
-            <div class="status-header">
-                <h1>Ride Status</h1>
-            </div>
-
-            <div class="progress-container">
-                <div class="stages">
-                    <div class="progress-line">
-                        <div class="progress-line-fill" id="progress-fill" style="width: 50%"></div>
-                    </div>
-                    
-                    <div class="stage completed">
-                        <div class="stage-circle">
-                            <i class='bx bx-check' style="font-size: 1.25rem;"></i>
-                        </div>
-                        <div class="stage-label">Waiting for driver</div>
-                    </div>
-                    
-                    <div class="stage active">
-                        <div class="stage-circle">
-                            <i class='bx bx-check' style="font-size: 1.25rem;"></i>
-                        </div>
-                        <div class="stage-label">Driver is on the way</div>
-                    </div>
-                    
-                    <div class="stage">
-                        <div class="stage-circle">3</div>
-                        <div class="stage-label">Ride in progress</div>
-                    </div>
-                    
-                    <div class="stage">
-                        <div class="stage-circle">4</div>
-                        <div class="stage-label">Dropping you off</div>
-                    </div>
-                    
-                    <div class="stage">
-                        <div class="stage-circle">5</div>
-                        <div class="stage-label">Arrived at destination</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="booking-details">
-                <h2>Booking Details</h2>
-                <p class="booking-subtitle">All set up. Sit comfortably. Thank you for choosing Corosa!</p>
-
-                <div class="driver-info">
-                    <div class="driver-avatar">MV</div>
-                    <div class="driver-details">
-                        <h3>Marvin Valdez</h3>
-                        <p class="driver-meta">Honda Civic | White</p>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: var(--radius-md); padding: 1rem;">
-                    <div class="info-row">
-                        <i class='bx bxs-map'></i>
-                        <span class="info-text">Carryway Corosa</span>
-                    </div>
-                    <div class="info-row">
-                        <i class='bx bxs-map-pin'></i>
-                        <span class="info-text">Main Campus</span>
-                    </div>
-                </div>
-
-                <p class="date-text">October 18, 2025</p>
-
-                <button class="rate-btn" id="update-status-btn">Update Status</button>
-            </div>
+    <main
+      class="container"
+      style="padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xl)"
+    >
+      <div class="status-card">
+        <div class="status-header">
+          <h1>Ride Status</h1>
         </div>
+
+        <div class="progress-container">
+          <div class="stages">
+            <div class="progress-line">
+              <div
+                class="progress-line-fill"
+                id="progress-fill"
+                style="width: 50%"
+              ></div>
+            </div>
+
+            <div class="stage completed">
+              <div class="stage-circle">
+                <i class="bx bx-check" style="font-size: 1.25rem"></i>
+              </div>
+              <div class="stage-label">Waiting for driver</div>
+            </div>
+
+            <div class="stage active">
+              <div class="stage-circle">
+                <i class="bx bx-check" style="font-size: 1.25rem"></i>
+              </div>
+              <div class="stage-label">Driver is on the way</div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-circle">3</div>
+              <div class="stage-label">Ride in progress</div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-circle">4</div>
+              <div class="stage-label">Dropping you off</div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-circle">5</div>
+              <div class="stage-label">Arrived at destination</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="booking-details">
+          <h2>Booking Details</h2>
+          <p class="booking-subtitle">
+            All set up. Sit comfortably. Thank you for choosing Corosa!
+          </p>
+
+          <div class="driver-info">
+            <div class="driver-avatar">MV</div>
+            <div class="driver-details">
+              <h3>Marvin Valdez</h3>
+              <p class="driver-meta">Honda Civic | White</p>
+            </div>
+          </div>
+
+          <div
+            style="
+              background: white;
+              border-radius: var(--radius-md);
+              padding: 1rem;
+            "
+          >
+            <div class="info-row">
+              <i class="bx bxs-map"></i>
+              <span class="info-text">Carryway Corosa</span>
+            </div>
+            <div class="info-row">
+              <i class="bx bxs-map-pin"></i>
+              <span class="info-text">Main Campus</span>
+            </div>
+          </div>
+
+          <p class="date-text">October 18, 2025</p>
+
+          <button class="btn-status" id="update-status-btn">
+            Update Status
+          </button>
+        </div>
+      </div>
     </main>
 
-    <footer class="footer">
-        <p>&copy; <span id="year"></span> Corosa — SLU Maryheights</p>
+    <footer
+      class="container"
+      style="
+        padding: var(--spacing-md) 0;
+        text-align: center;
+        color: var(--color-muted-foreground);
+      "
+    >
+      <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
     <script>
-        document.getElementById('year').textContent = new Date().getFullYear();
+      document.getElementById("year").textContent = new Date().getFullYear();
 
-        // Simulate ride progress
-        let currentStage = 2;
-        
-        function updateProgress() {
-            const stages = document.querySelectorAll('.stage');
-            const progressFill = document.getElementById('progress-fill');
-            
-            // Update stage classes
-            stages.forEach((stage, index) => {
-                stage.classList.remove('completed', 'active');
-                if (index < currentStage - 1) {
-                    stage.classList.add('completed');
-                } else if (index === currentStage - 1) {
-                    stage.classList.add('active');
-                }
-            });
-            
-            // Update progress bar
-            const progress = ((currentStage - 1) / (stages.length - 1)) * 100;
-            progressFill.style.width = progress + '%';
-            
-            // Update button text based on stage
-            const updateBtn = document.getElementById('update-status-btn');
-            if (currentStage >= 5) {
-                updateBtn.textContent = 'Rate';
-                updateBtn.style.background = '#22c55e';
-            } else {
-                updateBtn.textContent = 'Update Status';
-                updateBtn.style.background = 'var(--color-primary)';
-            }
-        }
+      // Simulate ride progress
+      let currentStage = 2;
 
-        // Update status when button is clicked
-        document.getElementById('update-status-btn').addEventListener('click', function() {
-            if (currentStage < 5) {
-                currentStage++;
-                updateProgress();
-            } else {
-                // Show rating interface or redirect
-                alert('Ride completed! Opening rating page...');
-            }
+      function updateProgress() {
+        const stages = document.querySelectorAll(".stage");
+        const progressFill = document.getElementById("progress-fill");
+
+        // Update stage classes
+        stages.forEach((stage, index) => {
+          stage.classList.remove("completed", "active");
+          if (index < currentStage - 1) {
+            stage.classList.add("completed");
+          } else if (index === currentStage - 1) {
+            stage.classList.add("active");
+          }
         });
 
-        updateProgress();
+        // Update progress bar
+        const progress = ((currentStage - 1) / (stages.length - 1)) * 100;
+        progressFill.style.width = progress + "%";
+
+        // Update button text based on stage
+        const updateBtn = document.getElementById("update-status-btn");
+        if (currentStage >= 5) {
+          updateBtn.textContent = "Rate";
+          updateBtn.classList.add("completed");
+        } else {
+          updateBtn.textContent = "Update Status";
+          updateBtn.classList.remove("completed");
+        }
+      }
+
+      // Update status when button is clicked
+      document
+        .getElementById("update-status-btn")
+        .addEventListener("click", function () {
+          if (currentStage < 5) {
+            currentStage++;
+            updateProgress();
+          } else {
+            // Show rating interface or redirect
+            alert("Ride completed! Opening rating page...");
+          }
+        });
+
+      updateProgress();
     </script>
-</body>
+  </body>
 </html>

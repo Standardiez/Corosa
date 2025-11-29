@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Passenger Feedback — Corosa</title>
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .feedback-card {
+        background: var(--color-background);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s;
+      }
+
+      .feedback-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--color-primary);
+      }
+
+      .feedback-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-lg);
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .passenger-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--color-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-muted-foreground);
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+
+      .feedback-meta {
+        flex: 1;
+      }
+
+      .passenger-name {
+        font-weight: 600;
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .trip-date {
+        font-size: var(--font-size-sm);
+        color: var(--color-muted-foreground);
+      }
+
+      .rating-display {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+      }
+
+      .stars {
+        display: flex;
+        gap: var(--spacing-xs);
+      }
+
+      .star {
+        color: #f59e0b;
+        font-size: var(--font-size-lg);
+      }
+
+      .rating-value {
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        color: var(--color-foreground);
+      }
+
+      .feedback-comment {
+        background: var(--color-secondary);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+        line-height: 1.6;
+        color: var(--color-foreground);
+        font-size: var(--font-size-sm);
+      }
+
+      .no-comment {
+        color: var(--color-muted-foreground);
+        font-style: italic;
+      }
+
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+      }
+
+      .stat-box {
+        background: var(--color-background);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-lg);
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: var(--font-size-2xl);
+        font-weight: 700;
+        color: var(--color-primary);
+        line-height: 1;
+      }
+
+      .stat-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-muted-foreground);
+        margin-top: var(--spacing-sm);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--spacing-xl);
+        color: var(--color-muted-foreground);
+      }
+
+      .empty-state i {
+        font-size: var(--font-size-3xl);
+        display: block;
+        margin-bottom: var(--spacing-md);
+        opacity: 0.5;
+      }
+
+      .filter-tabs {
+        display: flex;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: var(--spacing-md);
+      }
+
+      .filter-tab {
+        background: transparent;
+        border: none;
+        padding: var(--spacing-sm) var(--spacing-md);
+        cursor: pointer;
+        color: var(--color-muted-foreground);
+        font-weight: 500;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+      }
+
+      .filter-tab.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+      }
+
+      @media (max-width: 768px) {
+        .stats-container {
+          grid-template-columns: 1fr;
+        }
+
+        .feedback-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-content">
+        <img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="index.html">Back</a>
+          <button
+            class="btn btn-outline user-menu-btn"
+            id="user-menu-btn"
+            style="display: none"
+          >
+            <i class="bx bx-user"></i>
+            <span
+              id="user-initials"
+              style="margin-left: var(--spacing-sm)"
+            ></span>
+          </button>
+        </nav>
+        <button
+          class="btn mobile-menu"
+          aria-label="Open menu"
+          style="display: none"
+        >
+          ☰
+        </button>
+      </div>
+    </header>
+
+    <main
+      class="container"
+      style="padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xl)"
+    >
+      <!-- Page Header -->
+      <div style="margin-bottom: var(--spacing-xl)">
+        <h1
+          style="
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+          "
+        >
+          Passenger Feedback
+        </h1>
+        <p
+          style="
+            color: var(--color-muted-foreground);
+            font-size: var(--font-size-sm);
+          "
+        >
+          View ratings and comments from your passengers
+        </p>
+      </div>
+
+      <!-- Overall Stats -->
+      <div class="stats-container">
+        <div class="stat-box">
+          <div class="stat-number" id="avg-rating">4.8</div>
+          <div class="stat-label">Average Rating</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="total-reviews">24</div>
+          <div class="stat-label">Total Reviews</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="positive-percent">95%</div>
+          <div class="stat-label">Positive Feedback</div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs">
+        <button
+          class="filter-tab active"
+          data-filter="all"
+          onclick="filterFeedback('all')"
+        >
+          All
+        </button>
+        <button
+          class="filter-tab"
+          data-filter="5star"
+          onclick="filterFeedback('5star')"
+        >
+          ⭐ 5 Stars
+        </button>
+        <button
+          class="filter-tab"
+          data-filter="4star"
+          onclick="filterFeedback('4star')"
+        >
+          ⭐ 4 Stars
+        </button>
+        <button
+          class="filter-tab"
+          data-filter="3star"
+          onclick="filterFeedback('3star')"
+        >
+          ⭐ 3 Stars
+        </button>
+      </div>
+
+      <!-- Feedback List -->
+      <div id="feedback-list">
+        <!-- Feedback Card 1 -->
+        <div class="feedback-card" data-rating="5">
+          <div class="feedback-header">
+            <div class="passenger-avatar">JD</div>
+            <div class="feedback-meta">
+              <div class="passenger-name">Juan Dela Cruz</div>
+              <div class="trip-date">October 18, 2025</div>
+            </div>
+            <div class="rating-display">
+              <div class="stars">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+              </div>
+              <div class="rating-value">5.0</div>
+            </div>
+          </div>
+          <div class="feedback-comment">
+            "Excellent driver! Very professional and courteous. The car was
+            clean and comfortable. Highly recommend!"
+          </div>
+        </div>
+
+        <!-- Feedback Card 2 -->
+        <div class="feedback-card" data-rating="4">
+          <div class="feedback-header">
+            <div class="passenger-avatar">MC</div>
+            <div class="feedback-meta">
+              <div class="passenger-name">Maria Clara</div>
+              <div class="trip-date">October 15, 2025</div>
+            </div>
+            <div class="rating-display">
+              <div class="stars">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star" style="color: #ddd">☆</span>
+              </div>
+              <div class="rating-value">4.0</div>
+            </div>
+          </div>
+          <div class="feedback-comment">
+            "Good driver, arrived on time. Route was efficient."
+          </div>
+        </div>
+
+        <!-- Feedback Card 3 -->
+        <div class="feedback-card" data-rating="5">
+          <div class="feedback-header">
+            <div class="passenger-avatar">RG</div>
+            <div class="feedback-meta">
+              <div class="passenger-name">Robert Garcia</div>
+              <div class="trip-date">October 10, 2025</div>
+            </div>
+            <div class="rating-display">
+              <div class="stars">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+              </div>
+              <div class="rating-value">5.0</div>
+            </div>
+          </div>
+          <div class="feedback-comment">
+            "Perfect! Would ride again. Driver was friendly and the air
+            conditioning was perfect."
+          </div>
+        </div>
+
+        <!-- Feedback Card 4 -->
+        <div class="feedback-card" data-rating="5">
+          <div class="feedback-header">
+            <div class="passenger-avatar">LS</div>
+            <div class="feedback-meta">
+              <div class="passenger-name">Lisa Santos</div>
+              <div class="trip-date">October 8, 2025</div>
+            </div>
+            <div class="rating-display">
+              <div class="stars">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+              </div>
+              <div class="rating-value">5.0</div>
+            </div>
+          </div>
+          <div class="feedback-comment no-comment">No comment provided</div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" style="display: none">
+        <i class="bx bx-comment"></i>
+        <p>
+          No feedback yet. Your passengers will see your profile once you
+          complete your first ride.
+        </p>
+      </div>
+    </main>
+
+    <footer
+      class="container"
+      style="
+        padding: var(--spacing-md) 0;
+        text-align: center;
+        color: var(--color-muted-foreground);
+      "
+    >
+      <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      function filterFeedback(filter) {
+        const cards = document.querySelectorAll(".feedback-card");
+        const tabs = document.querySelectorAll(".filter-tab");
+
+        // Update active tab
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        event.target.classList.add("active");
+
+        // Filter cards
+        cards.forEach((card) => {
+          if (filter === "all") {
+            card.style.display = "block";
+          } else if (filter === "5star" && card.dataset.rating === "5") {
+            card.style.display = "block";
+          } else if (filter === "4star" && card.dataset.rating === "4") {
+            card.style.display = "block";
+          } else if (filter === "3star" && card.dataset.rating === "3") {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      // Check if empty state should show
+      function checkEmptyState() {
+        const cards = document.querySelectorAll(".feedback-card");
+        const empty = document.getElementById("empty-state");
+
+        if (cards.length === 0) {
+          empty.style.display = "block";
+        }
+      }
+
+      checkEmptyState();
+    </script>
+    <script src="../js/header-auth.js"></script>
+  </body>
+</html>

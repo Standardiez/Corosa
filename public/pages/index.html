@@ -21,39 +21,25 @@
             onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"
           />
           <!-- Fallback text logo using design system classes -->
-          <span
-            style="
-              display: none;
-              font-weight: 700;
-              font-size: 1.5rem;
-              color: var(--color-primary);
-            "
-            >COROSA</span
-          >
+          <span class="logo-fallback">COROSA</span>
         </div>
         <nav class="nav header-nav">
-          <a class="btn btn-outline" href="#book-ride">Book a Ride</a>
-          <a class="btn btn-outline" href="#offer-ride">Offer a Ride</a>
           <a class="btn btn-outline" id="signup-link" href="login.html"
             >Login</a
+          >
+          <a class="btn btn-outline" id="register-link" href="signup.html"
+            >Register</a
           >
           <button
             class="btn btn-outline user-menu-btn"
             id="user-menu-btn"
-            style="display: none"
             aria-label="User menu"
           >
-            <i class="bx bx-user" style="color: #806600"></i>
-            <span id="user-initials" style="margin-left: 0.5rem"></span>
+            <i class="bx bx-user"></i>
+            <span id="user-initials"></span>
           </button>
         </nav>
-        <button
-          class="btn mobile-menu"
-          aria-label="Open menu"
-          style="display: none"
-        >
-          ☰
-        </button>
+        <button class="btn mobile-menu" aria-label="Open menu">☰</button>
       </div>
     </header>
 
@@ -65,13 +51,15 @@
           <p>What would you like to do today?</p>
         </div>
 
-        <!-- Role Selection Card -->
-        <div class="card">
-          <div class="action-section">
+        <!-- Role Selection Container -->
+        <div class="role-selection-container">
+          <div class="role-card">
             <button class="btn-role btn-passenger" id="book-ride-btn">
               <i class="bx bx-user"></i>
               Book a Ride
             </button>
+          </div>
+          <div class="role-card">
             <button class="btn-role btn-driver" id="offer-ride-btn">
               <i class="bx bx-car"></i>
               Offer a Ride
@@ -81,14 +69,7 @@
       </div>
     </main>
 
-    <footer
-      class="container"
-      style="
-        padding: var(--spacing-md) 0;
-        text-align: center;
-        color: var(--color-muted-foreground);
-      "
-    >
+    <footer class="welcome-footer">
       <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
@@ -96,19 +77,36 @@
       // small script to show current year
       document.getElementById("year").textContent = new Date().getFullYear();
 
+      // Check if user is logged in
+      function isUserLoggedIn() {
+        return localStorage.getItem("userData") !== null;
+      }
+
       // Handle role selection buttons
       document
         .getElementById("book-ride-btn")
         .addEventListener("click", function () {
-          // Redirect to passenger side (landing page)
-          window.location.href = "landing-page.html";
+          // Check if user is logged in
+          if (!isUserLoggedIn()) {
+            // Redirect to login if not logged in
+            window.location.href = "login.html";
+          } else {
+            // Redirect to passenger side (landing page)
+            window.location.href = "landing-page.html";
+          }
         });
 
       document
         .getElementById("offer-ride-btn")
         .addEventListener("click", function () {
-          // Redirect to driver side
-          window.location.href = "driver-Homepage.html";
+          // Check if user is logged in
+          if (!isUserLoggedIn()) {
+            // Redirect to login if not logged in
+            window.location.href = "login.html";
+          } else {
+            // Redirect to driver side
+            window.location.href = "driver-Homepage.html";
+          }
         });
     </script>
     <script src="../js/header-auth.js"></script>
