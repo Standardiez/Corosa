@@ -843,7 +843,7 @@ footer.welcome-footer {
 
 /* Index Page Styles */
 .page-container {
-.page-container {
+  .page-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -851,157 +851,157 @@ footer.welcome-footer {
     min-height: 100vh;
     padding: var(--spacing-lg);
     width: 100%;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: var(--spacing-xl);
-  width: 100%;
-}
-
-.page-header h1 {
-  margin-bottom: var(--spacing-md);
-}
-
-.page-header p {
-  font-size: var(--font-size-lg);
-  color: var(--color-muted-foreground);
-}
-
-.role-selection-container {
-  display: flex;
-  gap: var(--spacing-lg);
-  width: 100%;
-  max-width: 900px;
-  justify-content: center;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.role-card {
-  flex: 1;
-  min-width: 280px;
-  max-width: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-role {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-lg);
-  border: none;
-  background: linear-gradient(135deg, hsl(0, 100%, 41%), hsl(0, 100%, 35%));
-  color: white;
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
-}
-
-.btn-role:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.btn-role:active {
-  transform: translateY(-2px);
-}
-
-.btn-role i {
-  font-size: 2.5rem;
-  margin-bottom: var(--spacing-md);
-}
-
-@media (max-width: 768px) {
-  .page-container {
-    padding: var(--spacing-md);
-    min-height: calc(100vh - 150px);
   }
 
   .page-header {
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .page-header h1 {
-    font-size: var(--font-size-2xl);
-  }
-
-  .page-header p {
-    font-size: var(--font-size-base);
-  }
-
-  .role-selection-container {
-    flex-direction: row;
-    gap: var(--spacing-md);
-    max-width: 100%;
-  }
-
-  .role-card {
-    min-width: 140px;
-    max-width: 200px;
-  }
-
-  .btn-role {
-    padding: var(--spacing-lg);
-    font-size: var(--font-size-base);
-  }
-
-  .btn-role i {
-    font-size: 2rem;
-    margin-bottom: var(--spacing-sm);
-  }
-}
-
-@media (max-width: 640px) {
-  .role-selection-container {
-    flex-direction: column;
-    gap: var(--spacing-md);
-  }
-
-  .role-card {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
     width: 100%;
-    min-width: unset;
-    max-width: unset;
-  }
-
-  .page-container {
-    padding: var(--spacing-md);
   }
 
   .page-header h1 {
-    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-md);
   }
 
   .page-header p {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-lg);
+    color: var(--color-muted-foreground);
+  }
+
+  .role-selection-container {
+    display: flex;
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: 900px;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .role-card {
+    flex: 1;
+    min-width: 280px;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .btn-role {
-    padding: var(--spacing-lg) var(--spacing-md);
-    font-size: var(--font-size-base);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    border: none;
+    background: linear-gradient(135deg, hsl(0, 100%, 41%), hsl(0, 100%, 35%));
+    color: white;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-role:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-role:active {
+    transform: translateY(-2px);
   }
 
   .btn-role i {
-    font-size: 1.75rem;
-    margin-bottom: var(--spacing-sm);
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
   }
-}
 
-@media (max-width: 600px) {
-  .action-section {
-    grid-template-columns: 1fr;
-    /* Stack vertically on mobile */
+  @media (max-width: 768px) {
+    .page-container {
+      padding: var(--spacing-md);
+      min-height: calc(100vh - 150px);
+    }
+
+    .page-header {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .page-header h1 {
+      font-size: var(--font-size-2xl);
+    }
+
+    .page-header p {
+      font-size: var(--font-size-base);
+    }
+
+    .role-selection-container {
+      flex-direction: row;
+      gap: var(--spacing-md);
+      max-width: 100%;
+    }
+
+    .role-card {
+      min-width: 140px;
+      max-width: 200px;
+    }
+
+    .btn-role {
+      padding: var(--spacing-lg);
+      font-size: var(--font-size-base);
+    }
+
+    .btn-role i {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-sm);
+    }
   }
-}
+
+  @media (max-width: 640px) {
+    .role-selection-container {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .role-card {
+      width: 100%;
+      min-width: unset;
+      max-width: unset;
+    }
+
+    .page-container {
+      padding: var(--spacing-md);
+    }
+
+    .page-header h1 {
+      font-size: var(--font-size-xl);
+    }
+
+    .page-header p {
+      font-size: var(--font-size-sm);
+    }
+
+    .btn-role {
+      padding: var(--spacing-lg) var(--spacing-md);
+      font-size: var(--font-size-base);
+    }
+
+    .btn-role i {
+      font-size: 1.75rem;
+      margin-bottom: var(--spacing-sm);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .action-section {
+      grid-template-columns: 1fr;
+      /* Stack vertically on mobile */
+    }
+  }
 }
 
 /* Driver Dashboard Landscape Layout */
@@ -1077,7 +1077,11 @@ footer.welcome-footer {
 }
 
 .welcome-section {
-  background: linear-gradient(135deg, var(--color-primary) 0%, hsl(0, 100%, 35%) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    hsl(0, 100%, 35%) 100%
+  );
   color: var(--color-primary-foreground);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
