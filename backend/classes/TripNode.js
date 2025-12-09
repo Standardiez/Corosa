@@ -163,3 +163,4 @@ class TripNode {
 }
 
 module.exports = TripNode;
+
