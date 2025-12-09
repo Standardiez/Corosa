@@ -11,8 +11,8 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 // Include database configuration and Reviews class
-require_once '../config/database.php';
-require_once '../classes/Reviews.php';
+require_once '../../../config/database.php';
+require_once '../../../classes/shared/php/Reviews.php';
 
 // Initialize database connection
 $database = new Database();

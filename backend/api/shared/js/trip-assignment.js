@@ -1,6 +1,6 @@
 
 const express = require("express");
-const TripAssignmentNode = require("../classes/TripAssignmentNode");
+const TripAssignmentNode = require("../../../classes/shared/js/TripAssignmentNode");
 
 const router = express.Router();
 const tripAssignment = new TripAssignmentNode();

@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const db = require('../../../config/database');
 
 // Node.js version of Trip.php
 class TripNode {
