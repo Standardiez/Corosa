@@ -32,7 +32,7 @@ function initializeEventListeners() {
 
     // Filters
     document.getElementById('apply-filters').addEventListener('click', applyFilters);
-    
+
     // Pagination
     document.getElementById('prev-page').addEventListener('click', () => changePage(-1));
     document.getElementById('next-page').addEventListener('click', () => changePage(1));
@@ -51,9 +51,9 @@ function switchTab(tab) {
     });
 
     // Show/hide tables
-    document.getElementById('rides-table-container').style.display = 
+    document.getElementById('rides-table-container').style.display =
         tab === 'rides' ? 'block' : 'none';
-    document.getElementById('transactions-table-container').style.display = 
+    document.getElementById('transactions-table-container').style.display =
         tab === 'transactions' ? 'block' : 'none';
 
     // Load appropriate data
@@ -70,7 +70,7 @@ function switchTab(tab) {
 async function loadStatistics() {
     // TODO: Replace with actual API call
     // const response = await fetch('/Corosa/backend/api/rides-stats.php');
-    
+
     // Mock statistics
     const stats = {
         totalRides: 248,
@@ -97,7 +97,7 @@ async function loadRidesData() {
         // Mock rides data
         allRides = generateMockRides();
         filteredData = [...allRides];
-        
+
         renderRidesTable();
         updatePagination();
 
@@ -119,7 +119,7 @@ async function loadTransactionsData() {
         // Mock transactions data
         allTransactions = generateMockTransactions();
         filteredData = [...allTransactions];
-        
+
         renderTransactionsTable();
         updatePagination();
 
@@ -170,7 +170,7 @@ function generateMockRides() {
 function generateMockTransactions() {
     const paymentMethods = ['Cash', 'GCash', 'PayMaya', 'Bank Transfer'];
     const users = ['Jose Rizal', 'Andres Bonifacio', 'Apolinario Mabini', 'Emilio Aguinaldo'];
-    
+
     const transactions = [];
     for (let i = 1; i <= 30; i++) {
         const date = new Date();
@@ -313,13 +313,13 @@ function applyFilters() {
     });
 
     currentPage = 1;
-    
+
     if (currentTab === 'rides') {
         renderRidesTable();
     } else {
         renderTransactionsTable();
     }
-    
+
     updatePagination();
 }
 
@@ -335,13 +335,13 @@ function changePage(delta) {
     }
 
     currentPage = newPage;
-    
+
     if (currentTab === 'rides') {
         renderRidesTable();
     } else {
         renderTransactionsTable();
     }
-    
+
     updatePagination();
 }
 
@@ -350,10 +350,10 @@ function changePage(delta) {
  */
 function updatePagination() {
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    
-    document.getElementById('pagination-info').textContent = 
+
+    document.getElementById('pagination-info').textContent =
         `Page ${currentPage} of ${totalPages || 1}`;
-    
+
     document.getElementById('prev-page').disabled = currentPage === 1;
     document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;
 }
@@ -402,14 +402,14 @@ function formatCurrency(amount) {
  */
 function formatDateTime(isoString) {
     const date = new Date(isoString);
-    const dateStr = date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
+    const dateStr = date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
     });
-    const timeStr = date.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
+    const timeStr = date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
     });
     return `${dateStr}<br><small style="color: var(--color-muted-foreground);">${timeStr}</small>`;
 }
