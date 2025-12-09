@@ -226,7 +226,7 @@ function renderRidesTable() {
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewRideDetails(${ride.id})" title="View Details">
-                        <i class='bx bx-show'></i>
+                        <i class='bx bx-eye'></i>
                     </button>
                     ${ride.status === 'active' ? `
                         <button class="action-btn" onclick="monitorRide(${ride.id})" title="Monitor">
@@ -274,7 +274,7 @@ function renderTransactionsTable() {
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewTransactionDetails('${txn.id}')" title="View Details">
-                        <i class='bx bx-show'></i>
+                        <i class='bx bx-eye'></i>
                     </button>
                     <button class="action-btn" onclick="downloadReceipt('${txn.id}')" title="Download Receipt">
                         <i class='bx bx-download'></i>

@@ -196,7 +196,7 @@ function renderTable() {
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewReport('${report.id}')" title="View Details">
-                        <i class='bx bx-show'></i>
+                        <i class='bx bx-eye'></i>
                     </button>
                     ${report.status === 'pending' || report.status === 'investigating' ? `
                         <button class="action-btn" onclick="updateStatus('${report.id}')" title="Update Status">

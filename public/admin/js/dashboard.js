@@ -83,7 +83,7 @@ async function loadRecentActivity() {
             },
             {
                 type: 'report',
-                icon: 'bx-message-error',
+                icon: 'bx-clipboard-x',
                 iconClass: 'report',
                 title: 'New report submitted',
                 description: 'User reported a payment issue',
