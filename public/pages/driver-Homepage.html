@@ -56,29 +56,53 @@
     <main class="driver-dashboard">
       <aside class="dashboard-sidebar" id="dashboard-sidebar">
         <div class="sidebar-header">
-          <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+          <button
+            class="sidebar-toggle"
+            id="sidebar-toggle"
+            aria-label="Toggle sidebar"
+          >
             <i class="bx bx-chevron-left"></i>
           </button>
         </div>
         <nav class="sidebar-nav">
-          <a href="driver-Homepage.html" class="sidebar-link active" title="Dashboard">
+          <a
+            href="driver-Homepage.html"
+            class="sidebar-link active"
+            title="Dashboard"
+          >
             <i class="bx bx-home"></i>
             <span class="sidebar-text">Dashboard</span>
           </a>
-          <a href="driver-rideconfirmation.html" class="sidebar-link" title="Ride Requests">
+          <a
+            href="driver-rideconfirmation.html"
+            class="sidebar-link"
+            title="Ride Requests"
+          >
             <i class="bx bx-bell"></i>
             <span class="sidebar-text">Ride Requests</span>
             <span class="badge">2</span>
           </a>
-          <a href="driver-passengerstatus.html" class="sidebar-link" title="Active Trip">
+          <a
+            href="driver-passengerstatus.html"
+            class="sidebar-link"
+            title="Active Trip"
+          >
             <i class="bx bx-navigation"></i>
             <span class="sidebar-text">Active Trip</span>
           </a>
-          <a href="driver-history.html" class="sidebar-link" title="Trip History">
+          <a
+            href="driver-history.html"
+            class="sidebar-link"
+            title="Trip History"
+          >
             <i class="bx bx-history"></i>
             <span class="sidebar-text">Trip History</span>
           </a>
-          <a href="driver-passengerfeedback.html" class="sidebar-link" title="Ratings">
+          <a
+            href="driver-passengerfeedback.html"
+            class="sidebar-link"
+            title="Ratings"
+          >
             <i class="bx bx-star"></i>
             <span class="sidebar-text">Ratings</span>
           </a>
@@ -278,16 +302,21 @@
           }
 
           // Fetch driver stats
-          const statsRes = await fetch(`../backend/api/driver.php?id=${driverId}`);
+          const statsRes = await fetch(
+            `../backend/api/driver.php?id=${driverId}`
+          );
           const statsData = await statsRes.json();
           if (statsData.success) {
             const driver = statsData.data;
-            document.querySelector(".dashboard-value:nth-of-type(2)").textContent =
-              driver.total_rides || 0;
-            document.querySelector(".dashboard-value:nth-of-type(3)").textContent =
-              (driver.avg_rating || 0).toFixed(1);
-            document.querySelector(".dashboard-value:nth-of-type(4)").textContent =
-              `₱${driver.weekly_earnings || 0}`;
+            document.querySelector(
+              ".dashboard-value:nth-of-type(2)"
+            ).textContent = driver.total_rides || 0;
+            document.querySelector(
+              ".dashboard-value:nth-of-type(3)"
+            ).textContent = (driver.avg_rating || 0).toFixed(1);
+            document.querySelector(
+              ".dashboard-value:nth-of-type(4)"
+            ).textContent = `₱${driver.weekly_earnings || 0}`;
           }
         } catch (error) {
           console.error("Error loading dashboard data:", error);
