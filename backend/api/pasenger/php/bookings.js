@@ -1,5 +1,5 @@
 const express = require("express");
-const BookingsNode = require("../classes/BookingsNode");
+const BookingsNode = require("../../../classes/passenger/js/BookingsNode");
 
 const router = express.Router();
 const booking = new BookingsNode();

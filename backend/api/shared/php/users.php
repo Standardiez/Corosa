@@ -40,8 +40,8 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 // Include database configuration and User class
-require_once '../config/database.php';
-require_once '../classes/User.php';
+require_once '../../../config/database.php';
+require_once '../../../classes/shared/php/User.php';
 
 // Initialize database connection
 try {

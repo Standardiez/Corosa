@@ -1,5 +1,5 @@
 const express = require("express");
-const TripNode = require("../classes/TripNode");
+const TripNode = require("../../../classes/shared/js/TripNode");
 
 const router = express.Router();
 const trip = new TripNode();

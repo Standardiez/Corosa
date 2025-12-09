@@ -78,10 +78,10 @@ error_reporting(E_ALL);
 // STEP 2: Load required dependencies
 // ============================================================================
 // Database class handles PostgreSQL/MySQL connection
-require_once '../config/database.php';
+require_once '../../../config/database.php';
 
 // User class contains methods for querying user data
-require_once '../classes/User.php';
+require_once '../../../classes/shared/php/User.php';
 
 // ============================================================================
 // STEP 3: Read and parse incoming request
