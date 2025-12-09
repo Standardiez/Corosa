@@ -1,1 +1,5 @@
 node_modules
+
+# Personal development folder - testing and references only
+.dev/
+
