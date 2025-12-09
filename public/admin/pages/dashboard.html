@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard — Corosa</title>
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css" rel="stylesheet">
+    <style>
+        /* Admin Dashboard Specific Styles */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .admin-sidebar {
+            width: 260px;
+            background: var(--color-background);
+            border-right: 1px solid var(--color-border);
+            padding: var(--spacing-xl) 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .admin-logo {
+            padding: 0 var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .admin-logo h1 {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .admin-logo .badge {
+            font-size: var(--font-size-xs);
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
+
+        .admin-nav {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            padding: 0 var(--spacing-md);
+        }
+
+        .admin-nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--color-muted-foreground);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        .admin-nav-link:hover {
+            background: var(--color-secondary);
+            color: var(--color-foreground);
+        }
+
+        .admin-nav-link.active {
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+        }
+
+        .admin-nav-link i {
+            font-size: var(--font-size-xl);
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            background: var(--color-secondary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-header {
+            background: var(--color-background);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .admin-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+        }
+
+        .admin-header h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-foreground);
+        }
+
+        .admin-header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-secondary);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+        }
+
+        .admin-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+
+        /* Dashboard Content */
+        .admin-content {
+            padding: var(--spacing-xl);
+            max-width: 1400px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: var(--color-background);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-2xl);
+        }
+
+        .stat-card-icon.blue {
+            background: hsl(210, 100%, 95%);
+            color: hsl(210, 100%, 50%);
+        }
+
+        .stat-card-icon.green {
+            background: hsl(140, 70%, 95%);
+            color: hsl(140, 70%, 40%);
+        }
+
+        .stat-card-icon.orange {
+            background: hsl(30, 100%, 95%);
+            color: hsl(30, 100%, 50%);
+        }
+
+        .stat-card-icon.red {
+            background: hsl(0, 80%, 95%);
+            color: hsl(0, 80%, 50%);
+        }
+
+        .stat-card-value {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            color: var(--color-foreground);
+            line-height: 1;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-card-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted-foreground);
+            font-weight: 500;
+        }
+
+        .stat-card-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            margin-top: var(--spacing-sm);
+        }
+
+        .stat-card-change.positive {
+            color: hsl(140, 70%, 40%);
+        }
+
+        .stat-card-change.negative {
+            color: hsl(0, 80%, 50%);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--color-background);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .quick-actions h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--color-foreground);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            color: var(--color-foreground);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+            border-color: var(--color-primary);
+        }
+
+        .action-button i {
+            font-size: var(--font-size-xl);
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            background: var(--color-background);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .recent-activity h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--color-foreground);
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .activity-item {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--color-secondary);
+            border-radius: var(--radius-md);
+            transition: background 0.2s;
+        }
+
+        .activity-item:hover {
+            background: var(--color-muted);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: var(--font-size-lg);
+        }
+
+        .activity-icon.user {
+            background: hsl(210, 100%, 95%);
+            color: hsl(210, 100%, 50%);
+        }
+
+        .activity-icon.vehicle {
+            background: hsl(140, 70%, 95%);
+            color: hsl(140, 70%, 40%);
+        }
+
+        .activity-icon.ride {
+            background: hsl(30, 100%, 95%);
+            color: hsl(30, 100%, 50%);
+        }
+
+        .activity-icon.report {
+            background: hsl(0, 80%, 95%);
+            color: hsl(0, 80%, 50%);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-description {
+            font-size: var(--font-size-xs);
+            color: var(--color-muted-foreground);
+        }
+
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-muted-foreground);
+            flex-shrink: 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--color-muted-foreground);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 220px;
+            }
+
+            .admin-main {
+                margin-left: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .admin-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .admin-main {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <h1>
+                    <i class='bx bx-shield-quarter'></i>
+                    COROSA
+                    <span class="badge">Admin</span>
+                </h1>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="dashboard.html" class="admin-nav-link active">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="user-management.html" class="admin-nav-link">
+                    <i class='bx bx-user-check'></i>
+                    <span>User Management</span>
+                </a>
+                <a href="vehicle-management.html" class="admin-nav-link">
+                    <i class='bx bx-car'></i>
+                    <span>Vehicle Management</span>
+                </a>
+                <a href="rides-transactions.html" class="admin-nav-link">
+                    <i class='bx bx-trip'></i>
+                    <span>Rides & Transactions</span>
+                </a>
+                <a href="reports-complaints.html" class="admin-nav-link">
+                    <i class='bx bx-message-error'></i>
+                    <span>Reports & Complaints</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="admin-header-content">
+                    <h2>Dashboard Overview</h2>
+                    <div class="admin-header-actions">
+                        <div class="admin-user">
+                            <div class="admin-user-avatar">AD</div>
+                            <span>Admin User</span>
+                        </div>
+                        <a href="../../shared/pages/index.html" class="btn btn-outline" style="font-size: var(--font-size-sm);">
+                            <i class='bx bx-log-out'></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="admin-content">
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value" id="total-users">0</div>
+                                <div class="stat-card-label">Total Users</div>
+                            </div>
+                            <div class="stat-card-icon blue">
+                                <i class='bx bx-user'></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-change positive">
+                            <i class='bx bx-up-arrow-alt'></i>
+                            <span>+12% from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value" id="total-vehicles">0</div>
+                                <div class="stat-card-label">Registered Vehicles</div>
+                            </div>
+                            <div class="stat-card-icon green">
+                                <i class='bx bx-car'></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-change positive">
+                            <i class='bx bx-up-arrow-alt'></i>
+                            <span>+8% from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value" id="active-rides">0</div>
+                                <div class="stat-card-label">Active Rides</div>
+                            </div>
+                            <div class="stat-card-icon orange">
+                                <i class='bx bx-trip'></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-change positive">
+                            <i class='bx bx-up-arrow-alt'></i>
+                            <span>+23% from yesterday</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value" id="pending-reports">0</div>
+                                <div class="stat-card-label">Pending Reports</div>
+                            </div>
+                            <div class="stat-card-icon red">
+                                <i class='bx bx-message-error'></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-change negative">
+                            <i class='bx bx-down-arrow-alt'></i>
+                            <span>-5% from last week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="actions-grid">
+                        <a href="user-management.html" class="action-button">
+                            <i class='bx bx-user-plus'></i>
+                            <span>Verify New Users</span>
+                        </a>
+                        <a href="vehicle-management.html" class="action-button">
+                            <i class='bx bx-check-circle'></i>
+                            <span>Approve Vehicles</span>
+                        </a>
+                        <a href="rides-transactions.html" class="action-button">
+                            <i class='bx bx-line-chart'></i>
+                            <span>View Transactions</span>
+                        </a>
+                        <a href="reports-complaints.html" class="action-button">
+                            <i class='bx bx-file'></i>
+                            <span>Review Reports</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list" id="activity-list">
+                        <div class="empty-state">
+                            <i class='bx bx-time-five'></i>
+                            <p>No recent activity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>
