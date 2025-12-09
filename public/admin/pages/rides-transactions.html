@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Vehicle Management — Corosa</title>
+    <title>Rides & Transactions — Corosa</title>
 
-    <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="../../styles/styles.css">
     <link href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css" rel="stylesheet">
 </head>
 
@@ -14,11 +14,11 @@
     <!-- HEADER -->
     <header class="header">
         <div class="container header-content">
-            <img src="../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
+            <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
 
             <nav class="nav header-nav">
-                <a class="btn btn-outline" href="index.html">Home</a>
-                <a class="btn btn-outline" id="signup-link" href="signup.html">Create account</a>
+                <a class="btn btn-outline" href="../../shared/pages/index.html">Home</a>
+                <a class="btn btn-outline" id="signup-link" href="../../shared/pages/signup.html">Create account</a>
 
                 <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
                     <i class='bx bx-user' style='color:#806600'></i>
@@ -35,30 +35,29 @@
             <!-- Sidebar -->
             <aside class="sidebar">
                 <a href="user-management.html">User Management</a>
-                <a href="vehicle-management.html" class="active">Vehicle Management</a>
-                <a href="rides-transactions.html">Rides & Transactions</a>
+                <a href="vehicle-management.html">Vehicle Management</a>
+                <a href="rides-transactions.html" class="active">Rides & Transactions</a>
                 <a href="reports-complaints.html">Reports & Complaints</a>
             </aside>
 
             <!-- Main Content -->
             <section class="dashboard-section">
-                <h2>Pending Vehicle Registration Requests</h2>
+                <h2>Active and Completed Rides</h2>
 
                 <div class="table-container card" style="padding: var(--spacing-md); margin-top: var(--spacing-md); overflow-x:auto;">
-                    <table class="table" id="vehicleTable">
+                    <table class="table" id="ridesTable">
                         <thead>
                             <tr>
-                                <th>Owner</th>
-                                <th>Make</th>
-                                <th>Model</th>
-                                <th>Year</th>
-                                <th>License Plate</th>
-                                <th>Insurance</th>
-                                <th>Registration Papers</th>
+                                <th>Ride ID</th>
+                                <th>Driver</th>
+                                <th>Passenger</th>
+                                <th>Route</th>
+                                <th>Status</th>
+                                <th>Payment</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="vehicleTableBody">
+                        <tbody id="ridesTableBody">
                             <!-- Rows populated by JS -->
                         </tbody>
                     </table>
@@ -75,7 +74,7 @@
 
     <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 
-    <script src="../js/vehicle-management.js"></script>
-    <script src="../js/header-auth.js"></script>
+    <script src="../js/rides-transactions.js"></script>
+    <script src="../../shared/js/header-auth.js"></script>
 </body>
 </html>
