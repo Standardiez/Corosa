@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rides & Transactions — Corosa Admin</title>
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css" rel="stylesheet">
+    <style>
+        /* Admin Dashboard Specific Styles */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .admin-sidebar {
+            width: 260px;
+            background: var(--color-background);
+            border-right: 1px solid var(--color-border);
+            padding: var(--spacing-xl) 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .admin-logo {
+            padding: 0 var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+
+        .admin-logo img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        .admin-logo .badge {
+            font-size: var(--font-size-xs);
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
+
+        .admin-nav {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            padding: 0 var(--spacing-md);
+        }
+
+        .admin-nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--color-muted-foreground);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        .admin-nav-link:hover {
+            background: var(--color-secondary);
+            color: var(--color-foreground);
+        }
+
+        .admin-nav-link.active {
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+        }
+
+        .admin-nav-link i {
+            font-size: var(--font-size-xl);
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            background: var(--color-secondary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-header {
+            background: var(--color-background);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .admin-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+        }
+
+        .admin-header h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-foreground);
+        }
+
+        .admin-header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-secondary);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+        }
+
+        .admin-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+
+        /* Page Content */
+        .admin-content {
+            padding: var(--spacing-xl);
+            max-width: 1400px;
+            flex: 1;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--color-background);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: var(--color-muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-background);
+            color: var(--color-foreground);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+        }
+
+        .filter-group input[type="date"] {
+            cursor: text;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-box {
+            background: var(--color-background);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .stat-box-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-muted-foreground);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-box-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-foreground);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .tab-button {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--color-muted-foreground);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--color-foreground);
+        }
+
+        .tab-button.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        /* Data Table */
+        .data-table-container {
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: var(--color-secondary);
+        }
+
+        .data-table th {
+            padding: var(--spacing-md) var(--spacing-lg);
+            text-align: left;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: var(--color-muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .data-table td {
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            color: var(--color-foreground);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--color-secondary);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.active {
+            background: hsl(140, 70%, 95%);
+            color: hsl(140, 70%, 40%);
+        }
+
+        .status-badge.completed {
+            background: hsl(210, 100%, 95%);
+            color: hsl(210, 100%, 50%);
+        }
+
+        .status-badge.cancelled {
+            background: hsl(0, 80%, 95%);
+            color: hsl(0, 80%, 50%);
+        }
+
+        .status-badge.pending {
+            background: hsl(30, 100%, 95%);
+            color: hsl(30, 100%, 50%);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .action-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-muted-foreground);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+            border-color: var(--color-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-lg);
+            color: var(--color-muted-foreground);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.5;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-lg);
+        }
+
+        .pagination button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-foreground);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--color-primary);
+            color: var(--color-primary-foreground);
+            border-color: var(--color-primary);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            font-size: var(--font-size-sm);
+            color: var(--color-muted-foreground);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 220px;
+            }
+
+            .admin-main {
+                margin-left: 220px;
+            }
+
+            .data-table {
+                font-size: var(--font-size-xs);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .admin-main {
+                margin-left: 0;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .data-table-container {
+                overflow-x: auto;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <img src="../../assets/corosa-logo.png" alt="Corosa Logo">
+                <span class="badge">Admin</span>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="dashboard.html" class="admin-nav-link">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="user-management.html" class="admin-nav-link">
+                    <i class='bx bx-user-check'></i>
+                    <span>User Management</span>
+                </a>
+                <a href="vehicle-management.html" class="admin-nav-link">
+                    <i class='bx bx-car'></i>
+                    <span>Vehicle Management</span>
+                </a>
+                <a href="rides-transactions.html" class="admin-nav-link active">
+                    <i class='bx bx-trip'></i>
+                    <span>Rides & Transactions</span>
+                </a>
+                <a href="reports-complaints.html" class="admin-nav-link">
+                    <i class='bx bx-message-error'></i>
+                    <span>Reports & Complaints</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="admin-header-content">
+                    <h2>Rides & Transactions</h2>
+                    <div class="admin-header-actions">
+                        <div class="admin-user">
+                            <div class="admin-user-avatar">AD</div>
+                            <span>Admin User</span>
+                        </div>
+                        <a href="../../shared/pages/index.html" class="btn btn-outline" style="font-size: var(--font-size-sm);">
+                            <i class='bx bx-log-out'></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="admin-content">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label>Status</label>
+                            <select id="filter-status">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Date From</label>
+                            <input type="date" id="filter-date-from">
+                        </div>
+                        <div class="filter-group">
+                            <label>Date To</label>
+                            <input type="date" id="filter-date-to">
+                        </div>
+                        <div class="filter-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" id="apply-filters" style="padding: var(--spacing-sm) var(--spacing-lg);">
+                                <i class='bx bx-filter'></i> Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-box-label">Total Rides</div>
+                        <div class="stat-box-value" id="stat-total-rides">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Active Rides</div>
+                        <div class="stat-box-value" id="stat-active-rides">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Total Revenue</div>
+                        <div class="stat-box-value" id="stat-total-revenue">₱0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Completed Today</div>
+                        <div class="stat-box-value" id="stat-completed-today">0</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="rides">
+                        <i class='bx bx-trip'></i> Rides
+                    </button>
+                    <button class="tab-button" data-tab="transactions">
+                        <i class='bx bx-money'></i> Transactions
+                    </button>
+                </div>
+
+                <!-- Rides Table -->
+                <div class="data-table-container" id="rides-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ride ID</th>
+                                <th>Driver</th>
+                                <th>Passenger</th>
+                                <th>Route</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Fare</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rides-table-body">
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <i class='bx bx-loader-alt bx-spin'></i>
+                                        <p>Loading rides...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Transactions Table -->
+                <div class="data-table-container" id="transactions-table-container" style="display: none;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Ride ID</th>
+                                <th>User</th>
+                                <th>Payment Method</th>
+                                <th>Amount</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-table-body">
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <i class='bx bx-loader-alt bx-spin'></i>
+                                        <p>Loading transactions...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button id="prev-page" disabled>
+                        <i class='bx bx-chevron-left'></i> Previous
+                    </button>
+                    <span class="pagination-info" id="pagination-info">Page 1 of 1</span>
+                    <button id="next-page" disabled>
+                        Next <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/rides-transactions.js"></script>
+</body>
+</html>

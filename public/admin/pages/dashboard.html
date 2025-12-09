@@ -27,15 +27,15 @@
         .admin-logo {
             padding: 0 var(--spacing-lg);
             margin-bottom: var(--spacing-xl);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
         }
 
-        .admin-logo h1 {
-            font-size: var(--font-size-xl);
-            font-weight: 700;
-            color: var(--color-primary);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
+        .admin-logo img {
+            max-width: 120px;
+            height: auto;
         }
 
         .admin-logo .badge {
@@ -425,11 +425,8 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar">
             <div class="admin-logo">
-                <h1>
-                    <i class='bx bx-shield-quarter'></i>
-                    COROSA
-                    <span class="badge">Admin</span>
-                </h1>
+                <img src="../../assets/corosa-logo.png" alt="Corosa Logo" style="max-width: 120px; margin-bottom: var(--spacing-sm);">
+                <span class="badge">Admin</span>
             </div>
 
             <nav class="admin-nav">
