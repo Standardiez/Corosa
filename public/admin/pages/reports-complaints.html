@@ -468,9 +468,24 @@
         }
 
         /* Responsive */
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 220px;
+            }
+
+            .admin-main {
+                margin-left: 220px;
+            }
+        }
+
         @media (max-width: 768px) {
             .admin-sidebar {
                 transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .admin-sidebar.open {
+                transform: translateX(0);
             }
 
             .admin-main {
@@ -496,29 +511,29 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar">
             <div class="admin-logo">
-                <img src="../../assets/corosa.png" alt="Corosa">
-                <span class="badge">ADMIN</span>
+                <img src="../../assets/corosa-logo.png" alt="Corosa Logo" style="max-width: 120px; margin-bottom: var(--spacing-sm);">
+                <span class="badge">Admin</span>
             </div>
 
             <nav class="admin-nav">
                 <a href="dashboard.html" class="admin-nav-link">
-                    <i class='bx bxs-dashboard'></i>
+                    <i class='bx bx-home-alt'></i>
                     <span>Dashboard</span>
                 </a>
                 <a href="user-management.html" class="admin-nav-link">
-                    <i class='bx bxs-user'></i>
+                    <i class='bx bx-user-check'></i>
                     <span>User Management</span>
                 </a>
                 <a href="vehicle-management.html" class="admin-nav-link">
-                    <i class='bx bxs-car'></i>
+                    <i class='bx bx-car'></i>
                     <span>Vehicle Management</span>
                 </a>
                 <a href="rides-transactions.html" class="admin-nav-link">
-                    <i class='bx bx-transfer'></i>
+                    <i class='bx bx-trip'></i>
                     <span>Rides & Transactions</span>
                 </a>
                 <a href="reports-complaints.html" class="admin-nav-link active">
-                    <i class='bx bxs-message-square-error'></i>
+                    <i class='bx bx-message-error'></i>
                     <span>Reports & Complaints</span>
                 </a>
             </nav>
@@ -526,14 +541,19 @@
 
         <!-- Main Content -->
         <main class="admin-main">
+            <!-- Header -->
             <header class="admin-header">
                 <div class="admin-header-content">
                     <h2>Reports & Complaints</h2>
                     <div class="admin-header-actions">
                         <div class="admin-user">
+                            <div class="admin-user-avatar">AD</div>
                             <span>Admin User</span>
-                            <div class="admin-user-avatar">A</div>
                         </div>
+                        <a href="../../shared/pages/index.html" class="btn btn-outline" style="font-size: var(--font-size-sm);">
+                            <i class='bx bx-log-out'></i>
+                            Logout
+                        </a>
                     </div>
                 </div>
             </header>
