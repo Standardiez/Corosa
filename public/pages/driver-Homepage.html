@@ -22,23 +22,31 @@
             href="driver-selectstartlocation.html"
             ><i class="bx bx-car"></i> Offer a Ride</a
           >
-          <button
-            class="btn btn-outline user-menu-btn"
-            id="user-menu-btn"
-            style="display: none"
-            aria-label="User menu"
-          >
-            <i class="bx bx-user"></i>
-            <span
-              id="user-initials"
-              style="margin-left: var(--spacing-sm)"
-            ></span>
-          </button>
+          <div class="profile-menu-wrapper">
+            <button
+              class="btn btn-outline profile-btn"
+              id="profile-menu-btn"
+              aria-label="Profile menu"
+            >
+              <i class="bx bx-user-circle"></i>
+            </button>
+            <div class="profile-dropdown" id="profile-dropdown">
+              <a href="user-profile.html" class="dropdown-item">
+                <i class="bx bx-user"></i> Profile
+              </a>
+              <a href="driver-settings.html" class="dropdown-item">
+                <i class="bx bx-cog"></i> Settings
+              </a>
+              <button class="dropdown-item logout-btn" id="logout-btn">
+                <i class="bx bx-log-out"></i> Logout
+              </button>
+            </div>
+          </div>
         </nav>
         <button
           class="btn mobile-menu"
+          id="mobile-menu-btn"
           aria-label="Open menu"
-          style="display: none"
         >
           ☰
         </button>
@@ -46,32 +54,61 @@
     </header>
 
     <main class="driver-dashboard">
-      <aside class="dashboard-sidebar">
+      <aside class="dashboard-sidebar" id="dashboard-sidebar">
+        <div class="sidebar-header">
+          <button
+            class="sidebar-toggle"
+            id="sidebar-toggle"
+            aria-label="Toggle sidebar"
+          >
+            <i class="bx bx-chevron-left"></i>
+          </button>
+        </div>
         <nav class="sidebar-nav">
-          <a href="driver-Homepage.html" class="sidebar-link active">
+          <a
+            href="driver-Homepage.html"
+            class="sidebar-link active"
+            title="Dashboard"
+          >
             <i class="bx bx-home"></i>
-            <span>Dashboard</span>
+            <span class="sidebar-text">Dashboard</span>
           </a>
-          <a href="driver-rideconfirmation.html" class="sidebar-link">
+          <a
+            href="driver-rideconfirmation.html"
+            class="sidebar-link"
+            title="Ride Requests"
+          >
             <i class="bx bx-bell"></i>
-            <span>Ride Requests</span>
+            <span class="sidebar-text">Ride Requests</span>
             <span class="badge">2</span>
           </a>
-          <a href="driver-passengerstatus.html" class="sidebar-link">
+          <a
+            href="driver-passengerstatus.html"
+            class="sidebar-link"
+            title="Active Trip"
+          >
             <i class="bx bx-navigation"></i>
-            <span>Active Trip</span>
+            <span class="sidebar-text">Active Trip</span>
           </a>
-          <a href="driver-history.html" class="sidebar-link">
+          <a
+            href="driver-history.html"
+            class="sidebar-link"
+            title="Trip History"
+          >
             <i class="bx bx-history"></i>
-            <span>Trip History</span>
+            <span class="sidebar-text">Trip History</span>
           </a>
-          <a href="driver-passengerfeedback.html" class="sidebar-link">
+          <a
+            href="driver-passengerfeedback.html"
+            class="sidebar-link"
+            title="Ratings"
+          >
             <i class="bx bx-star"></i>
-            <span>Ratings</span>
+            <span class="sidebar-text">Ratings</span>
           </a>
-          <a href="driver-settings.html" class="sidebar-link">
+          <a href="driver-settings.html" class="sidebar-link" title="Settings">
             <i class="bx bx-cog"></i>
-            <span>Settings</span>
+            <span class="sidebar-text">Settings</span>
           </a>
         </nav>
       </aside>
@@ -83,12 +120,6 @@
             <h2>Welcome back! 👋</h2>
             <p>You're all set to start accepting rides.</p>
           </div>
-          <button
-            class="action-btn"
-            onclick="window.location.href='driver-selectstartlocation.html'"
-          >
-            <i class="bx bx-car"></i> Offer a Ride
-          </button>
         </div>
 
         <!-- Quick Stats Grid -->
@@ -203,6 +234,97 @@
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Sidebar Toggle Functionality
+      const sidebarToggle = document.getElementById("sidebar-toggle");
+      const sidebar = document.getElementById("dashboard-sidebar");
+
+      sidebarToggle.addEventListener("click", function () {
+        sidebar.classList.toggle("collapsed");
+        localStorage.setItem(
+          "sidebarCollapsed",
+          sidebar.classList.contains("collapsed")
+        );
+      });
+
+      // Restore sidebar state from localStorage
+      if (localStorage.getItem("sidebarCollapsed") === "true") {
+        sidebar.classList.add("collapsed");
+      }
+
+      // Profile Menu Dropdown
+      const profileBtn = document.getElementById("profile-menu-btn");
+      const profileDropdown = document.getElementById("profile-dropdown");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      profileBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle("active");
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function (e) {
+        if (
+          !profileBtn.contains(e.target) &&
+          !profileDropdown.contains(e.target)
+        ) {
+          profileDropdown.classList.remove("active");
+        }
+      });
+
+      // Logout functionality
+      logoutBtn.addEventListener("click", function () {
+        localStorage.removeItem("userData");
+        localStorage.removeItem("userToken");
+        window.location.href = "index.html";
+      });
+
+      // Load dashboard data from API
+      async function loadDashboardData() {
+        try {
+          const userDataStr = localStorage.getItem("userData");
+          if (!userDataStr) {
+            window.location.href = "login.html";
+            return;
+          }
+
+          const userData = JSON.parse(userDataStr);
+          const driverId = userData.id;
+
+          // Fetch pending requests
+          const requestsRes = await fetch(
+            `../backend/api/trip_assignment.php?driver_id=${driverId}&status=pending`
+          );
+          const requestsData = await requestsRes.json();
+          if (requestsData.success) {
+            document.getElementById("pending-requests").textContent =
+              requestsData.data.length;
+          }
+
+          // Fetch driver stats
+          const statsRes = await fetch(
+            `../backend/api/driver.php?id=${driverId}`
+          );
+          const statsData = await statsRes.json();
+          if (statsData.success) {
+            const driver = statsData.data;
+            document.querySelector(
+              ".dashboard-value:nth-of-type(2)"
+            ).textContent = driver.total_rides || 0;
+            document.querySelector(
+              ".dashboard-value:nth-of-type(3)"
+            ).textContent = (driver.avg_rating || 0).toFixed(1);
+            document.querySelector(
+              ".dashboard-value:nth-of-type(4)"
+            ).textContent = `₱${driver.weekly_earnings || 0}`;
+          }
+        } catch (error) {
+          console.error("Error loading dashboard data:", error);
+        }
+      }
+
+      // Load data on page load
+      document.addEventListener("DOMContentLoaded", loadDashboardData);
     </script>
     <script src="../js/header-auth.js"></script>
   </body>
