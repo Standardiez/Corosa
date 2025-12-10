@@ -14,7 +14,7 @@
     if(!selected || !selected.driver){
       // no data, go back to start
       alert('No ride information available.');
-      window.location.href = 'select-pickup.html';
+      window.location.href = '../pages/select-pickup.html';
       return;
     }
     const d = selected.driver;

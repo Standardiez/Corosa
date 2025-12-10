@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     try {
-      const response = await fetch("/Corosa/backend/api/users.php", {
+      const response = await fetch("/Corosa/backend/api/shared/php/users.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "../pages/login.html";
       } else {
         console.error("Server returned error:", result);
-        
+
         // Handle validation errors from server
         if (result.errors) {
           for (const [field, message] of Object.entries(result.errors)) {

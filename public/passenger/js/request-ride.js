@@ -44,7 +44,7 @@
             // Redirect if coordinates aren't set
             if (!pickupLocation || !pickupLocation.coords || !dropoffLocation || !dropoffLocation.coords) {
                 alert('Please select pickup and drop-off locations first');
-                window.location.href = 'select-pickup.html';
+                window.location.href = '../pages/select-pickup.html';
             }
         } catch (error) {
             console.error('Error loading locations:', error);
@@ -133,7 +133,7 @@
     function fetchAvailableRides() {
 
 
-        fetch('/Corosa/backend/api/trip.php?action=getAvailableTrips')
+        fetch('http://localhost:3000/api/trips?action=getAvailableTrips')
             .then(response => response.json())
             .then(result => {
                 if (result.success && Array.isArray(result.data)) {

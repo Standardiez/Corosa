@@ -130,7 +130,7 @@
             // Addresses are optional (can show coordinates instead), but coords and ride are required
             if (!pickupCoords || !dropoffCoords || !selectedRide) {
                 alert('Missing trip or ride data. Please start over.');
-                window.location.href = 'select-pickup.html';  // Redirect to start
+                window.location.href = '../pages/select-pickup.html';  // Redirect to start
                 return null;
             }
 
@@ -141,7 +141,7 @@
             // ERROR HANDLING: Catches JSON parsing errors or other exceptions
             console.error('Error reading session data', e);
             alert('Missing trip or ride data. Please start over.');
-            window.location.href = 'select-pickup.html';
+            window.location.href = '../pages/select-pickup.html';
             return null;
         }
     }
@@ -321,7 +321,7 @@
         const userId = sessionStorage.getItem('userId');
         if (!userId) {
             alert('Please log in before confirming a ride.');
-            window.location.href = 'login.html';
+            window.location.href = '../../shared/pages/login.html';
             return;
         }
 
@@ -330,7 +330,7 @@
         const tripId = sessionStorage.getItem('selectedTripId') || selectedRide.tripId || selectedRide.id;
         if (!tripId) {
             alert('Missing trip information. Please select a ride again.');
-            window.location.href = 'request-ride.html';
+            window.location.href = '../pages/request-ride.html';
             return;
         }
 
@@ -395,7 +395,7 @@
              * EXPECTED RESPONSE (error):
              * { success: false, message: "Missing required fields..." }
              */
-            const bookingResponse = await fetch('/Corosa/backend/api/bookings.php', {
+            const bookingResponse = await fetch('http://localhost:3000/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingPayload)
@@ -468,7 +468,7 @@
              * - Prevents overbooking (more passengers than seats)
              * - Updates in real-time so next user sees reduced availability
              */
-            const assignmentResponse = await fetch('/Corosa/backend/api/trip_assignment.php', {
+            const assignmentResponse = await fetch('http://localhost:3000/api/trip-assignments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(tripAssignmentPayload)

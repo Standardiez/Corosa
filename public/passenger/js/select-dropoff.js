@@ -237,7 +237,7 @@
         if (backBtn) {
             backBtn.addEventListener('click', function() {
                 // Navigate back to pickup selection
-                window.location.href = 'select-pickup.html';
+                window.location.href = '../pages/select-pickup.html';
             });
         }
     }
@@ -253,7 +253,7 @@
                     sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
 
                     // Navigate to request-ride page
-                    window.location.href = 'request-ride.html';
+                    window.location.href = '../pages/request-ride.html';
                 }
             });
         }

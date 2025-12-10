@@ -71,7 +71,7 @@
                     sessionStorage.setItem('pickupCoords', JSON.stringify(currentLocation.coords));
 
                     // Navigate to drop-off page
-                    window.location.href = 'select-dropoff.html';
+                    window.location.href = '../pages/select-dropoff.html';
                 }
             });
         }

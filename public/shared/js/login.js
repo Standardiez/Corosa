@@ -160,8 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const useBackend = true; // Set to false to test without backend
     if (useBackend) {
       // API endpoint URL (adjust based on your server setup)
-      // For WAMP: http://localhost/Corosa/backend/api/login.php
-      const endpoint = "/Corosa/backend/api/login.php";
+      // For WAMP: http://localhost/Corosa/backend/api/shared/php/login.php
+      const endpoint = "/Corosa/backend/api/shared/php/login.php";
 
       // ======================================================================
       // FETCH API: Modern way to make HTTP requests in JavaScript
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // ==================================================================
             // Login successful! Take user to pickup location selection
             // window.location.href causes a full page navigation
-            window.location.href = 'select-pickup.html';
+            window.location.href = '../../passenger/pages/select-pickup.html';
 
           } else {
             // --------------------------------------------------------------------

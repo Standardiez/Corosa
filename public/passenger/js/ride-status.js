@@ -12,7 +12,7 @@
  *
  * COMPLEXITY LEVEL: VERY HIGH
  * - Advanced Google Maps API integration
- * - Complex mathematical calculations (Haversine formula)  
+ * - Complex mathematical calculations (Haversine formula)
  * - Sophisticated animation timing and interpolation
  * - Multi-phase asynchronous route planning
  * - Performance-optimized frame-by-frame animation
@@ -26,7 +26,7 @@
  * - Handles animation fallbacks for API failures
  *
  * DATA FLOW:
- * sessionStorage → Load Trip Data → Initialize Map → Fetch Directions → 
+ * sessionStorage → Load Trip Data → Initialize Map → Fetch Directions →
  * Animate Car Movement → Update Progress Stages → Complete Journey
  *
  * ============================================================================
@@ -38,41 +38,41 @@
     // ========================================================================
     // UTILITY FUNCTIONS - Basic helper functions for data formatting
     // ========================================================================
-    
+
     /**
      * Format GPS coordinates as a human-readable string
-     * 
+     *
      * @param {Object} latLng - Coordinates object with lat and lng properties
      * @returns {string} Formatted string like "16.402300, 120.596000"
-     * 
+     *
      * USAGE: Fallback display when human-readable addresses aren't available
      * PRECISION: 6 decimal places (~1 meter accuracy for GPS coordinates)
      */
-    function fmtLatLng(latLng){ 
-        return latLng.lat.toFixed(6) + ', ' + latLng.lng.toFixed(6); 
+    function fmtLatLng(latLng){
+        return latLng.lat.toFixed(6) + ', ' + latLng.lng.toFixed(6);
     }
 
     /**
      * Load and validate all trip data from browser session storage
-     * 
+     *
      * DATA SOURCES (set by previous pages in booking flow):
      * - pickupCoords: GPS coordinates from select-pickup.html
      * - pickupLocation: Human-readable pickup address
-     * - dropoffCoords: GPS coordinates from select-dropoff.html  
+     * - dropoffCoords: GPS coordinates from select-dropoff.html
      * - dropoffLocation: Human-readable dropoff address
      * - selectedRide: Complete ride/driver info from request-ride.html
-     * 
+     *
      * VALIDATION LOGIC:
      * - Ensures all critical data exists before proceeding
      * - Handles JSON parsing errors gracefully
      * - Redirects user back to start if data is corrupted/missing
      * - Prevents errors from undefined data access later
-     * 
+     *
      * ERROR HANDLING:
      * - JSON parsing failures → Caught and handled
      * - Missing required data → User redirected to pickup selection
      * - User-friendly error messages via alert()
-     * 
+     *
      * @returns {Object|null} Complete trip data object or null if invalid
      */
     function loadData(){
@@ -89,7 +89,7 @@
             // But coordinates and ride selection are mandatory
             if(!pickupCoords || !dropoffCoords || !selectedRide){
                 alert('Missing trip or ride data. Please start again.');
-                window.location.href = 'select-pickup.html';
+                window.location.href = '../pages/select-pickup.html';
                 return null;
             }
 
@@ -99,7 +99,7 @@
             // STEP 4: Handle any JSON parsing or access errors
             console.error('Error reading session data',e);
             alert('Missing trip or ride data. Please start again.');
-            window.location.href = 'select-pickup.html';
+            window.location.href = '../pages/select-pickup.html';
             return null;
         }
     }
@@ -107,42 +107,42 @@
     // ========================================================================
     // UI STATE MANAGEMENT - Progress indicator and visual feedback
     // ========================================================================
-    
+
     /**
      * Update the 3-stage ride progress indicator in the UI
-     * 
+     *
      * RIDE STAGES:
      * Stage 1: "Driver Approaching" - Driver heading to pickup location
      * Stage 2: "Passenger Pickup" - Driver at pickup, collecting passenger
      * Stage 3: "En Route to Destination" - Driving to dropoff location
-     * 
+     *
      * VISUAL STATES:
      * - 'done': Stage completed (green checkmark, filled circle)
      * - 'active': Current stage (pulsing animation, highlighted)
      * - 'pending': Future stage (grayed out, waiting state)
-     * 
+     *
      * HTML STRUCTURE EXPECTED:
      * <div id="stage-1" class="stage">Driver Approaching</div>
      * <div id="stage-2" class="stage">Passenger Pickup</div>
      * <div id="stage-3" class="stage">En Route</div>
-     * 
+     *
      * CSS CLASSES APPLIED:
-     * .done { background: green; } 
+     * .done { background: green; }
      * .active { background: blue; animation: pulse; }
      * .pending { background: gray; opacity: 0.5; }
-     * 
+     *
      * @param {number} n - Current stage number (1, 2, or 3)
      */
     function setStage(n){
         const total = 3; // Total number of ride stages
-        
+
         // Loop through all stage elements and update their visual state
         for(let i=1; i<=total; i++){
             const el = document.getElementById('stage-'+i);
-            
+
             // Clear all existing state classes
             el.classList.remove('active','done','pending');
-        
+
             // Apply appropriate class based on stage relationship
             if(i < n) {
                 el.classList.add('done');     // Past stage - completed
@@ -157,27 +157,27 @@
     // ========================================================================
     // GOOGLE MAPS INITIALIZATION & ANIMATION SYSTEM
     // ========================================================================
-    
+
     /**
      * Initialize Google Maps with real-time driver tracking simulation
-     * 
+     *
      * MAIN FUNCTION RESPONSIBILITIES:
      * 1. Load and display trip data in UI elements
      * 2. Create interactive Google Map with custom markers
      * 3. Set up realistic car movement animation system
      * 4. Integrate with Google Directions API for route planning
      * 5. Manage two-phase journey (approach → pickup → destination)
-     * 
+     *
      * ANIMATION PHASES:
      * Phase 1: Driver approaches pickup location (Stage 1)
      * Phase 2: Driver travels from pickup to dropoff (Stage 2→3)
-     * 
+     *
      * MAP FEATURES:
      * - Custom colored markers for pickup/dropoff locations
      * - Animated car icon following realistic road paths
      * - Dynamic polylines showing planned route
      * - Auto-centering camera following car movement
-     * 
+     *
      * GLOBAL FUNCTION: Assigned to window.initMap for Google Maps callback
      */
     window.initMap = function(){
@@ -186,18 +186,18 @@
         // ====================================================================
         const data = loadData();
         if(!data) return; // Exit if session data is missing/corrupted
-        
+
         // Destructure loaded data for easier access
         const {pickupCoords,pickupAddress,dropoffCoords,dropoffAddress,selectedRide} = data;
 
         // ====================================================================
         // STEP 2: POPULATE UI ELEMENTS WITH TRIP INFORMATION
         // ====================================================================
-        
+
         // Display location information (prefer human addresses over coordinates)
         document.getElementById('pickup-location').textContent = pickupAddress || fmtLatLng(pickupCoords);
         document.getElementById('dropoff-location').textContent = dropoffAddress || fmtLatLng(dropoffCoords);
-        
+
         // Display driver information in UI
         document.getElementById('driver-name').textContent = selectedRide.driver.firstName + ' ' + selectedRide.driver.lastName;
         document.getElementById('driver-employment').textContent = selectedRide.driver.employmentStatus || '';
@@ -206,20 +206,20 @@
         // ====================================================================
         // STEP 3: GOOGLE MAPS SETUP AND CONFIGURATION
         // ====================================================================
-        
+
         const mapEl = document.getElementById('map');
         mapEl.textContent = ''; // Clear any placeholder content
 
         // Calculate map center point (midpoint between pickup and dropoff)
         // This ensures both locations are visible in the initial view
-        const center = { 
-            lat: (pickupCoords.lat + dropoffCoords.lat)/2, 
-            lng: (pickupCoords.lng + dropoffCoords.lng)/2 
+        const center = {
+            lat: (pickupCoords.lat + dropoffCoords.lat)/2,
+            lng: (pickupCoords.lng + dropoffCoords.lng)/2
         };
-        
+
         // Create Google Map instance with optimized settings
-        const map = new google.maps.Map(mapEl, { 
-            center, 
+        const map = new google.maps.Map(mapEl, {
+            center,
             zoom: 14,                    // Zoom level for city-scale view
             mapTypeControl: false,       // Hide map type selector (satellite/road)
             streetViewControl: false     // Hide street view control
@@ -228,44 +228,44 @@
         // ====================================================================
         // STEP 4: CREATE CUSTOM MARKERS FOR LOCATIONS
         // ====================================================================
-        
+
         // Pickup location marker (teal circle)
-        const pickupMarker = new google.maps.Marker({ 
-            position: pickupCoords, 
-            map, 
+        const pickupMarker = new google.maps.Marker({
+            position: pickupCoords,
+            map,
             title: 'Pickup',
-            icon: { 
+            icon: {
                 path: google.maps.SymbolPath.CIRCLE, // Built-in circle shape
                 fillColor: '#2A9D8F',                // Teal color
                 fillOpacity: 1,                      // Solid fill
                 strokeWeight: 0,                     // No border
                 scale: 7                             // Size multiplier
-            } 
+            }
         });
-        
-        // Dropoff location marker (coral circle)  
-        const dropMarker = new google.maps.Marker({ 
-            position: dropoffCoords, 
-            map, 
+
+        // Dropoff location marker (coral circle)
+        const dropMarker = new google.maps.Marker({
+            position: dropoffCoords,
+            map,
             title: 'Drop-off',
-            icon: { 
+            icon: {
                 path: google.maps.SymbolPath.CIRCLE,
                 fillColor: '#E76F51',                // Coral color
                 fillOpacity: 1,
                 strokeWeight: 0,
                 scale: 7
-            } 
+            }
         });
 
         // ====================================================================
         // STEP 5: CREATE ANIMATED CAR MARKER
         // ====================================================================
-        
+
         // Start car slightly offset from pickup to simulate approach
         const offset = 0.003; // ~330 meters at this latitude
-        const start = { 
-            lat: pickupCoords.lat + offset, 
-            lng: pickupCoords.lng + offset 
+        const start = {
+            lat: pickupCoords.lat + offset,
+            lng: pickupCoords.lng + offset
         };
 
         // Custom car icon using SVG path
@@ -279,17 +279,17 @@
         };
 
         // Create car marker at starting position
-        const carMarker = new google.maps.Marker({ 
-            position: start, 
-            map, 
-            icon: carIcon, 
-            title: 'Driver' 
+        const carMarker = new google.maps.Marker({
+            position: start,
+            map,
+            icon: carIcon,
+            title: 'Driver'
         });
 
         // ====================================================================
         // STEP 6: GOOGLE DIRECTIONS API SETUP
         // ====================================================================
-        
+
         // Initialize Google Directions service for route planning
         // This service calculates optimal driving routes between points
         const directionsService = new google.maps.DirectionsService();
@@ -298,21 +298,21 @@
         // ====================================================================
         // MATHEMATICAL UTILITIES - Distance and geometry calculations
         // ====================================================================
-        
+
         /**
          * Calculate distance between two GPS points using Haversine formula
-         * 
+         *
          * HAVERSINE FORMULA EXPLAINED:
          * - Calculates great-circle distance (shortest distance on sphere surface)
          * - Accounts for Earth's curvature (more accurate than Euclidean distance)
          * - Used for precise GPS distance calculations
-         * 
+         *
          * MATHEMATICAL STEPS:
          * 1. Convert latitude/longitude differences to radians
          * 2. Apply haversine formula with trigonometric functions
          * 3. Calculate central angle using atan2 function
          * 4. Multiply by Earth's radius to get distance in meters
-         * 
+         *
          * @param {Object} a - Start point {lat, lng}
          * @param {Object} b - End point {lat, lng}
          * @returns {number} Distance in meters
@@ -320,28 +320,28 @@
         function haversine(a,b){
             const R = 6371000; // Earth's radius in meters (mean radius)
             const toRad = x => x * Math.PI / 180; // Degrees to radians converter
-            
+
             // Calculate coordinate differences in radians
             const dLat = toRad(b.lat - a.lat);
             const dLon = toRad(b.lng - a.lng);
             const lat1 = toRad(a.lat);
             const lat2 = toRad(b.lat);
-            
+
             // Apply haversine formula
             const sinDLat = Math.sin(dLat/2);
             const sinDLon = Math.sin(dLon/2);
             const aa = sinDLat*sinDLat + sinDLon*sinDLon * Math.cos(lat1) * Math.cos(lat2);
             const c = 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1-aa));
-            
+
             return R * c; // Return distance in meters
         }
 
         /**
          * Calculate total length of a path (array of GPS coordinates)
-         * 
+         *
          * USAGE: Determine total distance for animation timing calculations
          * METHOD: Sum of Haversine distances between consecutive points
-         * 
+         *
          * @param {Array} path - Array of {lat, lng} coordinate objects
          * @returns {number} Total path length in meters
          */
@@ -356,28 +356,28 @@
         // ====================================================================
         // ADVANCED ANIMATION ENGINE - Smooth car movement along routes
         // ====================================================================
-        
+
         /**
          * Animate car marker along Google Directions steps with realistic timing
-         * 
+         *
          * ANIMATION COMPLEXITY: VERY HIGH
          * This function implements a sophisticated multi-level animation system:
-         * 
+         *
          * LEVEL 1: Step-by-step animation (turn-by-turn directions)
          * LEVEL 2: Segment-by-segment animation within each step
          * LEVEL 3: Frame-by-frame interpolation within each segment
-         * 
+         *
          * TIMING CALCULATION:
          * - Uses real Google Directions timing data when available
          * - Falls back to distance-based speed calculations (~50 km/h)
          * - Applies speed multiplier for demo purposes (0.001 = very fast)
          * - Ensures minimum animation durations for smooth visual experience
-         * 
+         *
          * INTERPOLATION METHOD:
          * - Linear interpolation between GPS coordinate pairs
          * - requestAnimationFrame for smooth 60fps animation
          * - Proportional timing based on segment distances
-         * 
+         *
          * @param {Array} steps - Google Directions steps with paths and timing
          * @param {number} speedMultiplier - Animation speed control (1.0 = real time)
          * @param {Function} onProgress - Callback for each animation frame (position, progress)
@@ -385,9 +385,9 @@
          */
         function animateSteps(steps, speedMultiplier, onProgress, onComplete){
             // Validate input parameters
-            if(!steps || steps.length === 0) { 
-                onComplete && onComplete(); 
-                return; 
+            if(!steps || steps.length === 0) {
+                onComplete && onComplete();
+                return;
             }
 
             let stepIndex = 0; // Current step being animated
@@ -398,19 +398,19 @@
              */
             function runStep(){
                 // Check if all steps completed
-                if(stepIndex >= steps.length) { 
-                    onComplete && onComplete(); 
-                    return; 
+                if(stepIndex >= steps.length) {
+                    onComplete && onComplete();
+                    return;
                 }
-                
+
                 const step = steps[stepIndex];
                 const pts = step.path && step.path.length ? step.path : [];
-                
+
                 // Skip empty steps (shouldn't happen but defensive programming)
-                if(pts.length === 0) { 
-                    stepIndex++; 
-                    runStep(); 
-                    return; 
+                if(pts.length === 0) {
+                    stepIndex++;
+                    runStep();
+                    return;
                 }
 
                 // ============================================================
@@ -418,7 +418,7 @@
                 // ============================================================
                 const segs = []; // Array of {start, end, distance} objects
                 let segTotal = 0; // Total distance for this step
-                
+
                 // Create segments between consecutive points in step path
                 for(let i=1; i<pts.length; i++){
                     const a = pts[i-1]; // Start point
@@ -433,7 +433,7 @@
                 // ============================================================
                 const defaultSpeedMsPerMeter = 1000 / 13.9; // ~50 km/h in ms/meter
                 let stepDurationMs = null;
-                
+
                 if(step.duration && typeof step.duration === 'number'){
                     // Use Google's estimated duration (converted to ms)
                     stepDurationMs = Math.max(150, Math.round(step.duration * 1000 * speedMultiplier));
@@ -449,21 +449,21 @@
                 // SEGMENT ANIMATION: Animate each segment within the step
                 // ============================================================
                 let sidx = 0; // Current segment being animated
-                
+
                 /**
                  * RECURSIVE FUNCTION: Animate a single segment
                  * Each segment is a straight line between two GPS points
                  */
                 function runSeg(){
                     // Check if all segments in step completed
-                    if(sidx >= segs.length) { 
-                        stepIndex++; 
-                        runStep(); 
-                        return; 
+                    if(sidx >= segs.length) {
+                        stepIndex++;
+                        runStep();
+                        return;
                     }
-                    
+
                     const seg = segs[sidx];
-                    
+
                     // Calculate segment duration proportional to its distance
                     const segDuration = Math.max(20, Math.round(stepDurationMs * (seg.d / Math.max(1, segTotal))));
                     const startTime = performance.now();
@@ -475,23 +475,23 @@
                     function frame(now){
                         // Calculate animation progress (0.0 to 1.0)
                         const t = Math.min(1, (now - startTime) / segDuration);
-                        
+
                         // Linear interpolation between start and end coordinates
                         const lat = seg.a.lat + (seg.b.lat - seg.a.lat) * t;
                         const lng = seg.a.lng + (seg.b.lng - seg.a.lng) * t;
                         const pos = {lat, lng};
-                        
+
                         // Calculate overall progress through entire route
                         const overallProgress = (stepIndex + (sidx + t) / Math.max(1,segs.length)) / steps.length;
-                        
+
                         // Call progress callback with current position and progress
                         onProgress(pos, overallProgress);
-                        
+
                         // Continue animation or move to next segment
                         if(t < 1) {
                             requestAnimationFrame(frame); // Continue this segment
-                        } else { 
-                            sidx++; 
+                        } else {
+                            sidx++;
                             runSeg(); // Move to next segment
                         }
                     }
@@ -499,12 +499,12 @@
                 }
 
                 // Skip steps with no movement (single point)
-                if(segs.length === 0) { 
-                    stepIndex++; 
-                    runStep(); 
-                    return; 
+                if(segs.length === 0) {
+                    stepIndex++;
+                    runStep();
+                    return;
                 }
-                
+
                 runSeg(); // Start segment animation
             }
 
@@ -514,69 +514,69 @@
         // ====================================================================
         // GOOGLE DIRECTIONS API INTEGRATION
         // ====================================================================
-        
+
         /**
          * Convert Google Maps LatLng object to simple coordinate object
-         * 
+         *
          * GOOGLE MAPS OBJECTS: Complex objects with methods like .lat(), .lng()
          * SIMPLE OBJECTS: Plain {lat, lng} objects for easier manipulation
-         * 
+         *
          * @param {google.maps.LatLng} ll - Google Maps LatLng object
          * @returns {Object} Simple coordinate object {lat, lng}
          */
-        function toSimpleLatLng(ll) { 
-            return { lat: ll.lat(), lng: ll.lng() }; 
+        function toSimpleLatLng(ll) {
+            return { lat: ll.lat(), lng: ll.lng() };
         }
 
         /**
          * Request driving directions and extract detailed path information
-         * 
+         *
          * GOOGLE DIRECTIONS API WORKFLOW:
          * 1. Send origin/destination to Google's routing servers
          * 2. Receive optimized driving route with turn-by-turn instructions
          * 3. Extract detailed path coordinates for smooth animation
          * 4. Parse timing and distance data for realistic movement speed
-         * 
+         *
          * EXTRACTED DATA STRUCTURE:
          * steps: [
          *   {
          *     path: [{lat, lng}, {lat, lng}, ...],    // Detailed coordinate path
          *     duration: 45,                           // Time in seconds
-         *     distance: 650,                          // Distance in meters  
+         *     distance: 650,                          // Distance in meters
          *     instructions: "Turn left on Main St"    // Human-readable instruction
          *   },
          *   ... // More steps for complete route
          * ]
-         * 
+         *
          * ERROR HANDLING:
          * - Network failures → Callback with error
          * - Invalid routes → Callback with error
          * - Rate limiting → Callback with error
-         * 
+         *
          * @param {Object} origin - Start coordinates {lat, lng}
          * @param {Object} destination - End coordinates {lat, lng}
          * @param {Function} callback - Callback function (error, result)
          */
         function getDirections(origin, destination, callback){
-            directionsService.route({ 
-                origin, 
-                destination, 
-                travelMode: google.maps.TravelMode.DRIVING 
+            directionsService.route({
+                origin,
+                destination,
+                travelMode: google.maps.TravelMode.DRIVING
             }, function(result, status){
                 // Check if Google successfully calculated route
                 if(status === 'OK' && result.routes && result.routes.length){
                     const route = result.routes[0]; // Use first (best) route
-                    
+
                     // ====================================================
                     // STEP EXTRACTION: Parse Google's route into usable format
                     // ====================================================
                     const steps = [];
-                    
+
                     // Each route contains legs, each leg contains steps
                     route.legs.forEach(leg => {
                         leg.steps.forEach(step => {
                             const stepPath = [];
-                            
+
                             // Extract detailed path coordinates
                             if(step.path && step.path.length){
                                 // Use detailed path from Google (preferred)
@@ -586,17 +586,17 @@
                                 stepPath.push(toSimpleLatLng(step.start_location));
                                 stepPath.push(toSimpleLatLng(step.end_location));
                             }
-                            
+
                             // Create step object with all necessary data
-                            steps.push({ 
-                                path: stepPath, 
+                            steps.push({
+                                path: stepPath,
                                 duration: step.duration && step.duration.value ? step.duration.value : null,
                                 distance: step.distance && step.distance.value ? step.distance.value : null,
-                                instructions: step.instructions 
+                                instructions: step.instructions
                             });
                         });
                     });
-                    
+
                     // Return success with parsed data
                     callback(null, { steps, route });
                 } else {
@@ -609,17 +609,17 @@
         // ====================================================================
         // STEP 7: TWO-PHASE ANIMATION EXECUTION
         // ====================================================================
-        
+
         // Set initial stage: Driver approaching pickup location
         setStage(1);
-        
+
         // Animation speed control for demonstration purposes
         // 1.0 = real-time speed, 0.001 = very fast demo speed
         const SPEED_MULTIPLIER = 0.001;
-        
+
         /**
          * PHASE 1: DRIVER APPROACHES PICKUP LOCATION
-         * 
+         *
          * PROCESS:
          * 1. Request directions from driver's starting position to pickup
          * 2. Draw route polyline on map
@@ -634,27 +634,27 @@
                 // Used when Google Directions API fails or is unavailable
                 // ========================================================
                 console.warn('Directions failed for approach, falling back', err1);
-                
+
                 // Create simple fallback path (straight lines)
                 const fallbackPath = [start, pickupCoords, dropoffCoords];
-                
+
                 // Draw fallback route line
-                const routeLine = new google.maps.Polyline({ 
-                    path: fallbackPath, 
+                const routeLine = new google.maps.Polyline({
+                    path: fallbackPath,
                     strokeColor: '#2A9D8F',  // Teal color
                     strokeWeight: 4,         // 4px line width
-                    map 
+                    map
                 });
-                
+
                 // Animate with simple path (no turn-by-turn detail)
                 animateSteps(
-                    [{path: fallbackPath, duration: null, distance: null}], 
+                    [{path: fallbackPath, duration: null, distance: null}],
                     SPEED_MULTIPLIER,
-                    function(pos) { 
+                    function(pos) {
                         carMarker.setPosition(pos);  // Update car position
                         map.panTo(pos);              // Keep car centered on map
-                    }, 
-                    function() { 
+                    },
+                    function() {
                         setStage(3);                 // Jump to final stage
                     }
                 );
@@ -664,30 +664,30 @@
             // ====================================================
             // SUCCESS PATH: Use Google Directions data
             // ====================================================
-            
+
             // Extract turn-by-turn steps from Google's response
             const approachSteps = res1.steps;
-            
+
             // Flatten all step paths into single overview path
             const approachOverview = [].concat(...approachSteps.map(s => s.path));
             fullPath = fullPath.concat(approachOverview); // Store for debugging
-            
+
             // Draw approach route on map
-            const approachLine = new google.maps.Polyline({ 
-                path: approachOverview, 
-                strokeColor: '#2A9D8F', 
-                strokeWeight: 4, 
-                map 
+            const approachLine = new google.maps.Polyline({
+                path: approachOverview,
+                strokeColor: '#2A9D8F',
+                strokeWeight: 4,
+                map
             });
 
             // Start approach animation with realistic turn-by-turn timing
             animateSteps(
-                approachSteps, 
+                approachSteps,
                 SPEED_MULTIPLIER,
-                function(pos) { 
+                function(pos) {
                     carMarker.setPosition(pos);  // Update car position
                     map.panTo(pos);              // Keep car centered
-                }, 
+                },
                 function() {
                     // ================================================
                     // TRANSITION: Brief pause at pickup location
@@ -695,10 +695,10 @@
                     // ================================================
                     setTimeout(function(){
                         setStage(2); // Update to "Passenger Pickup" stage
-                        
+
                         /**
                          * PHASE 2: TRAVEL TO DESTINATION
-                         * 
+                         *
                          * PROCESS:
                          * 1. Request directions from pickup to dropoff
                          * 2. Draw destination route on map
@@ -709,23 +709,23 @@
                             if(err2){
                                 // Fallback for destination leg
                                 console.warn('Directions failed for main leg, falling back', err2);
-                                
+
                                 const fallbackPath = [pickupCoords, dropoffCoords];
-                                const legLine = new google.maps.Polyline({ 
-                                    path: fallbackPath, 
-                                    strokeColor: '#2A9D8F', 
-                                    strokeWeight: 4, 
-                                    map 
+                                const legLine = new google.maps.Polyline({
+                                    path: fallbackPath,
+                                    strokeColor: '#2A9D8F',
+                                    strokeWeight: 4,
+                                    map
                                 });
-                                
+
                                 animateSteps(
-                                    [{path: fallbackPath, duration: null, distance: null}], 
+                                    [{path: fallbackPath, duration: null, distance: null}],
                                     SPEED_MULTIPLIER,
-                                    function(pos) { 
-                                        carMarker.setPosition(pos); 
-                                        map.panTo(pos); 
-                                    }, 
-                                    function() { 
+                                    function(pos) {
+                                        carMarker.setPosition(pos);
+                                        map.panTo(pos);
+                                    },
+                                    function() {
                                         setStage(3); // Journey complete
                                     }
                                 );
@@ -736,24 +736,24 @@
                             const legSteps = res2.steps;
                             const legOverview = [].concat(...legSteps.map(s => s.path));
                             fullPath = fullPath.concat(legOverview);
-                            
+
                             // Draw destination route
-                            const legLine = new google.maps.Polyline({ 
-                                path: legOverview, 
-                                strokeColor: '#2A9D8F', 
-                                strokeWeight: 4, 
-                                map 
+                            const legLine = new google.maps.Polyline({
+                                path: legOverview,
+                                strokeColor: '#2A9D8F',
+                                strokeWeight: 4,
+                                map
                             });
 
                             // Animate final leg to destination
                             animateSteps(
-                                legSteps, 
+                                legSteps,
                                 SPEED_MULTIPLIER,
-                                function(pos) { 
-                                    carMarker.setPosition(pos); 
-                                    map.panTo(pos); 
-                                }, 
-                                function() { 
+                                function(pos) {
+                                    carMarker.setPosition(pos);
+                                    map.panTo(pos);
+                                },
+                                function() {
                                     setStage(3); // Set final stage: "En Route to Destination"
                                 }
                             );
