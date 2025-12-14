@@ -10,156 +10,144 @@
     />
     <link rel="stylesheet" href="../../styles/styles.css" />
     <style>
-      .page-container {
-        display: flex;
-        min-height: calc(100vh - 60px);
-        margin-left: 250px;
-        transition: margin-left 0.3s ease;
-        background: #f5f7fa;
-      }
-
-      .sidebar.collapsed ~ .page-container {
-        margin-left: 80px;
-      }
-
-      .page-wrapper {
-        flex: 1;
-        padding: 32px 20px;
-        max-width: 700px;
-        margin: 0 auto;
-        width: 100%;
-      }
-
-      .card {
-        background: white;
+      /* Route preview card - extends project design */
+      .dashboard-section .route-preview {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.08) 0%,
+          rgba(118, 75, 162, 0.08) 100%
+        );
+        border: 2px solid rgba(102, 126, 234, 0.2);
         border-radius: 12px;
-        padding: 32px;
-        margin-bottom: 24px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 20px;
+        margin-bottom: 20px;
       }
 
-      .card h2 {
-        margin: 0 0 24px 0;
+      .route-preview h4 {
+        margin: 0 0 16px 0;
+        font-size: 1em;
         color: #1a1a1a;
-        font-size: 1.4em;
         display: flex;
         align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      .route-preview h4 i {
+        color: #667eea;
+        font-size: 1.1em;
+      }
+
+      .route-points {
+        display: flex;
+        flex-direction: column;
         gap: 12px;
       }
 
-      .card h2 i {
-        color: #667eea;
-        font-size: 1.3em;
-      }
-
-      /* Route Preview Card */
-      .route-card {
-        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-        border: 2px solid #667eea30;
-      }
-
-      .route-summary {
+      .location-point {
         display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .location-display {
-        display: flex;
-        gap: 16px;
+        gap: 12px;
         align-items: flex-start;
       }
 
-      .location-icon {
-        width: 40px;
-        height: 40px;
+      .location-pin {
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1.2em;
+        font-size: 1.1em;
         flex-shrink: 0;
       }
 
-      .location-icon.pickup {
+      .location-pin.pickup {
         background: #667eea;
       }
 
-      .location-icon.dropoff {
+      .location-pin.dropoff {
         background: #764ba2;
       }
 
-      .location-info {
+      .location-content {
         flex: 1;
       }
 
       .location-label {
-        font-size: 0.8em;
+        font-size: 0.75em;
         color: #999;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
+        letter-spacing: 0.4px;
+        margin-bottom: 2px;
         font-weight: 600;
       }
 
       .location-address {
-        font-size: 1.1em;
+        font-size: 0.95em;
         color: #1a1a1a;
         font-weight: 500;
       }
 
-      .route-line {
+      .route-divider {
         width: 2px;
-        height: 30px;
+        height: 16px;
         background: linear-gradient(to bottom, #667eea, #764ba2);
-        margin-left: 20px;
+        margin-left: 17px;
+        margin-top: -4px;
+        margin-bottom: -4px;
       }
 
-      .route-notice {
-        padding: 12px 16px;
-        background: #f0f6ff;
-        border-left: 3px solid #2196f3;
-        border-radius: 4px;
-        font-size: 0.9em;
-        color: #1565c0;
-        margin-top: 16px;
+      /* Form section styling */
+      .create-ride-form {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       }
 
-      /* Form Styling */
-      .form-section {
-        margin-bottom: 28px;
+      .create-ride-form h3 {
+        margin: 0 0 20px 0;
+        font-size: 1em;
+        color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
       }
 
-      .form-section:last-child {
-        margin-bottom: 0;
+      .create-ride-form h3 i {
+        color: #667eea;
+        font-size: 1.1em;
       }
 
-      .form-group {
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
         margin-bottom: 20px;
       }
 
-      .form-group:last-child {
-        margin-bottom: 0;
+      .form-group {
+        display: flex;
+        flex-direction: column;
       }
 
       .form-group label {
-        display: block;
-        margin-bottom: 10px;
         font-weight: 600;
         color: #1a1a1a;
-        font-size: 0.95em;
+        margin-bottom: 6px;
+        font-size: 0.9em;
       }
 
       .form-group input,
       .form-group select {
-        width: 100%;
-        padding: 12px 14px;
+        padding: 11px 12px;
         border: 2px solid #e0e0e0;
         border-radius: 8px;
-        font-size: 1em;
-        transition: all 0.2s;
+        font-size: 0.95em;
         font-family: inherit;
+        transition: all 0.2s;
       }
 
       .form-group input:focus,
@@ -169,44 +157,22 @@
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
 
-      .form-group input::placeholder {
-        color: #bbb;
-      }
-
-      .field-help {
-        font-size: 0.85em;
-        color: #999;
-        margin-top: 6px;
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-
-      @media (max-width: 600px) {
-        .form-row {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      /* Button Styling */
-      .button-group {
+      /* Action buttons */
+      .form-actions {
         display: flex;
         gap: 12px;
-        margin-top: 32px;
-        padding-top: 24px;
+        padding-top: 20px;
         border-top: 1px solid #e0e0e0;
+        margin-top: 20px;
       }
 
-      .btn {
+      .form-actions .btn {
         flex: 1;
-        padding: 12px 20px;
+        padding: 11px 16px;
         border: none;
         border-radius: 8px;
-        font-size: 0.95em;
         font-weight: 600;
+        font-size: 0.95em;
         cursor: pointer;
         transition: all 0.2s;
         display: flex;
@@ -215,55 +181,52 @@
         gap: 8px;
       }
 
-      .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+      .form-actions .btn-primary {
+        background: var(--color-primary);
+        color: var(--color-primary-foreground);
       }
 
-      .btn-primary:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .btn-primary:hover:not(:disabled) {
+      .form-actions .btn-primary:hover:not(:disabled) {
+        background-color: hsl(0, 100%, 35%);
         transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
       }
 
-      .btn-primary:disabled {
+      .form-actions .btn-primary:disabled {
         opacity: 0.5;
         cursor: not-allowed;
       }
 
-      .btn-secondary {
+      .form-actions .btn-secondary {
         background: #f5f5f5;
         color: #333;
         border: 1px solid #e0e0e0;
       }
 
-      .btn-secondary:hover {
-        background: #f0f0f0;
+      .form-actions .btn-secondary:hover {
+        background: #eeeeee;
       }
 
-      /* Loading & Error States */
-      .loading-state {
+      /* Loading spinner */
+      .loading-spinner {
         display: none;
         text-align: center;
-        padding: 24px;
+        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
       }
 
-      .loading-state.active {
-        display: block;
+      .loading-spinner.show {
+        display: flex;
       }
 
       .spinner {
         border: 3px solid #f3f3f3;
         border-top: 3px solid #667eea;
         border-radius: 50%;
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         animation: spin 1s linear infinite;
-        margin: 0 auto 12px;
       }
 
       @keyframes spin {
@@ -275,246 +238,252 @@
         }
       }
 
-      .error-banner {
+      /* Error & success banners */
+      #errorBanner {
         display: none;
-        padding: 14px 16px;
+        padding: 12px 16px;
         background: #ffebee;
         border-left: 4px solid #f44336;
-        border-radius: 4px;
+        border-radius: 6px;
         color: #c62828;
         margin-bottom: 20px;
-        font-size: 0.95em;
+        font-size: 0.9em;
       }
 
-      .error-banner.visible {
-        display: block;
-      }
-
-      .error-banner.show {
-        display: flex !important;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .error-content {
+      #errorBanner.show {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
       }
 
-      .error-content i {
-        font-size: 1.2em;
-        flex-shrink: 0;
-      }
-
-      .success-banner {
-        display: flex;
-        align-items: center;
-        padding: 14px 16px;
-        background: #e8f5e9;
-        border-left: 4px solid #4caf50;
-        border-radius: 4px;
-        color: #2e7d32;
-        margin-bottom: 20px;
-        font-size: 0.95em;
-        gap: 12px;
-      }
-
-      .success-content {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .success-content i {
-        font-size: 1.2em;
+      #errorBanner i {
+        font-size: 1.1em;
         flex-shrink: 0;
       }
 
       /* Responsive */
       @media (max-width: 768px) {
-        .page-container {
-          margin-left: 0;
-          padding: 0;
+        .form-row {
+          grid-template-columns: 1fr;
         }
 
-        .page-wrapper {
-          padding: 16px;
-          max-width: 100%;
-        }
-
-        .card {
-          padding: 20px;
-          margin-bottom: 16px;
-        }
-
-        .card h2 {
-          font-size: 1.2em;
-          margin-bottom: 16px;
-        }
-
-        .button-group {
+        .form-actions {
           flex-direction: column;
-          margin-top: 24px;
-          padding-top: 20px;
         }
       }
     </style>
   </head>
   <body>
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-      <div class="sidebar-header">
-        <h2>Corosa Driver</h2>
-        <button id="sidebarToggle" class="sidebar-toggle">
-          <i class="bx bx-menu"></i>
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-content">
+        <img
+          src="../../assets/corosa-logo.png"
+          alt="Corosa Logo"
+          class="logo"
+        />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
+          <div class="profile-menu-wrapper">
+            <button
+              class="btn btn-outline profile-btn"
+              id="profile-menu-btn"
+              aria-label="Profile menu"
+            >
+              <i class="bx bx-user-circle"></i>
+            </button>
+            <div class="profile-dropdown" id="profile-dropdown">
+              <a
+                href="../../shared/pages/user-profile.html"
+                class="dropdown-item"
+              >
+                <i class="bx bx-user"></i> Profile
+              </a>
+              <a href="driver-settings.html" class="dropdown-item">
+                <i class="bx bx-cog"></i> Settings
+              </a>
+              <button class="dropdown-item logout-btn" id="logout-btn">
+                <i class="bx bx-log-out"></i> Logout
+              </button>
+            </div>
+          </div>
+        </nav>
+        <button
+          class="btn mobile-menu"
+          id="mobile-menu-btn"
+          aria-label="Open menu"
+        >
+          ☰
         </button>
       </div>
-      <div class="sidebar-menu">
-        <a href="driver-Homepage.html">
-          <i class="bx bx-home-alt"></i>
-          <span>Home</span>
-        </a>
-        <a href="driver-makeride.html" class="active">
-          <i class="bx bx-plus-circle"></i>
-          <span>Offer a Ride</span>
-        </a>
-        <a href="driver-ridestatus.html">
-          <i class="bx bx-car"></i>
-          <span>My Rides</span>
-        </a>
-        <a href="driver-requests.html">
-          <i class="bx bx-bell"></i>
-          <span>Booking Requests</span>
-        </a>
-        <a href="driver-ratepassengers.html">
-          <i class="bx bx-star"></i>
-          <span>Rate Passengers</span>
-        </a>
-        <a href="user-profile.html">
-          <i class="bx bx-user"></i>
-          <span>Profile</span>
-        </a>
-      </div>
-      <div class="sidebar-footer">
-        <button id="logoutBtn" class="logout-btn">
-          <i class="bx bx-log-out"></i>
-          <span>Logout</span>
-        </button>
-      </div>
-    </div>
+    </header>
 
-    <!-- Main Page Container -->
-    <div class="page-container">
-      <div class="page-wrapper">
+    <!-- Main Dashboard -->
+    <main class="driver-dashboard">
+      <!-- Sidebar -->
+      <aside class="dashboard-sidebar" id="dashboard-sidebar">
+        <div class="sidebar-header">
+          <button
+            class="sidebar-toggle"
+            id="sidebar-toggle"
+            aria-label="Toggle sidebar"
+          >
+            <i class="bx bx-chevron-left"></i>
+          </button>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="driver-Homepage.html" class="sidebar-link" title="Dashboard">
+            <i class="bx bx-home"></i>
+            <span class="sidebar-text">Dashboard</span>
+          </a>
+          <a
+            href="driver-rideconfirmation.html"
+            class="sidebar-link"
+            title="Ride Requests"
+          >
+            <i class="bx bx-bell"></i>
+            <span class="sidebar-text">Ride Requests</span>
+          </a>
+          <a
+            href="driver-passengerstatus.html"
+            class="sidebar-link"
+            title="Active Trip"
+          >
+            <i class="bx bx-navigation"></i>
+            <span class="sidebar-text">Active Trip</span>
+          </a>
+          <a
+            href="driver-history.html"
+            class="sidebar-link"
+            title="Trip History"
+          >
+            <i class="bx bx-history"></i>
+            <span class="sidebar-text">Trip History</span>
+          </a>
+          <a
+            href="driver-passengerfeedback.html"
+            class="sidebar-link"
+            title="Ratings"
+          >
+            <i class="bx bx-star"></i>
+            <span class="sidebar-text">Ratings</span>
+          </a>
+          <a href="driver-settings.html" class="sidebar-link" title="Settings">
+            <i class="bx bx-cog"></i>
+            <span class="sidebar-text">Settings</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Page Content -->
+      <div class="dashboard-content">
         <!-- Error Banner -->
-        <div id="errorBanner" class="error-banner"></div>
+        <div id="errorBanner"></div>
 
-        <!-- Route Display Card -->
-        <div class="card route-card">
-          <h2><i class="bx bx-map"></i> Your Route</h2>
+        <!-- Page Title -->
+        <div class="welcome-section">
+          <div>
+            <h2>Create a Ride</h2>
+            <p>
+              Offer a ride by selecting your route, departure time, and
+              available seats.
+            </p>
+          </div>
+        </div>
 
-          <div class="route-summary">
-            <!-- Pickup Location -->
-            <div class="location-display">
-              <div class="location-icon pickup">
-                <i class="bx bx-map-pin"></i>
-              </div>
-              <div class="location-info">
-                <div class="location-label">Pickup</div>
-                <div class="location-address" id="pickupDisplay">
-                  Loading...
+        <!-- Content Section -->
+        <section class="dashboard-section" style="max-width: 600px">
+          <!-- Route Preview -->
+          <div class="route-preview">
+            <h4><i class="bx bx-map"></i> Your Route</h4>
+            <div class="route-points">
+              <div class="location-point">
+                <div class="location-pin pickup">
+                  <i class="bx bx-map-pin"></i>
+                </div>
+                <div class="location-content">
+                  <div class="location-label">Pickup</div>
+                  <div class="location-address" id="pickupDisplay">
+                    Loading...
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Route Line -->
-            <div class="route-line"></div>
+              <div class="route-divider"></div>
 
-            <!-- Dropoff Location -->
-            <div class="location-display">
-              <div class="location-icon dropoff">
-                <i class="bx bx-location-plus"></i>
-              </div>
-              <div class="location-info">
-                <div class="location-label">Destination</div>
-                <div class="location-address" id="dropoffDisplay">
-                  Loading...
+              <div class="location-point">
+                <div class="location-pin dropoff">
+                  <i class="bx bx-location-plus"></i>
+                </div>
+                <div class="location-content">
+                  <div class="location-label">Destination</div>
+                  <div class="location-address" id="dropoffDisplay">
+                    Loading...
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="route-notice">
-            <i class="bx bx-info-circle"></i>
-            Route selected in previous steps. To change, go back to location
-            selection.
-          </div>
-        </div>
+          <!-- Ride Details Form -->
+          <div class="create-ride-form">
+            <h3><i class="bx bx-time"></i> Ride Details</h3>
 
-        <!-- Ride Details Form Card -->
-        <div class="card">
-          <h2><i class="bx bx-time"></i> Ride Details</h2>
-
-          <form id="rideDetailsForm">
-            <!-- Departure Date & Time -->
-            <div class="form-section">
-              <div class="form-group">
-                <label for="departureDateTime"> Departure Date & Time </label>
-                <input type="datetime-local" id="departureDateTime" required />
-                <div class="field-help">When will you depart?</div>
-              </div>
-            </div>
-
-            <!-- Available Seats -->
-            <div class="form-section">
-              <div class="form-group">
-                <label for="seatCount"> Available Seats </label>
-                <select id="seatCount" required>
-                  <option value="">Select number of seats</option>
-                  <option value="1">1 seat available</option>
-                  <option value="2">2 seats available</option>
-                  <option value="3">3 seats available</option>
-                  <option value="4">4 seats available</option>
-                  <option value="5">5 seats available</option>
-                  <option value="6">6 seats available</option>
-                  <option value="7">7 seats available</option>
-                  <option value="8">8 seats available</option>
-                </select>
-                <div class="field-help">
-                  How many seats can you offer to passengers?
+            <form id="rideDetailsForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="departureDateTime">Departure Time</label>
+                  <input
+                    type="datetime-local"
+                    id="departureDateTime"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="seatCount">Available Seats</label>
+                  <select id="seatCount" required>
+                    <option value="">Select seats</option>
+                    <option value="1">1 seat</option>
+                    <option value="2">2 seats</option>
+                    <option value="3">3 seats</option>
+                    <option value="4">4 seats</option>
+                    <option value="5">5 seats</option>
+                    <option value="6">6 seats</option>
+                    <option value="7">7 seats</option>
+                    <option value="8">8 seats</option>
+                  </select>
                 </div>
               </div>
-            </div>
 
-            <!-- Loading State -->
-            <div class="loading-state" id="loadingState">
-              <div class="spinner"></div>
-              <p>Creating your ride...</p>
-            </div>
+              <!-- Loading State -->
+              <div class="loading-spinner" id="loadingState">
+                <div class="spinner"></div>
+                <p>Creating your ride...</p>
+              </div>
 
-            <!-- Action Buttons -->
-            <div class="button-group">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                onclick="window.history.back()"
-              >
-                <i class="bx bx-chevron-left"></i> Back
-              </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                id="createRideBtn"
-                disabled
-              >
-                <i class="bx bx-check"></i> Create Ride
-              </button>
-            </div>
-          </form>
-        </div>
+              <!-- Action Buttons -->
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="window.history.back()"
+                >
+                  <i class="bx bx-chevron-left"></i> Back
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="createRideBtn"
+                  disabled
+                >
+                  <i class="bx bx-check"></i> Create Ride
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
       </div>
-    </div>
+    </main>
 
     <!-- Scripts -->
     <script src="../../shared/js/header-auth.js"></script>

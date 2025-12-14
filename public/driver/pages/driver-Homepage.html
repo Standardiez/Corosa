@@ -13,9 +13,15 @@
   <body>
     <header class="header">
       <div class="container header-content">
-        <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
+        <img
+          src="../../assets/corosa-logo.png"
+          alt="Corosa Logo"
+          class="logo"
+        />
         <nav class="nav header-nav">
-          <a class="btn btn-outline" href="../../shared/pages/index.html">Back</a>
+          <a class="btn btn-outline" href="../../shared/pages/index.html"
+            >Back</a
+          >
           <a
             class="btn btn-primary"
             id="offer-ride-nav"
@@ -31,7 +37,10 @@
               <i class="bx bx-user-circle"></i>
             </button>
             <div class="profile-dropdown" id="profile-dropdown">
-              <a href="../../shared/pages/user-profile.html" class="dropdown-item">
+              <a
+                href="../../shared/pages/user-profile.html"
+                class="dropdown-item"
+              >
                 <i class="bx bx-user"></i> Profile
               </a>
               <a href="driver-settings.html" class="dropdown-item">
@@ -236,7 +245,7 @@
       document.getElementById("year").textContent = new Date().getFullYear();
 
       // Set flowIntent for driver flow when this page loads
-      sessionStorage.setItem('flowIntent', 'driver');
+      sessionStorage.setItem("flowIntent", "driver");
 
       // Sidebar Toggle Functionality
       const sidebarToggle = document.getElementById("sidebar-toggle");

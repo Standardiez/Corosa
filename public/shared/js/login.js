@@ -64,7 +64,6 @@
 // DOMContentLoaded ensures all HTML elements exist before we try to access them
 // Think of it as: "Don't start the show until all actors are on stage"
 document.addEventListener("DOMContentLoaded", function () {
-
   // Get reference to the login form element from the HTML
   const form = document.getElementById("loginForm");
 
@@ -122,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // FormData API reads all input fields from the form
     // We get the values of email and password fields
     const data = new FormData(form);
-    const email = (data.get("email") || "").trim();  // .trim() removes whitespace
+    const email = (data.get("email") || "").trim(); // .trim() removes whitespace
     const password = data.get("password") || "";
 
     // ------------------------------------------------------------------------
@@ -169,9 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // This is like making a phone call to the server instead of mailing a letter
       // The page stays loaded while we wait for the response
       fetch(endpoint, {
-        method: "POST",                              // We're SENDING data (not just asking for it)
-        headers: { "Content-Type": "application/json" },  // Tell server we're sending JSON
-        body: JSON.stringify(payload),               // Convert JS object to JSON string
+        method: "POST", // We're SENDING data (not just asking for it)
+        headers: { "Content-Type": "application/json" }, // Tell server we're sending JSON
+        body: JSON.stringify(payload), // Convert JS object to JSON string
       })
         // ----------------------------------------------------------------------
         // STEP 6: Parse response from server
@@ -194,9 +193,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const userData = {
               userId: resp.userId || null,
               email: email,
-              role: resp.role || 'passenger',
-              firstName: resp.firstName || 'User',  // Default to 'User' if not provided
-              lastName: resp.lastName || '',
+              role: resp.role || "passenger",
+              firstName: resp.firstName || "User", // Default to 'User' if not provided
+              lastName: resp.lastName || "",
               token: resp.token || null,
             };
 
@@ -206,15 +205,15 @@ document.addEventListener("DOMContentLoaded", function () {
               // ================================================================
               // Used for login state that should survive browser restarts
               // Stored as JSON string (localStorage can only store text)
-              localStorage.setItem('userData', JSON.stringify(userData));
+              localStorage.setItem("userData", JSON.stringify(userData));
 
               // Store token separately for easy access in API calls
               if (resp.token) {
-                localStorage.setItem('userToken', resp.token);
+                localStorage.setItem("userToken", resp.token);
               }
             } catch (e) {
               // localStorage can fail if user disabled it or storage is full
-              console.warn('Could not write to localStorage', e);
+              console.warn("Could not write to localStorage", e);
             }
 
             // ==================================================================
@@ -223,9 +222,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // Used for temporary data needed during the booking flow
             // More secure than localStorage for sensitive session data
             if (resp.userId) {
-              sessionStorage.setItem('userId', resp.userId);
+              sessionStorage.setItem("userId", resp.userId);
             }
-            sessionStorage.setItem('userEmail', email);
+            sessionStorage.setItem("userEmail", email);
 
             // ==================================================================
             // EXPLICIT ROLE-SELECTION LOGIC
@@ -242,54 +241,58 @@ document.addEventListener("DOMContentLoaded", function () {
             // But flowIntent (set at index.html button click) is the user's INTENT
             // ==================================================================
 
-            const flowIntent = sessionStorage.getItem('flowIntent');
-            
+            const flowIntent = sessionStorage.getItem("flowIntent");
+
             // =========== SCENARIO 1: User selected "Offer a Ride" (driver flow) ===========
-            if (flowIntent === 'driver') {
-              if (userData.role !== 'driver') {
+            if (flowIntent === "driver") {
+              if (userData.role !== "driver") {
                 // User clicked "Offer a Ride" but isn't registered as a driver yet
                 // Redirect to driver registration form
-                sessionStorage.setItem('registrationPending', 'driver');
-                window.location.href = '../pages/driver-registration.html';
+                sessionStorage.setItem("registrationPending", "driver");
+                window.location.href = "../pages/driver-registration.html";
                 return;
               } else {
                 // User is registered as a driver and selected "Offer a Ride"
                 // Proceed to driver homepage
-                window.location.href = '../../driver/pages/driver-Homepage.html';
+                window.location.href =
+                  "../../driver/pages/driver-Homepage.html";
                 return;
               }
             }
 
             // =========== SCENARIO 2: User selected "Book a Ride" (passenger flow) ===========
-            if (flowIntent === 'passenger') {
-              if (userData.role === 'driver' && !isPassengerRegistered) {
+            if (flowIntent === "passenger") {
+              if (userData.role === "driver" && !isPassengerRegistered) {
                 // User clicked "Book a Ride" but isn't registered as a passenger
                 // Show message that passenger registration happens during signup
-                alert('You are registered as a driver only. Passengers register during account creation. You can still use the passenger side of the app with your current account.');
-                window.location.href = '../../passenger/pages/landing-page.html';
+                alert(
+                  "You are registered as a driver only. Passengers register during account creation. You can still use the passenger side of the app with your current account."
+                );
+                window.location.href =
+                  "../../passenger/pages/landing-page.html";
                 return;
               } else {
                 // User is registered as passenger (or both) - proceed to booking
-                window.location.href = '../../passenger/pages/select-pickup.html';
+                window.location.href =
+                  "../../passenger/pages/select-pickup.html";
                 return;
               }
             }
 
             // =========== DEFAULT: No explicit intent set ===========
             // Fallback based on actual role from database
-            if (userData.role === 'driver') {
-              window.location.href = '../../driver/pages/driver-Homepage.html';
+            if (userData.role === "driver") {
+              window.location.href = "../../driver/pages/driver-Homepage.html";
             } else {
-              window.location.href = '../../passenger/pages/landing-page.html';
+              window.location.href = "../../passenger/pages/landing-page.html";
             }
-
           } else {
             // --------------------------------------------------------------------
             // STEP 8: Handle failed login
             // --------------------------------------------------------------------
             // Server returned success: false
             // Show error message under password field
-            setError('password', resp.message || 'Invalid credentials');
+            setError("password", resp.message || "Invalid credentials");
           }
         })
         // ----------------------------------------------------------------------
@@ -298,9 +301,11 @@ document.addEventListener("DOMContentLoaded", function () {
         // .catch() runs if the request fails completely (no response from server)
         // Examples: Server is down, no internet, wrong URL, etc.
         .catch((err) => {
-          console.error('Login fetch error:', err);
-          console.error('Endpoint attempted:', endpoint);
-          alert('Could not connect to the server. Check browser console for details.');
+          console.error("Login fetch error:", err);
+          console.error("Endpoint attempted:", endpoint);
+          alert(
+            "Could not connect to the server. Check browser console for details."
+          );
         });
     }
   });

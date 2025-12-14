@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Driver Settings — Corosa</title>
@@ -14,15 +14,15 @@
         max-width: 600px;
         margin: 0 auto;
       }
-      
+
       .settings-section {
         background: white;
         border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         margin-bottom: 20px;
       }
-      
+
       .section-title {
         font-size: 16px;
         font-weight: 700;
@@ -32,12 +32,12 @@
         align-items: center;
         gap: 10px;
       }
-      
+
       .section-title i {
         color: #667eea;
         font-size: 20px;
       }
-      
+
       .setting-item {
         display: flex;
         justify-content: space-between;
@@ -45,27 +45,27 @@
         padding: 15px 0;
         border-bottom: 1px solid #f3f4f6;
       }
-      
+
       .setting-item:last-child {
         border-bottom: none;
       }
-      
+
       .setting-label {
         flex: 1;
       }
-      
+
       .setting-label h3 {
         font-size: 14px;
         font-weight: 600;
         color: #111827;
         margin-bottom: 4px;
       }
-      
+
       .setting-label p {
         font-size: 13px;
         color: #6b7280;
       }
-      
+
       .toggle-switch {
         position: relative;
         width: 48px;
@@ -75,13 +75,13 @@
         cursor: pointer;
         transition: background 0.3s;
       }
-      
+
       .toggle-switch.active {
         background: #667eea;
       }
-      
+
       .toggle-switch::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 2px;
         left: 2px;
@@ -91,11 +91,11 @@
         border-radius: 12px;
         transition: left 0.3s;
       }
-      
+
       .toggle-switch.active::after {
         left: 22px;
       }
-      
+
       .select-field {
         padding: 10px;
         border: 1px solid #e5e7eb;
@@ -104,17 +104,17 @@
         background: white;
         cursor: pointer;
       }
-      
+
       .select-field:focus {
         outline: none;
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
-      
+
       .form-group {
         margin-bottom: 20px;
       }
-      
+
       .form-group label {
         display: block;
         font-size: 14px;
@@ -122,7 +122,7 @@
         color: #111827;
         margin-bottom: 8px;
       }
-      
+
       .form-group input {
         width: 100%;
         padding: 10px;
@@ -130,19 +130,19 @@
         border-radius: 6px;
         font-size: 14px;
       }
-      
+
       .form-group input:focus {
         outline: none;
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
-      
+
       .button-group {
         display: flex;
         gap: 10px;
         margin-top: 30px;
       }
-      
+
       .btn {
         flex: 1;
         padding: 12px;
@@ -153,25 +153,25 @@
         cursor: pointer;
         transition: all 0.2s;
       }
-      
+
       .btn-secondary {
         background: #f3f4f6;
         color: #374151;
       }
-      
+
       .btn-secondary:hover {
         background: #e5e7eb;
       }
-      
+
       .btn-primary {
         background: #667eea;
         color: white;
       }
-      
+
       .btn-primary:hover {
         background: #5568d3;
       }
-      
+
       .success-message {
         display: none;
         background: #d1fae5;
@@ -181,221 +181,250 @@
         margin-bottom: 20px;
         font-size: 14px;
       }
-      
+
       .success-message.show {
         display: block;
       }
     </style>
-</head>
-<body>
-  <header class="header">
-    <div class="container header-content">
-      <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
-      <nav class="nav header-nav">
-        <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
-      </nav>
-    </div>
-  </header>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-content">
+        <img
+          src="../../assets/corosa-logo.png"
+          alt="Corosa Logo"
+          class="logo"
+        />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
+        </nav>
+      </div>
+    </header>
 
-  <main class="container settings-container">
-    <h1 style="margin-bottom: 30px; margin-top: 20px;">Settings</h1>
-    
-    <div class="success-message" id="successMessage">
-      ✓ Settings updated successfully
-    </div>
-    
-    <!-- Profile Settings -->
-    <div class="settings-section">
-      <div class="section-title">
-        <i class='bx bx-user'></i> Profile Settings
-      </div>
-      <div class="form-group">
-        <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" placeholder="Your name" />
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" />
-      </div>
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" placeholder="your.email@example.com" />
-      </div>
-    </div>
-    
-    <!-- Availability Settings -->
-    <div class="settings-section">
-      <div class="section-title">
-        <i class='bx bx-time'></i> Availability
-      </div>
-      <div class="setting-item">
-        <div class="setting-label">
-          <h3>Currently Available</h3>
-          <p>Show your profile to passengers</p>
-        </div>
-        <div class="toggle-switch active" id="availabilityToggle"></div>
-      </div>
-      <div class="setting-item">
-        <div class="setting-label">
-          <h3>Accept Shared Rides</h3>
-          <p>Allow multiple passengers per trip</p>
-        </div>
-        <div class="toggle-switch" id="sharedRideToggle"></div>
-      </div>
-      <div class="setting-item">
-        <div class="setting-label">
-          <h3>Preferred Ride Type</h3>
-        </div>
-      </div>
-      <div style="padding: 0 0 15px 0; border-bottom: 1px solid #f3f4f6;">
-        <select class="select-field" id="rideType" style="width: 100%;">
-          <option value="both">Both Economy & Premium</option>
-          <option value="economy">Economy Only</option>
-          <option value="premium">Premium Only</option>
-        </select>
-      </div>
-    </div>
-    
-    <!-- Safety & Preferences -->
-    <div class="settings-section">
-      <div class="section-title">
-        <i class='bx bx-shield'></i> Safety & Preferences
-      </div>
-      <div class="setting-item">
-        <div class="setting-label">
-          <h3>Auto-Accept Requests</h3>
-          <p>Accept ride requests automatically</p>
-        </div>
-        <div class="toggle-switch" id="autoAcceptToggle"></div>
-      </div>
-      <div class="setting-item">
-        <div class="setting-label">
-          <h3>Trip Notifications</h3>
-          <p>Get alerts for new ride requests</p>
-        </div>
-        <div class="toggle-switch active" id="notificationToggle"></div>
-      </div>
-      <div class="form-group" style="margin-bottom: 0;">
-        <label for="minRating">Minimum Passenger Rating</label>
-        <select class="select-field" id="minRating" style="width: 100%;">
-          <option value="any">Any Rating</option>
-          <option value="3.0">3.0+ Stars</option>
-          <option value="3.5">3.5+ Stars</option>
-          <option value="4.0">4.0+ Stars</option>
-          <option value="4.5">4.5+ Stars</option>
-        </select>
-      </div>
-    </div>
-    
-    <!-- Payment Settings -->
-    <div class="settings-section">
-      <div class="section-title">
-        <i class='bx bx-credit-card'></i> Payment Settings
-      </div>
-      <div class="form-group">
-        <label for="bankAccount">Bank Account (Last 4 digits)</label>
-        <input type="text" id="bankAccount" placeholder="****-1234" />
-      </div>
-      <div class="form-group">
-        <label for="payoutFrequency">Payout Frequency</label>
-        <select class="select-field" id="payoutFrequency" style="width: 100%;">
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="button-group">
-      <button class="btn btn-secondary" onclick="goBack()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
-    </div>
-  </main>
+    <main class="container settings-container">
+      <h1 style="margin-bottom: 30px; margin-top: 20px">Settings</h1>
 
-  <script>
-    // Load settings on page load
-    window.addEventListener('DOMContentLoaded', function() {
-      const userData = localStorage.getItem('userData');
-      if (!userData) {
-        window.location.href = '../../shared/pages/login.html';
-        return;
+      <div class="success-message" id="successMessage">
+        ✓ Settings updated successfully
+      </div>
+
+      <!-- Profile Settings -->
+      <div class="settings-section">
+        <div class="section-title">
+          <i class="bx bx-user"></i> Profile Settings
+        </div>
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" placeholder="Your name" />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+1 (555) 000-0000" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="your.email@example.com" />
+        </div>
+      </div>
+
+      <!-- Availability Settings -->
+      <div class="settings-section">
+        <div class="section-title"><i class="bx bx-time"></i> Availability</div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h3>Currently Available</h3>
+            <p>Show your profile to passengers</p>
+          </div>
+          <div class="toggle-switch active" id="availabilityToggle"></div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h3>Accept Shared Rides</h3>
+            <p>Allow multiple passengers per trip</p>
+          </div>
+          <div class="toggle-switch" id="sharedRideToggle"></div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h3>Preferred Ride Type</h3>
+          </div>
+        </div>
+        <div style="padding: 0 0 15px 0; border-bottom: 1px solid #f3f4f6">
+          <select class="select-field" id="rideType" style="width: 100%">
+            <option value="both">Both Economy & Premium</option>
+            <option value="economy">Economy Only</option>
+            <option value="premium">Premium Only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Safety & Preferences -->
+      <div class="settings-section">
+        <div class="section-title">
+          <i class="bx bx-shield"></i> Safety & Preferences
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h3>Auto-Accept Requests</h3>
+            <p>Accept ride requests automatically</p>
+          </div>
+          <div class="toggle-switch" id="autoAcceptToggle"></div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h3>Trip Notifications</h3>
+            <p>Get alerts for new ride requests</p>
+          </div>
+          <div class="toggle-switch active" id="notificationToggle"></div>
+        </div>
+        <div class="form-group" style="margin-bottom: 0">
+          <label for="minRating">Minimum Passenger Rating</label>
+          <select class="select-field" id="minRating" style="width: 100%">
+            <option value="any">Any Rating</option>
+            <option value="3.0">3.0+ Stars</option>
+            <option value="3.5">3.5+ Stars</option>
+            <option value="4.0">4.0+ Stars</option>
+            <option value="4.5">4.5+ Stars</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Payment Settings -->
+      <div class="settings-section">
+        <div class="section-title">
+          <i class="bx bx-credit-card"></i> Payment Settings
+        </div>
+        <div class="form-group">
+          <label for="bankAccount">Bank Account (Last 4 digits)</label>
+          <input type="text" id="bankAccount" placeholder="****-1234" />
+        </div>
+        <div class="form-group">
+          <label for="payoutFrequency">Payout Frequency</label>
+          <select class="select-field" id="payoutFrequency" style="width: 100%">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-secondary" onclick="goBack()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSettings()">
+          Save Changes
+        </button>
+      </div>
+    </main>
+
+    <script>
+      // Load settings on page load
+      window.addEventListener("DOMContentLoaded", function () {
+        const userData = localStorage.getItem("userData");
+        if (!userData) {
+          window.location.href = "../../shared/pages/login.html";
+          return;
+        }
+
+        const user = JSON.parse(userData);
+        document.getElementById("fullName").value = user.name || "";
+
+        // Load saved settings
+        const settings = JSON.parse(
+          localStorage.getItem("driverSettings") || "{}"
+        );
+        document.getElementById("phone").value = settings.phone || "";
+        document.getElementById("email").value = settings.email || "";
+        document.getElementById("rideType").value = settings.rideType || "both";
+        document.getElementById("minRating").value =
+          settings.minRating || "any";
+        document.getElementById("bankAccount").value =
+          settings.bankAccount || "";
+        document.getElementById("payoutFrequency").value =
+          settings.payoutFrequency || "weekly";
+
+        if (settings.available === false) {
+          document
+            .getElementById("availabilityToggle")
+            .classList.remove("active");
+        }
+
+        if (settings.sharedRides === true) {
+          document.getElementById("sharedRideToggle").classList.add("active");
+        }
+
+        if (settings.autoAccept === true) {
+          document.getElementById("autoAcceptToggle").classList.add("active");
+        }
+
+        if (settings.notifications === false) {
+          document
+            .getElementById("notificationToggle")
+            .classList.remove("active");
+        }
+      });
+
+      // Toggle switch handlers
+      document
+        .getElementById("availabilityToggle")
+        .addEventListener("click", function () {
+          this.classList.toggle("active");
+        });
+
+      document
+        .getElementById("sharedRideToggle")
+        .addEventListener("click", function () {
+          this.classList.toggle("active");
+        });
+
+      document
+        .getElementById("autoAcceptToggle")
+        .addEventListener("click", function () {
+          this.classList.toggle("active");
+        });
+
+      document
+        .getElementById("notificationToggle")
+        .addEventListener("click", function () {
+          this.classList.toggle("active");
+        });
+
+      function saveSettings() {
+        const settings = {
+          phone: document.getElementById("phone").value,
+          email: document.getElementById("email").value,
+          rideType: document.getElementById("rideType").value,
+          minRating: document.getElementById("minRating").value,
+          bankAccount: document.getElementById("bankAccount").value,
+          payoutFrequency: document.getElementById("payoutFrequency").value,
+          available: document
+            .getElementById("availabilityToggle")
+            .classList.contains("active"),
+          sharedRides: document
+            .getElementById("sharedRideToggle")
+            .classList.contains("active"),
+          autoAccept: document
+            .getElementById("autoAcceptToggle")
+            .classList.contains("active"),
+          notifications: document
+            .getElementById("notificationToggle")
+            .classList.contains("active"),
+          updatedAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem("driverSettings", JSON.stringify(settings));
+
+        // Show success message
+        const successMsg = document.getElementById("successMessage");
+        successMsg.classList.add("show");
+        setTimeout(() => {
+          successMsg.classList.remove("show");
+        }, 3000);
       }
-      
-      const user = JSON.parse(userData);
-      document.getElementById('fullName').value = user.name || '';
-      
-      // Load saved settings
-      const settings = JSON.parse(localStorage.getItem('driverSettings') || '{}');
-      document.getElementById('phone').value = settings.phone || '';
-      document.getElementById('email').value = settings.email || '';
-      document.getElementById('rideType').value = settings.rideType || 'both';
-      document.getElementById('minRating').value = settings.minRating || 'any';
-      document.getElementById('bankAccount').value = settings.bankAccount || '';
-      document.getElementById('payoutFrequency').value = settings.payoutFrequency || 'weekly';
-      
-      if (settings.available === false) {
-        document.getElementById('availabilityToggle').classList.remove('active');
+
+      function goBack() {
+        window.location.href = "driver-Homepage.html";
       }
-      
-      if (settings.sharedRides === true) {
-        document.getElementById('sharedRideToggle').classList.add('active');
-      }
-      
-      if (settings.autoAccept === true) {
-        document.getElementById('autoAcceptToggle').classList.add('active');
-      }
-      
-      if (settings.notifications === false) {
-        document.getElementById('notificationToggle').classList.remove('active');
-      }
-    });
-    
-    // Toggle switch handlers
-    document.getElementById('availabilityToggle').addEventListener('click', function() {
-      this.classList.toggle('active');
-    });
-    
-    document.getElementById('sharedRideToggle').addEventListener('click', function() {
-      this.classList.toggle('active');
-    });
-    
-    document.getElementById('autoAcceptToggle').addEventListener('click', function() {
-      this.classList.toggle('active');
-    });
-    
-    document.getElementById('notificationToggle').addEventListener('click', function() {
-      this.classList.toggle('active');
-    });
-    
-    function saveSettings() {
-      const settings = {
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        rideType: document.getElementById('rideType').value,
-        minRating: document.getElementById('minRating').value,
-        bankAccount: document.getElementById('bankAccount').value,
-        payoutFrequency: document.getElementById('payoutFrequency').value,
-        available: document.getElementById('availabilityToggle').classList.contains('active'),
-        sharedRides: document.getElementById('sharedRideToggle').classList.contains('active'),
-        autoAccept: document.getElementById('autoAcceptToggle').classList.contains('active'),
-        notifications: document.getElementById('notificationToggle').classList.contains('active'),
-        updatedAt: new Date().toISOString()
-      };
-      
-      localStorage.setItem('driverSettings', JSON.stringify(settings));
-      
-      // Show success message
-      const successMsg = document.getElementById('successMessage');
-      successMsg.classList.add('show');
-      setTimeout(() => {
-        successMsg.classList.remove('show');
-      }, 3000);
-    }
-    
-    function goBack() {
-      window.location.href = 'driver-Homepage.html';
-    }
-  </script>
-  <script src="../../shared/js/header-auth.js"></script>
-</body>
+    </script>
+    <script src="../../shared/js/header-auth.js"></script>
+  </body>
 </html>

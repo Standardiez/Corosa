@@ -1,326 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Driver Registration — Corosa</title>
     <link rel="stylesheet" href="../../styles/styles.css" />
-    <link href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css" rel="stylesheet" />
-</head>
-<body>
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <header class="header">
-        <div class="container header-content">
-            <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
-            <nav class="nav header-nav">
-                <a class="btn btn-outline" href="index.html">Back</a>
-            </nav>
-        </div>
+      <div class="container header-content">
+        <img
+          src="../../assets/corosa-logo.png"
+          alt="Corosa Logo"
+          class="logo"
+        />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="index.html">Back</a>
+        </nav>
+      </div>
     </header>
 
-    <main class="container" style="padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xl);">
-        <section class="form-card card" style="max-width: 600px; margin: 0 auto;">
-            <h2 style="margin-bottom: var(--spacing-md);">Complete Your Driver Profile</h2>
-            <p class="text-muted" style="margin-bottom: var(--spacing-lg);">
-                Your passenger account is ready. Now let's set up your driver profile so you can offer rides.
-            </p>
+    <main
+      class="container"
+      style="padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xl)"
+    >
+      <section class="form-card card" style="max-width: 600px; margin: 0 auto">
+        <h2 style="margin-bottom: var(--spacing-md)">
+          Complete Your Driver Profile
+        </h2>
+        <p class="text-muted" style="margin-bottom: var(--spacing-lg)">
+          Your passenger account is ready. Now let's set up your driver profile
+          so you can offer rides.
+        </p>
 
-            <form id="driverRegistrationForm" class="form-grid" method="POST" action="javascript:void(0);" novalidate>
-                <!-- User Email (Read-only) -->
-                <div class="form-group col-2">
-                    <label for="email" class="form-label">Email (from your account)</label>
-                    <input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        class="input" 
-                        readonly 
-                        style="background-color: var(--color-light-bg); cursor: not-allowed;"
-                    />
-                </div>
+        <form
+          id="driverRegistrationForm"
+          class="form-grid"
+          method="POST"
+          action="javascript:void(0);"
+          novalidate
+        >
+          <!-- User Email (Read-only) -->
+          <div class="form-group col-2">
+            <label for="email" class="form-label"
+              >Email (from your account)</label
+            >
+            <input
+              id="email"
+              name="email"
+              type="email"
+              class="input"
+              readonly
+              style="
+                background-color: var(--color-light-bg);
+                cursor: not-allowed;
+              "
+            />
+          </div>
 
-                <!-- Driver License -->
-                <div class="form-group col-2">
-                    <label for="driverLicenseImage" class="form-label">Driver License Upload</label>
-                    <input 
-                        id="driverLicenseImage" 
-                        name="driverLicenseImage" 
-                        type="file" 
-                        accept="image/*"
-                        class="input"
-                        required 
-                    />
-                    <small style="color: var(--color-text-muted); display: block; margin-top: var(--spacing-xs);">
-                        Accepted formats: JPG, PNG (Max 5MB)
-                    </small>
-                    <div class="error" data-error-for="driverLicenseImage"></div>
-                </div>
+          <!-- Driver License -->
+          <div class="form-group col-2">
+            <label for="driverLicenseImage" class="form-label"
+              >Driver License Upload</label
+            >
+            <input
+              id="driverLicenseImage"
+              name="driverLicenseImage"
+              type="file"
+              accept="image/*"
+              class="input"
+              required
+            />
+            <small
+              style="
+                color: var(--color-text-muted);
+                display: block;
+                margin-top: var(--spacing-xs);
+              "
+            >
+              Accepted formats: JPG, PNG (Max 5MB)
+            </small>
+            <div class="error" data-error-for="driverLicenseImage"></div>
+          </div>
 
-                <!-- Vehicle Information Section -->
-                <div class="form-group col-2" style="border-top: 1px solid var(--color-border); padding-top: var(--spacing-md); margin-top: var(--spacing-md);">
-                    <h3 style="margin: 0 0 var(--spacing-md) 0; font-size: 1rem;">Vehicle Information</h3>
-                </div>
+          <!-- Vehicle Information Section -->
+          <div
+            class="form-group col-2"
+            style="
+              border-top: 1px solid var(--color-border);
+              padding-top: var(--spacing-md);
+              margin-top: var(--spacing-md);
+            "
+          >
+            <h3 style="margin: 0 0 var(--spacing-md) 0; font-size: 1rem">
+              Vehicle Information
+            </h3>
+          </div>
 
-                <!-- Plate Number -->
-                <div class="form-group col-1">
-                    <label for="plateNumber" class="form-label">Plate Number</label>
-                    <input 
-                        id="plateNumber" 
-                        name="plateNumber" 
-                        class="input" 
-                        placeholder="ABC 1234"
-                        required 
-                    />
-                    <div class="error" data-error-for="plateNumber"></div>
-                </div>
+          <!-- Plate Number -->
+          <div class="form-group col-1">
+            <label for="plateNumber" class="form-label">Plate Number</label>
+            <input
+              id="plateNumber"
+              name="plateNumber"
+              class="input"
+              placeholder="ABC 1234"
+              required
+            />
+            <div class="error" data-error-for="plateNumber"></div>
+          </div>
 
-                <!-- Vehicle Model -->
-                <div class="form-group col-1">
-                    <label for="vehicleModel" class="form-label">Vehicle Model</label>
-                    <input 
-                        id="vehicleModel" 
-                        name="vehicleModel" 
-                        class="input" 
-                        placeholder="e.g., Honda Civic 2020"
-                        required 
-                    />
-                    <div class="error" data-error-for="vehicleModel"></div>
-                </div>
+          <!-- Vehicle Model -->
+          <div class="form-group col-1">
+            <label for="vehicleModel" class="form-label">Vehicle Model</label>
+            <input
+              id="vehicleModel"
+              name="vehicleModel"
+              class="input"
+              placeholder="e.g., Honda Civic 2020"
+              required
+            />
+            <div class="error" data-error-for="vehicleModel"></div>
+          </div>
 
-                <!-- Seat Capacity -->
-                <div class="form-group col-1">
-                    <label for="seatCapacity" class="form-label">Seat Capacity</label>
-                    <select id="seatCapacity" name="seatCapacity" class="input" required>
-                        <option value="">Select capacity</option>
-                        <option value="2">2 seats</option>
-                        <option value="3">3 seats</option>
-                        <option value="4">4 seats</option>
-                        <option value="5">5 seats</option>
-                        <option value="6">6 seats</option>
-                        <option value="7">7 seats</option>
-                        <option value="8">8 seats or more</option>
-                    </select>
-                    <div class="error" data-error-for="seatCapacity"></div>
-                </div>
+          <!-- Seat Capacity -->
+          <div class="form-group col-1">
+            <label for="seatCapacity" class="form-label">Seat Capacity</label>
+            <select
+              id="seatCapacity"
+              name="seatCapacity"
+              class="input"
+              required
+            >
+              <option value="">Select capacity</option>
+              <option value="2">2 seats</option>
+              <option value="3">3 seats</option>
+              <option value="4">4 seats</option>
+              <option value="5">5 seats</option>
+              <option value="6">6 seats</option>
+              <option value="7">7 seats</option>
+              <option value="8">8 seats or more</option>
+            </select>
+            <div class="error" data-error-for="seatCapacity"></div>
+          </div>
 
-                <!-- Form Actions -->
-                <div class="form-group col-2" style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">
-                        <i class="bx bx-check"></i> Complete Registration
-                    </button>
-                    <button type="button" class="btn btn-outline" style="flex: 1;" id="cancelBtn">
-                        Cancel
-                    </button>
-                </div>
+          <!-- Form Actions -->
+          <div
+            class="form-group col-2"
+            style="
+              display: flex;
+              gap: var(--spacing-md);
+              margin-top: var(--spacing-lg);
+            "
+          >
+            <button type="submit" class="btn btn-primary" style="flex: 1">
+              <i class="bx bx-check"></i> Complete Registration
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline"
+              style="flex: 1"
+              id="cancelBtn"
+            >
+              Cancel
+            </button>
+          </div>
 
-                <!-- Loading indicator -->
-                <div id="loadingIndicator" style="display: none; text-align: center; margin-top: var(--spacing-md);">
-                    <p><i class="bx bx-loader bx-spin"></i> Processing...</p>
-                </div>
-            </form>
-        </section>
+          <!-- Loading indicator -->
+          <div
+            id="loadingIndicator"
+            style="
+              display: none;
+              text-align: center;
+              margin-top: var(--spacing-md);
+            "
+          >
+            <p><i class="bx bx-loader bx-spin"></i> Processing...</p>
+          </div>
+        </form>
+      </section>
     </main>
 
     <footer class="welcome-footer">
-        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+      <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
     <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
+      document.getElementById("year").textContent = new Date().getFullYear();
 
-        // ====================================================================
-        // DRIVER REGISTRATION FORM HANDLER
-        // ====================================================================
+      // ====================================================================
+      // DRIVER REGISTRATION FORM HANDLER
+      // ====================================================================
 
-        const form = document.getElementById("driverRegistrationForm");
-        const emailInput = document.getElementById("email");
-        const loadingIndicator = document.getElementById("loadingIndicator");
-        const cancelBtn = document.getElementById("cancelBtn");
+      const form = document.getElementById("driverRegistrationForm");
+      const emailInput = document.getElementById("email");
+      const loadingIndicator = document.getElementById("loadingIndicator");
+      const cancelBtn = document.getElementById("cancelBtn");
 
-        // Initialize email from localStorage
-        function initializeForm() {
-            try {
-                const userDataStr = localStorage.getItem("userData");
-                if (!userDataStr) {
-                    // No authenticated user, redirect to login
-                    alert("You must be logged in to register as a driver");
-                    window.location.href = "login.html";
-                    return;
+      // Initialize email from localStorage
+      function initializeForm() {
+        try {
+          const userDataStr = localStorage.getItem("userData");
+          if (!userDataStr) {
+            // No authenticated user, redirect to login
+            alert("You must be logged in to register as a driver");
+            window.location.href = "login.html";
+            return;
+          }
+
+          const userData = JSON.parse(userDataStr);
+          emailInput.value = userData.email || "";
+        } catch (e) {
+          console.error("Error initializing form:", e);
+          window.location.href = "login.html";
+        }
+      }
+
+      // Helper function to display errors
+      function setError(fieldName, message) {
+        const el = document.querySelector(`[data-error-for="${fieldName}"]`);
+        if (el) el.textContent = message || "";
+      }
+
+      // Helper function to clear all errors
+      function clearErrors() {
+        document
+          .querySelectorAll("[data-error-for]")
+          .forEach((e) => (e.textContent = ""));
+      }
+
+      // File size validation
+      function isValidFileSize(file, maxMB = 5) {
+        return file.size <= maxMB * 1024 * 1024;
+      }
+
+      // Form submission handler
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        clearErrors();
+
+        // Get form data
+        const formData = new FormData(form);
+        const email = emailInput.value.trim();
+        const driverLicenseFile =
+          document.getElementById("driverLicenseImage").files[0];
+        const plateNumber = (formData.get("plateNumber") || "")
+          .trim()
+          .toUpperCase();
+        const vehicleModel = (formData.get("vehicleModel") || "").trim();
+        const seatCapacity = formData.get("seatCapacity") || "";
+
+        // Validate inputs
+        let valid = true;
+
+        if (!driverLicenseFile) {
+          setError("driverLicenseImage", "Driver license image is required");
+          valid = false;
+        } else if (!isValidFileSize(driverLicenseFile)) {
+          setError("driverLicenseImage", "File size must be less than 5MB");
+          valid = false;
+        }
+
+        if (!plateNumber) {
+          setError("plateNumber", "Plate number is required");
+          valid = false;
+        }
+
+        if (!vehicleModel) {
+          setError("vehicleModel", "Vehicle model is required");
+          valid = false;
+        }
+
+        if (!seatCapacity) {
+          setError("seatCapacity", "Seat capacity is required");
+          valid = false;
+        }
+
+        if (!valid) return;
+
+        // Show loading indicator
+        loadingIndicator.style.display = "block";
+        form.style.opacity = "0.6";
+        form.style.pointerEvents = "none";
+
+        // Convert image file to base64
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const base64String = e.target.result.split(",")[1]; // Remove data:image/jpeg;base64, prefix
+          const imageType = driverLicenseFile.type;
+
+          // Create JSON payload
+          const submitData = {
+            userId: localStorage.getItem("userData")
+              ? JSON.parse(localStorage.getItem("userData")).userId
+              : null,
+            email: email,
+            plateNumber: plateNumber,
+            vehicleModel: vehicleModel,
+            seatCapacity: seatCapacity,
+            driverLicenseBase64: base64String,
+            driverLicenseType: imageType,
+          };
+
+          console.log(
+            "Submitting driver registration with file size:",
+            base64String.length,
+            "bytes"
+          );
+
+          // Send to Node.js backend
+          fetch("http://localhost:3000/api/driver/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(submitData),
+          })
+            .then((r) => {
+              console.log("Response status:", r.status);
+              return r.text().then((text) => {
+                console.log("Response text:", text);
+                try {
+                  return JSON.parse(text);
+                } catch (parseErr) {
+                  console.error("Failed to parse JSON:", parseErr);
+                  throw new Error(
+                    "Server returned invalid JSON: " + text.substring(0, 200)
+                  );
+                }
+              });
+            })
+            .then((resp) => {
+              loadingIndicator.style.display = "none";
+              form.style.opacity = "1";
+              form.style.pointerEvents = "auto";
+
+              console.log("Driver registration response:", resp);
+
+              if (resp && resp.success) {
+                // Registration successful
+                alert(
+                  "🎉 Congratulations! Your driver profile has been created.\nYou can now log in as a driver."
+                );
+
+                // Update userData to include driver role
+                try {
+                  const userData = JSON.parse(localStorage.getItem("userData"));
+                  userData.role = "driver";
+                  localStorage.setItem("userData", JSON.stringify(userData));
+                } catch (storageErr) {
+                  console.warn("Could not update userData:", storageErr);
                 }
 
-                const userData = JSON.parse(userDataStr);
-                emailInput.value = userData.email || "";
-            } catch (e) {
-                console.error("Error initializing form:", e);
+                // Redirect to login so user can log in as driver
+                sessionStorage.setItem("flowIntent", "driver");
                 window.location.href = "login.html";
-            }
-        }
+              } else {
+                // Registration failed
+                const errorMessage =
+                  resp.message || "Registration failed. Please try again.";
+                alert(`Error: ${errorMessage}`);
 
-        // Helper function to display errors
-        function setError(fieldName, message) {
-            const el = document.querySelector(`[data-error-for="${fieldName}"]`);
-            if (el) el.textContent = message || "";
-        }
+                console.error("Driver registration error:", resp);
 
-        // Helper function to clear all errors
-        function clearErrors() {
-            document.querySelectorAll("[data-error-for]").forEach((e) => (e.textContent = ""));
-        }
+                // Show specific field errors if provided
+                if (resp.errors && typeof resp.errors === "object") {
+                  for (const [field, message] of Object.entries(resp.errors)) {
+                    setError(field, message);
+                  }
+                }
+              }
+            })
+            .catch((error) => {
+              loadingIndicator.style.display = "none";
+              form.style.opacity = "1";
+              form.style.pointerEvents = "auto";
 
-        // File size validation
-        function isValidFileSize(file, maxMB = 5) {
-            return file.size <= maxMB * 1024 * 1024;
-        }
+              console.error("Error submitting driver registration:", error);
+              console.error("Error details:", error.message, error.stack);
+              alert("Error: " + error.message);
+            });
+        };
 
-        // Form submission handler
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            clearErrors();
+        reader.onerror = function () {
+          loadingIndicator.style.display = "none";
+          form.style.opacity = "1";
+          form.style.pointerEvents = "auto";
+          setError("driverLicenseImage", "Failed to read file");
+        };
 
-            // Get form data
-            const formData = new FormData(form);
-            const email = emailInput.value.trim();
-            const driverLicenseFile = document.getElementById("driverLicenseImage").files[0];
-            const plateNumber = (formData.get("plateNumber") || "").trim().toUpperCase();
-            const vehicleModel = (formData.get("vehicleModel") || "").trim();
-            const seatCapacity = formData.get("seatCapacity") || "";
+        reader.readAsDataURL(driverLicenseFile);
+      });
 
-            // Validate inputs
-            let valid = true;
+      // Cancel button handler
+      cancelBtn.addEventListener("click", function () {
+        // Return to index.html
+        window.location.href = "index.html";
+      });
 
-            if (!driverLicenseFile) {
-                setError("driverLicenseImage", "Driver license image is required");
-                valid = false;
-            } else if (!isValidFileSize(driverLicenseFile)) {
-                setError("driverLicenseImage", "File size must be less than 5MB");
-                valid = false;
-            }
-
-            if (!plateNumber) {
-                setError("plateNumber", "Plate number is required");
-                valid = false;
-            }
-
-            if (!vehicleModel) {
-                setError("vehicleModel", "Vehicle model is required");
-                valid = false;
-            }
-
-            if (!seatCapacity) {
-                setError("seatCapacity", "Seat capacity is required");
-                valid = false;
-            }
-
-            if (!valid) return;
-
-            // Show loading indicator
-            loadingIndicator.style.display = "block";
-            form.style.opacity = "0.6";
-            form.style.pointerEvents = "none";
-
-            // Convert image file to base64
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const base64String = e.target.result.split(',')[1]; // Remove data:image/jpeg;base64, prefix
-                const imageType = driverLicenseFile.type;
-
-                // Create JSON payload
-                const submitData = {
-                    userId: localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).userId : null,
-                    email: email,
-                    plateNumber: plateNumber,
-                    vehicleModel: vehicleModel,
-                    seatCapacity: seatCapacity,
-                    driverLicenseBase64: base64String,
-                    driverLicenseType: imageType
-                };
-
-                console.log("Submitting driver registration with file size:", base64String.length, "bytes");
-
-                // Send to Node.js backend
-                fetch("http://localhost:3000/api/driver/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(submitData),
-                })
-                    .then((r) => {
-                        console.log("Response status:", r.status);
-                        return r.text().then(text => {
-                            console.log("Response text:", text);
-                            try {
-                                return JSON.parse(text);
-                            } catch (parseErr) {
-                                console.error("Failed to parse JSON:", parseErr);
-                                throw new Error("Server returned invalid JSON: " + text.substring(0, 200));
-                            }
-                        });
-                    })
-                    .then((resp) => {
-                        loadingIndicator.style.display = "none";
-                        form.style.opacity = "1";
-                        form.style.pointerEvents = "auto";
-
-                        console.log("Driver registration response:", resp);
-
-                        if (resp && resp.success) {
-                            // Registration successful
-                            alert("🎉 Congratulations! Your driver profile has been created.\nYou can now log in as a driver.");
-                            
-                            // Update userData to include driver role
-                            try {
-                                const userData = JSON.parse(localStorage.getItem("userData"));
-                                userData.role = "driver";
-                                localStorage.setItem("userData", JSON.stringify(userData));
-                            } catch (storageErr) {
-                                console.warn("Could not update userData:", storageErr);
-                            }
-
-                            // Redirect to login so user can log in as driver
-                            sessionStorage.setItem("flowIntent", "driver");
-                            window.location.href = "login.html";
-                        } else {
-                            // Registration failed
-                            const errorMessage = resp.message || "Registration failed. Please try again.";
-                            alert(`Error: ${errorMessage}`);
-                            
-                            console.error("Driver registration error:", resp);
-                            
-                            // Show specific field errors if provided
-                            if (resp.errors && typeof resp.errors === "object") {
-                                for (const [field, message] of Object.entries(resp.errors)) {
-                                    setError(field, message);
-                                }
-                            }
-                        }
-                    })
-                    .catch((error) => {
-                        loadingIndicator.style.display = "none";
-                        form.style.opacity = "1";
-                        form.style.pointerEvents = "auto";
-
-                        console.error("Error submitting driver registration:", error);
-                        console.error("Error details:", error.message, error.stack);
-                        alert("Error: " + error.message);
-                    });
-            };
-
-            reader.onerror = function () {
-                loadingIndicator.style.display = "none";
-                form.style.opacity = "1";
-                form.style.pointerEvents = "auto";
-                setError("driverLicenseImage", "Failed to read file");
-            };
-
-            reader.readAsDataURL(driverLicenseFile);
-        });
-
-        // Cancel button handler
-        cancelBtn.addEventListener("click", function () {
-            // Return to index.html
-            window.location.href = "index.html";
-        });
-
-        // Initialize form when page loads
-        document.addEventListener("DOMContentLoaded", initializeForm);
+      // Initialize form when page loads
+      document.addEventListener("DOMContentLoaded", initializeForm);
     </script>
-</body>
+  </body>
 </html>
