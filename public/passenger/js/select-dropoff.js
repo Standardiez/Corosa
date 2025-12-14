@@ -76,6 +76,14 @@
         const el = document.getElementById('selected-coords');
         const nextBtn = document.getElementById('next-btn');
 
+        console.log('DEBUG: setSelectedLocationInfo called with:', {
+            coords,
+            address,
+            addressIsEmpty: address === '',
+            addressIsUndefined: address === undefined,
+            addressTrimmed: (address || '').trim()
+        });
+
         if (el) {
             const coordsText = fmtLatLng(coords);
             el.textContent = address ? `${address} (${coordsText})` : coordsText;
@@ -83,6 +91,8 @@
             // Store the current selection
             currentLocation.address = address || coordsText;
             currentLocation.coords = coords;
+            
+            console.log('DEBUG: currentLocation updated to:', currentLocation);
         }
 
         // Enable the next button when we have coordinates
@@ -91,37 +101,14 @@
         }
     }
 
-    // Handle next button click
-    function setupNextButton() {
-        const nextBtn = document.getElementById('next-btn');
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
-                if (currentLocation.coords) {
-                    // Get flow intent from sessionStorage
-                    const flowIntent = sessionStorage.getItem('flowIntent') || 'passenger';
-
-                    // Store drop-off location based on flow intent
-                    if (flowIntent === 'driver') {
-                        sessionStorage.setItem('driverDropoffLocation', currentLocation.address);
-                        sessionStorage.setItem('driverDropoffCoords', JSON.stringify(currentLocation.coords));
-                        // Redirect to driver makeride page
-                        window.location.href = '../../driver/pages/driver-makeride.html';
-                    } else {
-                        sessionStorage.setItem('dropoffLocation', currentLocation.address);
-                        sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
-                        // Redirect to passenger request-ride page
-                        window.location.href = 'request-ride.html';
-                    }
-                }
-            });
-        }
-    }
-
     // Get location details using reverse geocoding
     async function getLocationDetails(latLng) {
         const geocoder = new google.maps.Geocoder();
+        console.log('DEBUG: getLocationDetails called with:', latLng);
         try {
             const response = await geocoder.geocode({ location: latLng });
+            console.log('DEBUG: Geocoder response:', response);
+            
             if (response.results[0]) {
                 // Try to find the most relevant place name
                 const result = response.results[0];
@@ -135,6 +122,7 @@
 
                 if (poi) {
                     locationName = poi.long_name;
+                    console.log('DEBUG: Found POI:', locationName);
                 } else {
                     // If no POI, try to construct an address from street + sublocality
                     const street = result.address_components.find(component =>
@@ -147,20 +135,26 @@
 
                     if (street && area) {
                         locationName = `${street.long_name}, ${area.long_name}`;
+                        console.log('DEBUG: Found street + area:', locationName);
                     } else if (street) {
                         locationName = street.long_name;
+                        console.log('DEBUG: Found street only:', locationName);
                     } else if (area) {
                         locationName = area.long_name;
+                        console.log('DEBUG: Found area only:', locationName);
                     } else {
                         // Fallback to formatted address, but try to keep it concise
                         locationName = result.formatted_address.split(',').slice(0, 2).join(',');
+                        console.log('DEBUG: Using formatted address:', locationName);
                     }
                 }
+                console.log('DEBUG: Final locationName to return:', locationName);
                 return locationName;
             }
         } catch (error) {
             console.error('Geocoding failed:', error);
         }
+        console.log('DEBUG: getLocationDetails returning empty string');
         return '';
     }
 
@@ -264,13 +258,36 @@
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) {
             nextBtn.addEventListener('click', function() {
+                console.log('DEBUG: Next button clicked');
+                console.log('DEBUG: currentLocation =', currentLocation);
+                
                 if (currentLocation.coords) {
-                    // Store drop-off location in sessionStorage
-                    sessionStorage.setItem('dropoffLocation', currentLocation.address);
-                    sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
+                    // Get flow intent from sessionStorage
+                    const flowIntent = sessionStorage.getItem('flowIntent') || 'passenger';
+                    
+                    console.log('DEBUG: flowIntent =', flowIntent);
+                    console.log('DEBUG: All sessionStorage keys:', Object.keys(sessionStorage));
+                    console.log('DEBUG: currentLocation.address =', currentLocation.address);
+                    console.log('DEBUG: currentLocation.coords =', currentLocation.coords);
 
-                    // Navigate to request-ride page
-                    window.location.href = '../pages/request-ride.html';
+                    // Store drop-off location based on flow intent
+                    if (flowIntent === 'driver') {
+                        console.log('DEBUG: Redirecting to DRIVER makeride page');
+                        console.log('DEBUG: Storing driverDropoffLocation =', currentLocation.address);
+                        sessionStorage.setItem('driverDropoffLocation', currentLocation.address);
+                        sessionStorage.setItem('driverDropoffCoords', JSON.stringify(currentLocation.coords));
+                        console.log('DEBUG: After storing, driverDropoffLocation =', sessionStorage.getItem('driverDropoffLocation'));
+                        // Redirect to driver makeride page
+                        window.location.href = '../../driver/pages/driver-makeride.html';
+                    } else {
+                        console.log('DEBUG: Redirecting to PASSENGER request-ride page');
+                        sessionStorage.setItem('dropoffLocation', currentLocation.address);
+                        sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
+                        // Redirect to passenger request-ride page
+                        window.location.href = '../pages/request-ride.html';
+                    }
+                } else {
+                    console.error('DEBUG: No coords in currentLocation!', currentLocation);
                 }
             });
         }

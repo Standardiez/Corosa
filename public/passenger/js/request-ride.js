@@ -19,6 +19,19 @@
     // Load locations from session storage
     function loadLocations() {
         try {
+            // Check if this is a driver or passenger flow
+            const flowIntent = sessionStorage.getItem('flowIntent') || 'passenger';
+            
+            console.log('DEBUG: request-ride.js flowIntent =', flowIntent);
+            
+            // If driver, redirect to driver-makeride page instead
+            if (flowIntent === 'driver') {
+                console.log('DEBUG: Driver flow detected in request-ride.js, redirecting to driver-makeride.html');
+                window.location.href = '../../driver/pages/driver-makeride.html';
+                return;
+            }
+            
+            // Load passenger locations
             pickupLocation = {
                 coords: JSON.parse(sessionStorage.getItem('pickupCoords')),
                 address: sessionStorage.getItem('pickupLocation')

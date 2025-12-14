@@ -26,12 +26,16 @@ const tripsRouter = require("./api/shared/js/trip");
 const bookingsRouter = require("./api/pasenger/php/bookings");
 const tripAssignmentsRouter = require("./api/shared/js/trip-assignment");
 const driverRegistrationRouter = require("./server/routes/driver-registration");
+const driverRidesRouter = require("./server/routes/driver-rides");
+const driverBookingsRouter = require("./server/routes/driver-bookings");
 
 // Mount routes
 app.use("/api/trips", tripsRouter);
 app.use("/api/bookings", bookingsRouter);
 app.use("/api/trip-assignments", tripAssignmentsRouter);
 app.use("/api/driver", driverRegistrationRouter);
+app.use("/api/driver", driverRidesRouter);
+app.use("/api/driver", driverBookingsRouter);
 
 // Start server
 const PORT = 3000;
