@@ -31,7 +31,7 @@ class TripNode {
                 WHERE assignment_status = 'confirmed'
                 GROUP BY trip_id
             ) ta ON t.trip_id = ta.trip_id
-            WHERE t.ride_status IN ('available', 'scheduled')
+            WHERE t.ride_status IN ('available', 'pending')
               AND t.available_seats > 0
             ORDER BY t.created_at DESC
         `);
@@ -81,7 +81,7 @@ class TripNode {
             LEFT JOIN driver d ON t.driver_id = d.driver_id
             LEFT JOIN users u ON d.user_id = u.user_id
             LEFT JOIN vehicle v ON v.driver_id = d.driver_id
-            WHERE t.ride_status IN ('available', 'scheduled')
+            WHERE t.ride_status IN ('available', 'pending')
             ORDER BY t.created_at DESC
         `);
 

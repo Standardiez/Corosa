@@ -69,6 +69,9 @@ CREATE TABLE IF NOT EXISTS vehicle (
 ) ENGINE=InnoDB;
 
 -- TRIPS
+-- Initiated by the driver; driver selects start and destination locations.
+-- This is because this carpooling system is for drivers who are on their way to a particular
+-- location (e.g. home, mall, school) and want to pickup and drop off passengers along that route.
 CREATE TABLE IF NOT EXISTS trips (
     trip_id INT AUTO_INCREMENT PRIMARY KEY,
     driver_id INT,
@@ -78,12 +81,13 @@ CREATE TABLE IF NOT EXISTS trips (
     start_long DECIMAL(11,8),
     available_seats TINYINT UNSIGNED,
     ride_distance DECIMAL(10,2),
-    ride_status VARCHAR(50) DEFAULT 'scheduled',
+    ride_status ENUM('available', 'pending', 'active', 'completed', 'cancelled', 'full') DEFAULT 'available',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (driver_id) REFERENCES driver(driver_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- BOOKINGS
+-- Initiated by the passenger; passenger selects pickup (start) and dropoff (end) locations.
 CREATE TABLE IF NOT EXISTS bookings (
     booking_id INT AUTO_INCREMENT PRIMARY KEY,
     passenger_id INT,
@@ -142,7 +146,7 @@ INSERT INTO vehicle (plate_number, driver_id, vehicle_model, seat_capacity, vehi
 ('ABC-1234', 1, 'Toyota Vios 2018', 4, 'available');
 
 INSERT INTO trips (driver_id, start_lat, start_long, end_lat, end_long, available_seats, ride_distance, ride_status) VALUES
-(1, 16.4023, 120.5960, 16.4080, 120.5969, 3, 2.5, 'scheduled');
+(1, 16.4023, 120.5960, 16.4080, 120.5969, 3, 2.5, 'available');
 
 INSERT INTO bookings (passenger_id, start_lat, start_long, end_lat, end_long, payment_type, total_cost, booking_confirmation) VALUES
 (2, 16.4023, 120.5960, 16.4080, 120.5969, 'Cash', 50.00, TRUE);

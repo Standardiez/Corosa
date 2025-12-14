@@ -232,7 +232,7 @@ FROM trips t
 LEFT JOIN driver d ON t.driver_id = d.driver_id
 LEFT JOIN users u ON d.user_id = u.user_id
 LEFT JOIN vehicle v ON v.driver_id = d.driver_id
-WHERE t.ride_status IN ('available', 'scheduled')
+WHERE t.ride_status IN ('available', 'pending')
 ORDER BY t.created_at DESC
 ```
 

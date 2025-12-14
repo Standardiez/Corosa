@@ -428,7 +428,7 @@ LEFT JOIN (
     WHERE assignment_status = 'confirmed'
     GROUP BY trip_id
 ) ta ON t.trip_id = ta.trip_id
-WHERE t.ride_status IN ('available', 'scheduled')
+WHERE t.ride_status IN ('available', 'pending')
 AND t.available_seats > 0
 ORDER BY t.created_at DESC
 ```
