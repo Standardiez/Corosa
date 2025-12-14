@@ -19,7 +19,7 @@
           <a
             class="btn btn-primary"
             id="offer-ride-nav"
-            href="driver-selectstartlocation.html"
+            href="../../passenger/pages/select-pickup.html"
             ><i class="bx bx-car"></i> Offer a Ride</a
           >
           <div class="profile-menu-wrapper">
@@ -234,6 +234,9 @@
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Set flowIntent for driver flow when this page loads
+      sessionStorage.setItem('flowIntent', 'driver');
 
       // Sidebar Toggle Functionality
       const sidebarToggle = document.getElementById("sidebar-toggle");

@@ -332,6 +332,35 @@
     </main>
 
     <script>
+        // Authentication check - Verify user is logged in as driver
+        window.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = '../../shared/pages/login.html';
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            if (user.role !== 'driver') {
+                window.location.href = '../../shared/pages/index.html';
+                return;
+            }
+            
+            // Prepopulate pickup and dropoff from sessionStorage (if coming from location picker)
+            const pickupInput = document.getElementById('pickup');
+            const dropoffInput = document.getElementById('dropoff');
+            
+            const pickupLocation = sessionStorage.getItem('driverPickupLocation');
+            const dropoffLocation = sessionStorage.getItem('driverDropoffLocation');
+            
+            if (pickupLocation) {
+                pickupInput.value = pickupLocation;
+            }
+            if (dropoffLocation) {
+                dropoffInput.value = dropoffLocation;
+            }
+        });
+
         // Set minimum date to today
         const dateInput = document.getElementById('date');
         dateInput.min = new Date().toISOString().split("T")[0];
