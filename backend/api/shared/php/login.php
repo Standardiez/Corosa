@@ -70,18 +70,68 @@
 // Tell the client we're sending JSON data (not HTML)
 header('Content-Type: application/json; charset=UTF-8');
 
+// Enable CORS for local development (localhost)
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+// Handle preflight requests (browsers send OPTIONS before POST)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 // Enable error display for debugging (DISABLE in production!)
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);  // Don't display errors as HTML
+ini_set('log_errors', 1);       // Log errors instead
 error_reporting(E_ALL);
+
+// Set error handler to catch all errors and log them
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    error_log("PHP Error [$errno]: $errstr in $errfile on line $errline");
+    // Return true to prevent default error handling
+    return true;
+});
+
+// Set exception handler to catch uncaught exceptions
+set_exception_handler(function($exception) {
+    error_log("Uncaught Exception: " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'An error occurred. Check server logs for details.'
+    ]);
+    exit;
+});
 
 // ============================================================================
 // STEP 2: Load required dependencies
 // ============================================================================
 // Database class handles PostgreSQL/MySQL connection
-require_once '../../../config/database.php';
+try {
+    require_once '../../../config/database.php';
+} catch (Exception $e) {
+    error_log("Failed to load database.php: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to load database configuration'
+    ]);
+    exit;
+}
 
 // User class contains methods for querying user data
-require_once '../../../classes/shared/php/User.php';
+try {
+    require_once '../../../classes/shared/php/User.php';
+} catch (Exception $e) {
+    error_log("Failed to load User.php: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to load user class'
+    ]);
+    exit;
+}
 
 // ============================================================================
 // STEP 3: Read and parse incoming request
@@ -112,14 +162,38 @@ if (!$email || !$password) {
 // STEP 6: Establish database connection
 // ============================================================================
 // Create new Database instance and get PDO connection object
-$database = new Database();
-$db = $database->getConnection();
+try {
+    $database = new Database();
+    $db = $database->getConnection();
+    
+    if (!$db) {
+        throw new Exception("Database connection returned null");
+    }
+} catch (Exception $e) {
+    error_log("Database connection error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database connection failed. Ensure MySQL is running and corosa_db exists.'
+    ]);
+    exit;
+}
 
 // ============================================================================
 // STEP 7: Initialize User object and query database
 // ============================================================================
 // Create User instance with database connection
-$user = new User($db);
+try {
+    $user = new User($db);
+} catch (Exception $e) {
+    error_log("User initialization error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'User class initialization failed'
+    ]);
+    exit;
+}
 
 // Set the email we're searching for
 $user->email = $email;
@@ -130,7 +204,19 @@ $user->email = $email;
 // getByEmail() queries the database: SELECT * FROM users WHERE email = ?
 // Returns true if user found, false if not found
 // If found, user properties are populated (user_id, hashed_password, etc.)
-if ($user->getByEmail()) {
+try {
+    $userFound = $user->getByEmail();
+} catch (Exception $e) {
+    error_log("Query error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database query failed'
+    ]);
+    exit;
+}
+
+if ($userFound) {
 
     // --------------------------------------------------------------------------
     // User exists in database - now verify the password
@@ -168,11 +254,27 @@ if ($user->getByEmail()) {
         // SUCCESS: Password matches!
         // ----------------------------------------------------------------------
 
-        // Return success response with user ID
+        // Determine user role (check if they're a driver)
+        $role = 'passenger'; // Default role
+        try {
+            $checkDriverQuery = "SELECT driver_id FROM driver WHERE user_id = ?";
+            $checkDriverStmt = $db->prepare($checkDriverQuery);
+            $checkDriverStmt->execute([$user->user_id]);
+            if ($checkDriverStmt->rowCount() > 0) {
+                $role = 'driver';
+            }
+        } catch (Exception $e) {
+            error_log("Role check error: " . $e->getMessage());
+            // Default to passenger if role check fails
+            $role = 'passenger';
+        }
+
+        // Return success response with user ID and role
         // Frontend will store this in localStorage and sessionStorage
         echo json_encode([
             'success' => true,
             'userId' => $user->user_id,
+            'role' => $role,
             'message' => 'Logged in'
 
             // OPTIONAL FIELDS you could add:
