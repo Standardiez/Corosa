@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
+
 /*
 * Open directory in cmd
-* npm install express cors
+* npm install express cors multer mysql2
 */
 const app = express();
 
@@ -16,15 +18,20 @@ app.use(cors({
 // Middleware to parse JSON
 app.use(express.json());
 
+// Middleware for file uploads
+app.use(express.urlencoded({ extended: true }));
+
 // Import routers
 const tripsRouter = require("./api/shared/js/trip");
 const bookingsRouter = require("./api/pasenger/php/bookings");
 const tripAssignmentsRouter = require("./api/shared/js/trip-assignment");
+const driverRegistrationRouter = require("./server/routes/driver-registration");
 
 // Mount routes
 app.use("/api/trips", tripsRouter);
 app.use("/api/bookings", bookingsRouter);
 app.use("/api/trip-assignments", tripAssignmentsRouter);
+app.use("/api/driver", driverRegistrationRouter);
 
 // Start server
 const PORT = 3000;

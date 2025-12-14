@@ -32,14 +32,22 @@
         const params = new URLSearchParams(window.location.search);
         const pickupEl = document.getElementById('pickup-location');
 
+        // Get flow intent
+        const flowIntent = sessionStorage.getItem('flowIntent') || 'passenger';
+
         // Try to get location from URL parameters first
         let pickupLocation = params.get('pickup');
         let pickupCoords = params.get('coords');
 
-        // Fallback to sessionStorage if not in URL
+        // Fallback to sessionStorage (check based on flow intent)
         if (!pickupLocation) {
-            pickupLocation = sessionStorage.getItem('pickupLocation');
-            pickupCoords = sessionStorage.getItem('pickupCoords');
+            if (flowIntent === 'driver') {
+                pickupLocation = sessionStorage.getItem('driverPickupLocation');
+                pickupCoords = sessionStorage.getItem('driverPickupCoords');
+            } else {
+                pickupLocation = sessionStorage.getItem('pickupLocation');
+                pickupCoords = sessionStorage.getItem('pickupCoords');
+            }
         }
 
         if (pickupEl) {
@@ -89,12 +97,21 @@
         if (nextBtn) {
             nextBtn.addEventListener('click', function() {
                 if (currentLocation.coords) {
-                    // Store drop-off location in sessionStorage
-                    sessionStorage.setItem('dropoffLocation', currentLocation.address);
-                    sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
+                    // Get flow intent from sessionStorage
+                    const flowIntent = sessionStorage.getItem('flowIntent') || 'passenger';
 
-                    // Navigate to request-ride page
-                    window.location.href = 'request-ride.html';
+                    // Store drop-off location based on flow intent
+                    if (flowIntent === 'driver') {
+                        sessionStorage.setItem('driverDropoffLocation', currentLocation.address);
+                        sessionStorage.setItem('driverDropoffCoords', JSON.stringify(currentLocation.coords));
+                        // Redirect to driver makeride page
+                        window.location.href = '../../driver/pages/driver-makeride.html';
+                    } else {
+                        sessionStorage.setItem('dropoffLocation', currentLocation.address);
+                        sessionStorage.setItem('dropoffCoords', JSON.stringify(currentLocation.coords));
+                        // Redirect to passenger request-ride page
+                        window.location.href = 'request-ride.html';
+                    }
                 }
             });
         }

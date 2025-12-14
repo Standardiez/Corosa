@@ -194,6 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const userData = {
               userId: resp.userId || null,
               email: email,
+              role: resp.role || 'passenger',
               firstName: resp.firstName || 'User',  // Default to 'User' if not provided
               lastName: resp.lastName || '',
               token: resp.token || null,
@@ -227,11 +228,60 @@ document.addEventListener("DOMContentLoaded", function () {
             sessionStorage.setItem('userEmail', email);
 
             // ==================================================================
-            // Redirect to next page
+            // EXPLICIT ROLE-SELECTION LOGIC
             // ==================================================================
-            // Login successful! Take user to pickup location selection
-            // window.location.href causes a full page navigation
-            window.location.href = '../../passenger/pages/select-pickup.html';
+            // The user's intent (flowIntent) determines their active session role
+            // This allows users registered for multiple roles to choose which to use
+            //
+            // Possible scenarios:
+            // 1. User registered ONLY as passenger → Can only use "Book a Ride"
+            // 2. User registered ONLY as driver → Must register as passenger first
+            // 3. User registered as BOTH → Can choose either role
+            //
+            // The database returns role based on existence in driver/passenger tables
+            // But flowIntent (set at index.html button click) is the user's INTENT
+            // ==================================================================
+
+            const flowIntent = sessionStorage.getItem('flowIntent');
+            
+            // =========== SCENARIO 1: User selected "Offer a Ride" (driver flow) ===========
+            if (flowIntent === 'driver') {
+              if (userData.role !== 'driver') {
+                // User clicked "Offer a Ride" but isn't registered as a driver yet
+                // Redirect to driver registration form
+                sessionStorage.setItem('registrationPending', 'driver');
+                window.location.href = '../pages/driver-registration.html';
+                return;
+              } else {
+                // User is registered as a driver and selected "Offer a Ride"
+                // Proceed to driver homepage
+                window.location.href = '../../driver/pages/driver-Homepage.html';
+                return;
+              }
+            }
+
+            // =========== SCENARIO 2: User selected "Book a Ride" (passenger flow) ===========
+            if (flowIntent === 'passenger') {
+              if (userData.role === 'driver' && !isPassengerRegistered) {
+                // User clicked "Book a Ride" but isn't registered as a passenger
+                // Show message that passenger registration happens during signup
+                alert('You are registered as a driver only. Passengers register during account creation. You can still use the passenger side of the app with your current account.');
+                window.location.href = '../../passenger/pages/landing-page.html';
+                return;
+              } else {
+                // User is registered as passenger (or both) - proceed to booking
+                window.location.href = '../../passenger/pages/select-pickup.html';
+                return;
+              }
+            }
+
+            // =========== DEFAULT: No explicit intent set ===========
+            // Fallback based on actual role from database
+            if (userData.role === 'driver') {
+              window.location.href = '../../driver/pages/driver-Homepage.html';
+            } else {
+              window.location.href = '../../passenger/pages/landing-page.html';
+            }
 
           } else {
             // --------------------------------------------------------------------
@@ -248,8 +298,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // .catch() runs if the request fails completely (no response from server)
         // Examples: Server is down, no internet, wrong URL, etc.
         .catch((err) => {
-          console.error('Login failed', err);
-          alert('Could not connect to the server.');
+          console.error('Login fetch error:', err);
+          console.error('Endpoint attempted:', endpoint);
+          alert('Could not connect to the server. Check browser console for details.');
         });
     }
   });

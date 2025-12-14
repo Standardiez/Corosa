@@ -66,11 +66,19 @@
         if (nextBtn) {
             nextBtn.addEventListener('click', function() {
                 if (currentLocation.coords) {
-                    // Store in sessionStorage
-                    sessionStorage.setItem('pickupLocation', currentLocation.address);
-                    sessionStorage.setItem('pickupCoords', JSON.stringify(currentLocation.coords));
+                    // Get flow intent from sessionStorage
+                    const flowIntent = sessionStorage.getItem('flowIntent') || 'passenger';
+                    
+                    // Store location based on flow intent
+                    if (flowIntent === 'driver') {
+                        sessionStorage.setItem('driverPickupLocation', currentLocation.address);
+                        sessionStorage.setItem('driverPickupCoords', JSON.stringify(currentLocation.coords));
+                    } else {
+                        sessionStorage.setItem('pickupLocation', currentLocation.address);
+                        sessionStorage.setItem('pickupCoords', JSON.stringify(currentLocation.coords));
+                    }
 
-                    // Navigate to drop-off page
+                    // Navigate to drop-off page (same for both roles)
                     window.location.href = '../pages/select-dropoff.html';
                 }
             });

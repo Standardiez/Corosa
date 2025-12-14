@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ride History — Corosa</title>
+    <link rel="stylesheet" href="../../styles/styles.css" />
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .history-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
+      .filter-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      
+      .filter-btn {
+        padding: 8px 16px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #6b7280;
+      }
+      
+      .filter-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+      
+      .filter-btn:hover {
+        border-color: #667eea;
+      }
+      
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .history-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.2s;
+      }
+      
+      .history-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      }
+      
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+      }
+      
+      .card-passenger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .passenger-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+      }
+      
+      .passenger-info h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+      }
+      
+      .passenger-info p {
+        font-size: 13px;
+        color: #6b7280;
+        margin: 2px 0 0 0;
+      }
+      
+      .card-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      
+      .status-completed {
+        color: #10b981;
+      }
+      
+      .status-cancelled {
+        color: #ef4444;
+      }
+      
+      .status-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      
+      .status-icon.completed {
+        background: #d1fae5;
+        color: #10b981;
+      }
+      
+      .status-icon.cancelled {
+        background: #fee2e2;
+        color: #ef4444;
+      }
+      
+      .card-body {
+        margin-bottom: 12px;
+      }
+      
+      .route {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+      }
+      
+      .location {
+        color: #374151;
+      }
+      
+      .trip-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f3f4f6;
+      }
+      
+      .detail-item {
+        text-align: center;
+      }
+      
+      .detail-label {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 4px;
+      }
+      
+      .detail-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+      }
+      
+      .card-footer {
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #f3f4f6;
+        padding-top: 12px;
+      }
+      
+      .card-footer button {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .btn-view {
+        background: #f3f4f6;
+        color: #374151;
+      }
+      
+      .btn-view:hover {
+        background: #e5e7eb;
+      }
+      
+      .btn-rate {
+        background: #667eea;
+        color: white;
+      }
+      
+      .btn-rate:hover {
+        background: #5568d3;
+      }
+      
+      .rating-display {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      
+      .star {
+        color: #fbbf24;
+        font-size: 14px;
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6b7280;
+      }
+      
+      .empty-state i {
+        font-size: 48px;
+        color: #d1d5db;
+        margin-bottom: 16px;
+      }
+    </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
+      <nav class="nav header-nav">
+        <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container history-container">
+    <h1 style="margin-bottom: 20px; margin-top: 20px;">Ride History</h1>
+    
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterHistory('all')">All Rides</button>
+      <button class="filter-btn" onclick="filterHistory('completed')">Completed</button>
+      <button class="filter-btn" onclick="filterHistory('cancelled')">Cancelled</button>
+      <button class="filter-btn" onclick="filterHistory('month')">This Month</button>
+    </div>
+    
+    <!-- History List -->
+    <div class="history-list" id="historyList">
+      <!-- Sample data will be inserted here -->
+    </div>
+  </main>
+
+  <script>
+    const sampleHistory = [
+      {
+        id: 1,
+        passenger: 'Sarah Johnson',
+        initials: 'SJ',
+        from: '123 Main Street',
+        to: 'Downtown Station',
+        date: '2024-01-15',
+        time: '2:30 PM',
+        distance: '3.2 km',
+        duration: '12 min',
+        fare: '$8.50',
+        status: 'completed',
+        rating: 5
+      },
+      {
+        id: 2,
+        passenger: 'Mike Chen',
+        initials: 'MC',
+        from: '456 Business Ave',
+        to: 'Shopping Mall',
+        date: '2024-01-14',
+        time: '10:15 AM',
+        distance: '5.1 km',
+        duration: '18 min',
+        fare: '$12.00',
+        status: 'completed',
+        rating: 4
+      },
+      {
+        id: 3,
+        passenger: 'Emma Wilson',
+        initials: 'EW',
+        from: '789 Park Lane',
+        to: 'Airport Terminal 3',
+        date: '2024-01-13',
+        time: '6:45 PM',
+        distance: '18.5 km',
+        duration: '35 min',
+        fare: '$42.50',
+        status: 'completed',
+        rating: 5
+      },
+      {
+        id: 4,
+        passenger: 'John Davis',
+        initials: 'JD',
+        from: 'Coffee Shop Downtown',
+        to: 'University Campus',
+        date: '2024-01-12',
+        time: '11:20 AM',
+        distance: '4.8 km',
+        duration: '16 min',
+        fare: '$10.75',
+        status: 'cancelled',
+        rating: null
+      }
+    ];
+    
+    let currentFilter = 'all';
+    
+    function renderHistory() {
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '';
+      
+      const filtered = sampleHistory.filter(ride => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'completed') return ride.status === 'completed';
+        if (currentFilter === 'cancelled') return ride.status === 'cancelled';
+        if (currentFilter === 'month') {
+          const rideDate = new Date(ride.date);
+          const now = new Date();
+          return rideDate.getMonth() === now.getMonth() && 
+                 rideDate.getFullYear() === now.getFullYear();
+        }
+        return true;
+      });
+      
+      if (filtered.length === 0) {
+        historyList.innerHTML = `
+          <div class="empty-state">
+            <i class='bx bx-inbox'></i>
+            <p>No rides found</p>
+          </div>
+        `;
+        return;
+      }
+      
+      filtered.forEach(ride => {
+        const statusClass = ride.status === 'completed' ? 'completed' : 'cancelled';
+        const statusIcon = ride.status === 'completed' ? '✓' : '✕';
+        const statusText = ride.status === 'completed' ? 'Completed' : 'Cancelled';
+        const statusTextClass = ride.status === 'completed' ? 'status-completed' : 'status-cancelled';
+        
+        const ratingHtml = ride.rating ? `
+          <div class="rating-display">
+            ${Array(ride.rating).fill(0).map(() => '<span class="star">★</span>').join('')}
+            <span style="font-size: 12px; color: #6b7280; margin-left: 4px;">${ride.rating}.0</span>
+          </div>
+        ` : '';
+        
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-passenger">
+              <div class="passenger-avatar">${ride.initials}</div>
+              <div class="passenger-info">
+                <h3>${ride.passenger}</h3>
+                <p>${ride.date}</p>
+              </div>
+            </div>
+            <div class="card-status ${statusTextClass}">
+              <span class="status-icon ${statusClass}">${statusIcon}</span>
+              ${statusText}
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="route">
+              <i class='bx bx-location-plus' style="color: #667eea;"></i>
+              <span class="location">${ride.from}</span>
+            </div>
+            <div class="route">
+              <i class='bx bx-location-minus' style="color: #ef4444;"></i>
+              <span class="location">${ride.to}</span>
+            </div>
+          </div>
+          
+          <div class="trip-details">
+            <div class="detail-item">
+              <div class="detail-label">Time</div>
+              <div class="detail-value">${ride.time}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Distance</div>
+              <div class="detail-value">${ride.distance}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Duration</div>
+              <div class="detail-value">${ride.duration}</div>
+            </div>
+          </div>
+          
+          <div class="card-footer">
+            <button class="btn-view" onclick="viewDetails(${ride.id})">View Details</button>
+            ${ride.status === 'completed' ? `
+              <button class="btn-rate" onclick="ratePassenger(${ride.id})">
+                ${ride.rating ? 'Rating: ' + ride.rating + '★' : 'Rate Passenger'}
+              </button>
+            ` : ''}
+          </div>
+        `;
+        historyList.appendChild(card);
+      });
+    }
+    
+    function filterHistory(filter) {
+      currentFilter = filter;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      renderHistory();
+    }
+    
+    function viewDetails(rideId) {
+      alert('View details for ride #' + rideId);
+      // Could redirect to detailed ride view
+    }
+    
+    function ratePassenger(rideId) {
+      alert('Rate passenger for ride #' + rideId);
+      // Could redirect to rating page
+    }
+    
+    // Load on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        window.location.href = '../../shared/pages/login.html';
+        return;
+      }
+      
+      renderHistory();
+    });
+  </script>
+  <script src="../../shared/js/header-auth.js"></script>
+</body>
+</html>
