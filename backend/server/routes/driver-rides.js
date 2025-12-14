@@ -1,7 +1,7 @@
 /**
  * DRIVER RIDE CREATION API - NODE.JS
  * Handles ride creation, updates, and queries
- * 
+ *
  * Endpoints:
  * POST   /api/driver/rides - Create new ride
  * GET    /api/driver/rides/:driverId - Get driver's rides
@@ -9,26 +9,26 @@
  * DELETE /api/driver/rides/:rideId - Cancel ride
  */
 
-const express = require('express');
-const mysql = require('mysql2/promise');
+const express = require("express");
+const mysql = require("mysql2/promise");
 const router = express.Router();
 
 /**
  * POST /api/driver/rides
  * Create a new ride with start location, destination, time, and seats
  */
-router.post('/rides', async (req, res) => {
+router.post("/rides", async (req, res) => {
   try {
-    const { 
-      driverId, 
-      startLat, 
-      startLong, 
+    const {
+      driverId,
+      startLat,
+      startLong,
       startAddress,
-      endLat, 
-      endLong, 
+      endLat,
+      endLong,
       endAddress,
-      departureTime, 
-      availableSeats 
+      departureTime,
+      availableSeats,
     } = req.body;
 
     // ====================================================================
@@ -36,21 +36,22 @@ router.post('/rides', async (req, res) => {
     // ====================================================================
     const errors = {};
 
-    if (!driverId) errors.driverId = 'Driver ID is required';
-    if (!startLat || !startLong) errors.start = 'Start location coordinates required';
-    if (!startAddress) errors.startAddress = 'Start address required';
-    if (!endLat || !endLong) errors.end = 'End location coordinates required';
-    if (!endAddress) errors.endAddress = 'End address required';
-    if (!departureTime) errors.departureTime = 'Departure time required';
+    if (!driverId) errors.driverId = "Driver ID is required";
+    if (!startLat || !startLong)
+      errors.start = "Start location coordinates required";
+    if (!startAddress) errors.startAddress = "Start address required";
+    if (!endLat || !endLong) errors.end = "End location coordinates required";
+    if (!endAddress) errors.endAddress = "End address required";
+    if (!departureTime) errors.departureTime = "Departure time required";
     if (!availableSeats || availableSeats < 1 || availableSeats > 8) {
-      errors.availableSeats = 'Available seats must be between 1 and 8';
+      errors.availableSeats = "Available seats must be between 1 and 8";
     }
 
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
-        errors
+        message: "Validation failed",
+        errors,
       });
     }
 
@@ -58,10 +59,10 @@ router.post('/rides', async (req, res) => {
     // DATABASE CONNECTION
     // ====================================================================
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'corosa_db'
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "",
+      database: process.env.DB_NAME || "corosa_db",
     });
 
     try {
@@ -69,15 +70,15 @@ router.post('/rides', async (req, res) => {
       // VERIFY DRIVER EXISTS
       // ====================================================================
       const [driverRows] = await connection.execute(
-        'SELECT driver_id FROM driver WHERE driver_id = ?',
+        "SELECT driver_id FROM driver WHERE driver_id = ?",
         [driverId]
       );
 
       if (driverRows.length === 0) {
         return res.status(404).json({
           success: false,
-          message: 'Driver not found',
-          errors: { driver: 'not_found' }
+          message: "Driver not found",
+          errors: { driver: "not_found" },
         });
       }
 
@@ -107,7 +108,7 @@ router.post('/rides', async (req, res) => {
           endAddress,
           departureTime,
           parseInt(availableSeats),
-          'available'
+          "available",
         ]
       );
 
@@ -119,18 +120,16 @@ router.post('/rides', async (req, res) => {
       res.status(201).json({
         success: true,
         tripId: tripId,
-        message: 'Ride created successfully'
+        message: "Ride created successfully",
       });
-
     } finally {
       await connection.end();
     }
-
   } catch (error) {
-    console.error('Ride creation error:', error);
+    console.error("Ride creation error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error: ' + error.message
+      message: "Server error: " + error.message,
     });
   }
 });
@@ -139,15 +138,15 @@ router.post('/rides', async (req, res) => {
  * GET /api/driver/rides/:driverId
  * Get all rides for a specific driver
  */
-router.get('/rides/:driverId', async (req, res) => {
+router.get("/rides/:driverId", async (req, res) => {
   try {
     const { driverId } = req.params;
 
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'corosa_db'
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "",
+      database: process.env.DB_NAME || "corosa_db",
     });
 
     try {
@@ -173,18 +172,16 @@ router.get('/rides/:driverId', async (req, res) => {
 
       res.status(200).json({
         success: true,
-        rides: rides
+        rides: rides,
       });
-
     } finally {
       await connection.end();
     }
-
   } catch (error) {
-    console.error('Get rides error:', error);
+    console.error("Get rides error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error: ' + error.message
+      message: "Server error: " + error.message,
     });
   }
 });
@@ -193,7 +190,7 @@ router.get('/rides/:driverId', async (req, res) => {
  * PUT /api/driver/rides/:rideId
  * Update a ride (available seats, status)
  */
-router.put('/rides/:rideId', async (req, res) => {
+router.put("/rides/:rideId", async (req, res) => {
   try {
     const { rideId } = req.params;
     const { availableSeats, tripStatus } = req.body;
@@ -201,33 +198,34 @@ router.put('/rides/:rideId', async (req, res) => {
     if (!availableSeats && !tripStatus) {
       return res.status(400).json({
         success: false,
-        message: 'At least one field (availableSeats or tripStatus) is required'
+        message:
+          "At least one field (availableSeats or tripStatus) is required",
       });
     }
 
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'corosa_db'
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "",
+      database: process.env.DB_NAME || "corosa_db",
     });
 
     try {
-      let updateQuery = 'UPDATE trips SET ';
+      let updateQuery = "UPDATE trips SET ";
       let updateParams = [];
       let updateFields = [];
 
       if (availableSeats !== undefined) {
-        updateFields.push('available_seats = ?');
+        updateFields.push("available_seats = ?");
         updateParams.push(parseInt(availableSeats));
       }
 
       if (tripStatus) {
-        updateFields.push('trip_status = ?');
+        updateFields.push("trip_status = ?");
         updateParams.push(tripStatus);
       }
 
-      updateQuery += updateFields.join(', ') + ' WHERE trip_id = ?';
+      updateQuery += updateFields.join(", ") + " WHERE trip_id = ?";
       updateParams.push(rideId);
 
       const [result] = await connection.execute(updateQuery, updateParams);
@@ -235,24 +233,22 @@ router.put('/rides/:rideId', async (req, res) => {
       if (result.affectedRows === 0) {
         return res.status(404).json({
           success: false,
-          message: 'Ride not found'
+          message: "Ride not found",
         });
       }
 
       res.status(200).json({
         success: true,
-        message: 'Ride updated successfully'
+        message: "Ride updated successfully",
       });
-
     } finally {
       await connection.end();
     }
-
   } catch (error) {
-    console.error('Ride update error:', error);
+    console.error("Ride update error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error: ' + error.message
+      message: "Server error: " + error.message,
     });
   }
 });
@@ -261,45 +257,43 @@ router.put('/rides/:rideId', async (req, res) => {
  * DELETE /api/driver/rides/:rideId
  * Cancel a ride
  */
-router.delete('/rides/:rideId', async (req, res) => {
+router.delete("/rides/:rideId", async (req, res) => {
   try {
     const { rideId } = req.params;
 
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'corosa_db'
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "",
+      database: process.env.DB_NAME || "corosa_db",
     });
 
     try {
       // Soft delete - mark as cancelled
       const [result] = await connection.execute(
-        'UPDATE trips SET trip_status = ? WHERE trip_id = ?',
-        ['cancelled', rideId]
+        "UPDATE trips SET trip_status = ? WHERE trip_id = ?",
+        ["cancelled", rideId]
       );
 
       if (result.affectedRows === 0) {
         return res.status(404).json({
           success: false,
-          message: 'Ride not found'
+          message: "Ride not found",
         });
       }
 
       res.status(200).json({
         success: true,
-        message: 'Ride cancelled successfully'
+        message: "Ride cancelled successfully",
       });
-
     } finally {
       await connection.end();
     }
-
   } catch (error) {
-    console.error('Ride deletion error:', error);
+    console.error("Ride deletion error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error: ' + error.message
+      message: "Server error: " + error.message,
     });
   }
 });

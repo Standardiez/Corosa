@@ -1,7 +1,7 @@
 /**
  * SIDEBAR MANAGER
  * Manages sidebar state persistence and active item highlighting
- * 
+ *
  * - Keeps sidebar visible (fixed position)
  * - Highlights active menu item based on current page
  * - Persists sidebar open/closed state in localStorage
@@ -9,12 +9,12 @@
 
 class SidebarManager {
   constructor() {
-    this.sidebar = document.getElementById('sidebar');
-    this.toggleBtn = document.getElementById('sidebarToggle');
-    this.menuItems = document.querySelectorAll('.sidebar-menu a');
-    
-    this.SIDEBAR_STATE_KEY = 'driverSidebarOpen';
-    
+    this.sidebar = document.getElementById("sidebar");
+    this.toggleBtn = document.getElementById("sidebarToggle");
+    this.menuItems = document.querySelectorAll(".sidebar-menu a");
+
+    this.SIDEBAR_STATE_KEY = "driverSidebarOpen";
+
     this.init();
   }
 
@@ -27,21 +27,21 @@ class SidebarManager {
 
     // Add toggle button listener
     if (this.toggleBtn) {
-      this.toggleBtn.addEventListener('click', () => this.toggleSidebar());
+      this.toggleBtn.addEventListener("click", () => this.toggleSidebar());
     }
 
     // Highlight active menu item based on current page
     this.highlightActivePage();
 
     // Add click handlers to menu items
-    this.menuItems.forEach(item => {
-      item.addEventListener('click', () => this.onMenuItemClick(item));
+    this.menuItems.forEach((item) => {
+      item.addEventListener("click", () => this.onMenuItemClick(item));
     });
 
     // Close sidebar on mobile when navigating
     if (window.innerWidth < 768) {
-      this.menuItems.forEach(item => {
-        item.addEventListener('click', () => this.closeSidebar());
+      this.menuItems.forEach((item) => {
+        item.addEventListener("click", () => this.closeSidebar());
       });
     }
   }
@@ -50,13 +50,13 @@ class SidebarManager {
    * Restore sidebar state from localStorage
    */
   restoreState() {
-    const isOpen = localStorage.getItem(this.SIDEBAR_STATE_KEY) !== 'false';
-    
+    const isOpen = localStorage.getItem(this.SIDEBAR_STATE_KEY) !== "false";
+
     if (this.sidebar) {
       if (isOpen) {
-        this.sidebar.classList.remove('collapsed');
+        this.sidebar.classList.remove("collapsed");
       } else {
-        this.sidebar.classList.add('collapsed');
+        this.sidebar.classList.add("collapsed");
       }
     }
   }
@@ -67,10 +67,10 @@ class SidebarManager {
   toggleSidebar() {
     if (!this.sidebar) return;
 
-    this.sidebar.classList.toggle('collapsed');
+    this.sidebar.classList.toggle("collapsed");
 
     // Save state
-    const isOpen = !this.sidebar.classList.contains('collapsed');
+    const isOpen = !this.sidebar.classList.contains("collapsed");
     localStorage.setItem(this.SIDEBAR_STATE_KEY, isOpen);
   }
 
@@ -78,7 +78,7 @@ class SidebarManager {
    * Close sidebar
    */
   closeSidebar() {
-    if (this.sidebar && !this.sidebar.classList.contains('collapsed')) {
+    if (this.sidebar && !this.sidebar.classList.contains("collapsed")) {
       this.toggleSidebar();
     }
   }
@@ -87,7 +87,7 @@ class SidebarManager {
    * Open sidebar
    */
   openSidebar() {
-    if (this.sidebar && this.sidebar.classList.contains('collapsed')) {
+    if (this.sidebar && this.sidebar.classList.contains("collapsed")) {
       this.toggleSidebar();
     }
   }
@@ -97,18 +97,19 @@ class SidebarManager {
    */
   highlightActivePage() {
     // Get current page filename
-    const currentPage = window.location.pathname.split('/').pop() || 'driver-Homepage.html';
+    const currentPage =
+      window.location.pathname.split("/").pop() || "driver-Homepage.html";
 
     // Remove active class from all items
-    this.menuItems.forEach(item => {
-      item.classList.remove('active');
+    this.menuItems.forEach((item) => {
+      item.classList.remove("active");
     });
 
     // Add active class to matching item
-    this.menuItems.forEach(item => {
-      const href = item.getAttribute('href');
+    this.menuItems.forEach((item) => {
+      const href = item.getAttribute("href");
       if (href && href.includes(currentPage)) {
-        item.classList.add('active');
+        item.classList.add("active");
       }
     });
   }
@@ -118,16 +119,16 @@ class SidebarManager {
    */
   onMenuItemClick(item) {
     // Remove active class from all items
-    this.menuItems.forEach(el => {
-      el.classList.remove('active');
+    this.menuItems.forEach((el) => {
+      el.classList.remove("active");
     });
 
     // Add active class to clicked item
-    item.classList.add('active');
+    item.classList.add("active");
   }
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   window.sidebarManager = new SidebarManager();
 });

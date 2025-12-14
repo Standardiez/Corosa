@@ -3,17 +3,19 @@ const cors = require("cors");
 const path = require("path");
 
 /*
-* Open directory in cmd
-* npm install express cors multer mysql2
-*/
+ * Open directory in cmd
+ * npm install express cors multer mysql2
+ */
 const app = express();
 
 // Enable CORS so the WAMP-served frontend (http://localhost) can call this API
-app.use(cors({
+app.use(
+  cors({
     origin: "http://localhost",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -40,5 +42,5 @@ app.use("/api/driver", driverBookingsRouter);
 // Start server
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

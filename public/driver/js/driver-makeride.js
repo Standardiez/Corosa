@@ -1,7 +1,7 @@
 /**
  * DRIVER MAKERIDE HANDLER
  * Manages ride creation flow: location selection → time/seats input → submission
- * 
+ *
  * Uses sessionStorage for state persistence across page navigation
  * Integrates with Google Maps or similar for route visualization
  */
@@ -9,23 +9,23 @@
 class DriverRideFlow {
   constructor() {
     // Form elements
-    this.form = document.getElementById('rideCreationForm');
-    this.pickupInput = document.getElementById('pickupLocation');
-    this.dropoffInput = document.getElementById('dropoffLocation');
-    this.departureTimeInput = document.getElementById('departureTime');
-    this.seatsInput = document.getElementById('availableSeats');
-    this.submitBtn = document.getElementById('submitRideBtn');
-    
+    this.form = document.getElementById("rideCreationForm");
+    this.pickupInput = document.getElementById("pickupLocation");
+    this.dropoffInput = document.getElementById("dropoffLocation");
+    this.departureTimeInput = document.getElementById("departureTime");
+    this.seatsInput = document.getElementById("availableSeats");
+    this.submitBtn = document.getElementById("submitRideBtn");
+
     // Status indicators
-    this.pickupStatus = document.getElementById('pickupStatus');
-    this.dropoffStatus = document.getElementById('dropoffStatus');
-    this.locationError = document.getElementById('locationError');
-    this.formError = document.getElementById('formError');
-    this.loadingIndicator = document.getElementById('loadingIndicator');
+    this.pickupStatus = document.getElementById("pickupStatus");
+    this.dropoffStatus = document.getElementById("dropoffStatus");
+    this.locationError = document.getElementById("locationError");
+    this.formError = document.getElementById("formError");
+    this.loadingIndicator = document.getElementById("loadingIndicator");
 
     // Route preview element
-    this.routePreview = document.getElementById('routePreview');
-    this.routeMap = document.getElementById('routeMap');
+    this.routePreview = document.getElementById("routePreview");
+    this.routeMap = document.getElementById("routeMap");
 
     // State
     this.rideData = {
@@ -36,7 +36,7 @@ class DriverRideFlow {
       endLong: null,
       endAddress: null,
       departureTime: null,
-      availableSeats: null
+      availableSeats: null,
     };
 
     this.init();
@@ -51,19 +51,25 @@ class DriverRideFlow {
 
     // Event listeners
     if (this.pickupInput) {
-      this.pickupInput.addEventListener('change', () => this.onLocationChanged('pickup'));
+      this.pickupInput.addEventListener("change", () =>
+        this.onLocationChanged("pickup")
+      );
     }
     if (this.dropoffInput) {
-      this.dropoffInput.addEventListener('change', () => this.onLocationChanged('dropoff'));
+      this.dropoffInput.addEventListener("change", () =>
+        this.onLocationChanged("dropoff")
+      );
     }
     if (this.departureTimeInput) {
-      this.departureTimeInput.addEventListener('change', () => this.validateForm());
+      this.departureTimeInput.addEventListener("change", () =>
+        this.validateForm()
+      );
     }
     if (this.seatsInput) {
-      this.seatsInput.addEventListener('change', () => this.validateForm());
+      this.seatsInput.addEventListener("change", () => this.validateForm());
     }
     if (this.form) {
-      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+      this.form.addEventListener("submit", (e) => this.handleSubmit(e));
     }
 
     // Initial validation
@@ -75,38 +81,37 @@ class DriverRideFlow {
    */
   restoreSavedLocations() {
     try {
-      const savedPickup = sessionStorage.getItem('driverPickupLocation');
-      const savedDropoff = sessionStorage.getItem('driverDropoffLocation');
+      const savedPickup = sessionStorage.getItem("driverPickupLocation");
+      const savedDropoff = sessionStorage.getItem("driverDropoffLocation");
 
       if (savedPickup && this.pickupInput) {
         this.pickupInput.value = savedPickup;
         this.rideData.startAddress = savedPickup;
-        this.pickupInput.classList.add('completed');
-        if (this.pickupStatus) this.pickupStatus.textContent = '✓ Selected';
+        this.pickupInput.classList.add("completed");
+        if (this.pickupStatus) this.pickupStatus.textContent = "✓ Selected";
       }
 
       if (savedDropoff && this.dropoffInput) {
         this.dropoffInput.value = savedDropoff;
         this.rideData.endAddress = savedDropoff;
-        this.dropoffInput.classList.add('completed');
-        if (this.dropoffStatus) this.dropoffStatus.textContent = '✓ Selected';
+        this.dropoffInput.classList.add("completed");
+        if (this.dropoffStatus) this.dropoffStatus.textContent = "✓ Selected";
       }
 
       // Restore time and seats if available
-      const savedTime = sessionStorage.getItem('driverDepartureTime');
+      const savedTime = sessionStorage.getItem("driverDepartureTime");
       if (savedTime && this.departureTimeInput) {
         this.departureTimeInput.value = savedTime;
         this.rideData.departureTime = savedTime;
       }
 
-      const savedSeats = sessionStorage.getItem('driverAvailableSeats');
+      const savedSeats = sessionStorage.getItem("driverAvailableSeats");
       if (savedSeats && this.seatsInput) {
         this.seatsInput.value = savedSeats;
         this.rideData.availableSeats = parseInt(savedSeats);
       }
-
     } catch (e) {
-      console.warn('Could not restore saved locations:', e);
+      console.warn("Could not restore saved locations:", e);
     }
   }
 
@@ -114,33 +119,34 @@ class DriverRideFlow {
    * Handle location change (pickup or dropoff)
    */
   onLocationChanged(type) {
-    if (type === 'pickup') {
+    if (type === "pickup") {
       const value = this.pickupInput.value.trim();
       if (value) {
         this.rideData.startAddress = value;
-        sessionStorage.setItem('driverPickupLocation', value);
-        this.pickupInput.classList.add('completed');
-        if (this.pickupStatus) this.pickupStatus.textContent = '✓ Selected';
-        this.locationError.style.display = 'none';
+        sessionStorage.setItem("driverPickupLocation", value);
+        this.pickupInput.classList.add("completed");
+        if (this.pickupStatus) this.pickupStatus.textContent = "✓ Selected";
+        this.locationError.style.display = "none";
       } else {
         this.rideData.startAddress = null;
-        sessionStorage.removeItem('driverPickupLocation');
-        this.pickupInput.classList.remove('completed');
-        if (this.pickupStatus) this.pickupStatus.textContent = '○ Not selected';
+        sessionStorage.removeItem("driverPickupLocation");
+        this.pickupInput.classList.remove("completed");
+        if (this.pickupStatus) this.pickupStatus.textContent = "○ Not selected";
       }
-    } else if (type === 'dropoff') {
+    } else if (type === "dropoff") {
       const value = this.dropoffInput.value.trim();
       if (value) {
         this.rideData.endAddress = value;
-        sessionStorage.setItem('driverDropoffLocation', value);
-        this.dropoffInput.classList.add('completed');
-        if (this.dropoffStatus) this.dropoffStatus.textContent = '✓ Selected';
-        this.locationError.style.display = 'none';
+        sessionStorage.setItem("driverDropoffLocation", value);
+        this.dropoffInput.classList.add("completed");
+        if (this.dropoffStatus) this.dropoffStatus.textContent = "✓ Selected";
+        this.locationError.style.display = "none";
       } else {
         this.rideData.endAddress = null;
-        sessionStorage.removeItem('driverDropoffLocation');
-        this.dropoffInput.classList.remove('completed');
-        if (this.dropoffStatus) this.dropoffStatus.textContent = '○ Not selected';
+        sessionStorage.removeItem("driverDropoffLocation");
+        this.dropoffInput.classList.remove("completed");
+        if (this.dropoffStatus)
+          this.dropoffStatus.textContent = "○ Not selected";
       }
     }
 
@@ -155,7 +161,8 @@ class DriverRideFlow {
    * Update UI when locations are selected
    */
   updateLocationsUI() {
-    const locationsSelected = this.rideData.startAddress && this.rideData.endAddress;
+    const locationsSelected =
+      this.rideData.startAddress && this.rideData.endAddress;
 
     // Enable/disable time and seats inputs based on location selection
     if (this.departureTimeInput) {
@@ -178,7 +185,7 @@ class DriverRideFlow {
    */
   showRoutePreview() {
     if (this.routePreview) {
-      this.routePreview.style.display = 'block';
+      this.routePreview.style.display = "block";
     }
     if (this.routeMap) {
       this.routeMap.innerHTML = `
@@ -203,7 +210,7 @@ class DriverRideFlow {
    */
   hideRoutePreview() {
     if (this.routePreview) {
-      this.routePreview.style.display = 'none';
+      this.routePreview.style.display = "none";
     }
   }
 
@@ -216,17 +223,19 @@ class DriverRideFlow {
     // Enable/disable submit button
     if (this.submitBtn) {
       this.submitBtn.disabled = !isValid;
-      this.submitBtn.style.opacity = isValid ? '1' : '0.5';
-      this.submitBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
+      this.submitBtn.style.opacity = isValid ? "1" : "0.5";
+      this.submitBtn.style.cursor = isValid ? "pointer" : "not-allowed";
     }
 
     // Show/hide time and seats inputs
     if (this.rideData.startAddress && this.rideData.endAddress) {
-      if (this.departureTimeInput) this.departureTimeInput.style.display = 'block';
-      if (this.seatsInput) this.seatsInput.style.display = 'block';
+      if (this.departureTimeInput)
+        this.departureTimeInput.style.display = "block";
+      if (this.seatsInput) this.seatsInput.style.display = "block";
     } else {
-      if (this.departureTimeInput) this.departureTimeInput.style.display = 'none';
-      if (this.seatsInput) this.seatsInput.style.display = 'none';
+      if (this.departureTimeInput)
+        this.departureTimeInput.style.display = "none";
+      if (this.seatsInput) this.seatsInput.style.display = "none";
     }
   }
 
@@ -254,17 +263,17 @@ class DriverRideFlow {
 
     // Final validation
     if (!this.isFormValid()) {
-      this.showError('Please fill in all required fields');
+      this.showError("Please fill in all required fields");
       return;
     }
 
     // Show loading state
     this.showLoading(true);
-    this.formError.style.display = 'none';
+    this.formError.style.display = "none";
 
     try {
       // Get driver ID from localStorage
-      const userData = JSON.parse(localStorage.getItem('userData'));
+      const userData = JSON.parse(localStorage.getItem("userData"));
       const driverId = userData.userId;
 
       // TODO: Get actual coordinates from location picker
@@ -278,36 +287,36 @@ class DriverRideFlow {
         endLong: this.rideData.endLong || 120.9842,
         endAddress: this.rideData.endAddress,
         departureTime: this.rideData.departureTime,
-        availableSeats: this.rideData.availableSeats
+        availableSeats: this.rideData.availableSeats,
       };
 
       // Send to backend
-      const response = await fetch('http://localhost:3000/api/driver/rides', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      const response = await fetch("http://localhost:3000/api/driver/rides", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
 
       if (result.success) {
         // Clear saved locations
-        sessionStorage.removeItem('driverPickupLocation');
-        sessionStorage.removeItem('driverDropoffLocation');
-        sessionStorage.removeItem('driverDepartureTime');
-        sessionStorage.removeItem('driverAvailableSeats');
+        sessionStorage.removeItem("driverPickupLocation");
+        sessionStorage.removeItem("driverDropoffLocation");
+        sessionStorage.removeItem("driverDepartureTime");
+        sessionStorage.removeItem("driverAvailableSeats");
 
         // Show success message
-        alert('✅ Ride created successfully!');
+        alert("✅ Ride created successfully!");
 
         // Redirect to ride confirmation or driver homepage
-        window.location.href = 'driver-ridestatus.html';
+        window.location.href = "driver-ridestatus.html";
       } else {
-        this.showError(result.message || 'Failed to create ride');
+        this.showError(result.message || "Failed to create ride");
       }
     } catch (error) {
-      console.error('Ride creation error:', error);
-      this.showError('Error: ' + error.message);
+      console.error("Ride creation error:", error);
+      this.showError("Error: " + error.message);
     } finally {
       this.showLoading(false);
     }
@@ -319,9 +328,9 @@ class DriverRideFlow {
   showError(message) {
     if (this.formError) {
       this.formError.textContent = message;
-      this.formError.style.display = 'block';
+      this.formError.style.display = "block";
     } else {
-      alert('Error: ' + message);
+      alert("Error: " + message);
     }
   }
 
@@ -330,7 +339,7 @@ class DriverRideFlow {
    */
   showLoading(show) {
     if (this.loadingIndicator) {
-      this.loadingIndicator.style.display = show ? 'block' : 'none';
+      this.loadingIndicator.style.display = show ? "block" : "none";
     }
     if (this.submitBtn) {
       this.submitBtn.disabled = show;
@@ -339,6 +348,6 @@ class DriverRideFlow {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   window.driverRideFlow = new DriverRideFlow();
 });

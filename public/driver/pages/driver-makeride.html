@@ -1,513 +1,524 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Ride - Corosa Driver</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-    <link rel="stylesheet" href="../../styles/styles.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css"
+    />
+    <link rel="stylesheet" href="../../styles/styles.css" />
     <style>
-        .page-container {
-            display: flex;
-            min-height: calc(100vh - 60px);
-            margin-left: 250px;
-            transition: margin-left 0.3s ease;
-            background: #f5f7fa;
-        }
+      .page-container {
+        display: flex;
+        min-height: calc(100vh - 60px);
+        margin-left: 250px;
+        transition: margin-left 0.3s ease;
+        background: #f5f7fa;
+      }
 
-        .sidebar.collapsed ~ .page-container {
-            margin-left: 80px;
+      .sidebar.collapsed ~ .page-container {
+        margin-left: 80px;
+      }
+
+      .page-wrapper {
+        flex: 1;
+        padding: 32px 20px;
+        max-width: 700px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .card h2 {
+        margin: 0 0 24px 0;
+        color: #1a1a1a;
+        font-size: 1.4em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .card h2 i {
+        color: #667eea;
+        font-size: 1.3em;
+      }
+
+      /* Route Preview Card */
+      .route-card {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border: 2px solid #667eea30;
+      }
+
+      .route-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .location-display {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .location-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2em;
+        flex-shrink: 0;
+      }
+
+      .location-icon.pickup {
+        background: #667eea;
+      }
+
+      .location-icon.dropoff {
+        background: #764ba2;
+      }
+
+      .location-info {
+        flex: 1;
+      }
+
+      .location-label {
+        font-size: 0.8em;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+
+      .location-address {
+        font-size: 1.1em;
+        color: #1a1a1a;
+        font-weight: 500;
+      }
+
+      .route-line {
+        width: 2px;
+        height: 30px;
+        background: linear-gradient(to bottom, #667eea, #764ba2);
+        margin-left: 20px;
+      }
+
+      .route-notice {
+        padding: 12px 16px;
+        background: #f0f6ff;
+        border-left: 3px solid #2196f3;
+        border-radius: 4px;
+        font-size: 0.9em;
+        color: #1565c0;
+        margin-top: 16px;
+      }
+
+      /* Form Styling */
+      .form-section {
+        margin-bottom: 28px;
+      }
+
+      .form-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 0.95em;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-group input::placeholder {
+        color: #bbb;
+      }
+
+      .field-help {
+        font-size: 0.85em;
+        color: #999;
+        margin-top: 6px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      @media (max-width: 600px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Button Styling */
+      .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-secondary {
+        background: #f5f5f5;
+        color: #333;
+        border: 1px solid #e0e0e0;
+      }
+
+      .btn-secondary:hover {
+        background: #f0f0f0;
+      }
+
+      /* Loading & Error States */
+      .loading-state {
+        display: none;
+        text-align: center;
+        padding: 24px;
+      }
+
+      .loading-state.active {
+        display: block;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 12px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error-banner {
+        display: none;
+        padding: 14px 16px;
+        background: #ffebee;
+        border-left: 4px solid #f44336;
+        border-radius: 4px;
+        color: #c62828;
+        margin-bottom: 20px;
+        font-size: 0.95em;
+      }
+
+      .error-banner.visible {
+        display: block;
+      }
+
+      .error-banner.show {
+        display: flex !important;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .error-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .error-content i {
+        font-size: 1.2em;
+        flex-shrink: 0;
+      }
+
+      .success-banner {
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+        background: #e8f5e9;
+        border-left: 4px solid #4caf50;
+        border-radius: 4px;
+        color: #2e7d32;
+        margin-bottom: 20px;
+        font-size: 0.95em;
+        gap: 12px;
+      }
+
+      .success-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .success-content i {
+        font-size: 1.2em;
+        flex-shrink: 0;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .page-container {
+          margin-left: 0;
+          padding: 0;
         }
 
         .page-wrapper {
-            flex: 1;
-            padding: 32px 20px;
-            max-width: 700px;
-            margin: 0 auto;
-            width: 100%;
+          padding: 16px;
+          max-width: 100%;
         }
 
         .card {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          padding: 20px;
+          margin-bottom: 16px;
         }
 
         .card h2 {
-            margin: 0 0 24px 0;
-            color: #1a1a1a;
-            font-size: 1.4em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+          font-size: 1.2em;
+          margin-bottom: 16px;
         }
 
-        .card h2 i {
-            color: #667eea;
-            font-size: 1.3em;
-        }
-
-        /* Route Preview Card */
-        .route-card {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border: 2px solid #667eea30;
-        }
-
-        .route-summary {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .location-display {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-
-        .location-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2em;
-            flex-shrink: 0;
-        }
-
-        .location-icon.pickup {
-            background: #667eea;
-        }
-
-        .location-icon.dropoff {
-            background: #764ba2;
-        }
-
-        .location-info {
-            flex: 1;
-        }
-
-        .location-label {
-            font-size: 0.8em;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .location-address {
-            font-size: 1.1em;
-            color: #1a1a1a;
-            font-weight: 500;
-        }
-
-        .route-line {
-            width: 2px;
-            height: 30px;
-            background: linear-gradient(to bottom, #667eea, #764ba2);
-            margin-left: 20px;
-        }
-
-        .route-notice {
-            padding: 12px 16px;
-            background: #f0f6ff;
-            border-left: 3px solid #2196f3;
-            border-radius: 4px;
-            font-size: 0.9em;
-            color: #1565c0;
-            margin-top: 16px;
-        }
-
-        /* Form Styling */
-        .form-section {
-            margin-bottom: 28px;
-        }
-
-        .form-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #1a1a1a;
-            font-size: 0.95em;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group input::placeholder {
-            color: #bbb;
-        }
-
-        .field-help {
-            font-size: 0.85em;
-            color: #999;
-            margin-top: 6px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Button Styling */
         .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #e0e0e0;
+          flex-direction: column;
+          margin-top: 24px;
+          padding-top: 20px;
         }
-
-        .btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-            border: 1px solid #e0e0e0;
-        }
-
-        .btn-secondary:hover {
-            background: #f0f0f0;
-        }
-
-        /* Loading & Error States */
-        .loading-state {
-            display: none;
-            text-align: center;
-            padding: 24px;
-        }
-
-        .loading-state.active {
-            display: block;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error-banner {
-            display: none;
-            padding: 14px 16px;
-            background: #ffebee;
-            border-left: 4px solid #f44336;
-            border-radius: 4px;
-            color: #c62828;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-        }
-
-        .error-banner.visible {
-            display: block;
-        }
-
-        .error-banner.show {
-            display: flex !important;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .error-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .error-content i {
-            font-size: 1.2em;
-            flex-shrink: 0;
-        }
-
-        .success-banner {
-            display: flex;
-            align-items: center;
-            padding: 14px 16px;
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            border-radius: 4px;
-            color: #2e7d32;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-            gap: 12px;
-        }
-
-        .success-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .success-content i {
-            font-size: 1.2em;
-            flex-shrink: 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .page-container {
-                margin-left: 0;
-                padding: 0;
-            }
-
-            .page-wrapper {
-                padding: 16px;
-                max-width: 100%;
-            }
-
-            .card {
-                padding: 20px;
-                margin-bottom: 16px;
-            }
-
-            .card h2 {
-                font-size: 1.2em;
-                margin-bottom: 16px;
-            }
-
-            .button-group {
-                flex-direction: column;
-                margin-top: 24px;
-                padding-top: 20px;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h2>Corosa Driver</h2>
-            <button id="sidebarToggle" class="sidebar-toggle">
-                <i class="bx bx-menu"></i>
-            </button>
-        </div>
-        <div class="sidebar-menu">
-            <a href="driver-Homepage.html">
-                <i class="bx bx-home-alt"></i>
-                <span>Home</span>
-            </a>
-            <a href="driver-makeride.html" class="active">
-                <i class="bx bx-plus-circle"></i>
-                <span>Offer a Ride</span>
-            </a>
-            <a href="driver-ridestatus.html">
-                <i class="bx bx-car"></i>
-                <span>My Rides</span>
-            </a>
-            <a href="driver-requests.html">
-                <i class="bx bx-bell"></i>
-                <span>Booking Requests</span>
-            </a>
-            <a href="driver-ratepassengers.html">
-                <i class="bx bx-star"></i>
-                <span>Rate Passengers</span>
-            </a>
-            <a href="user-profile.html">
-                <i class="bx bx-user"></i>
-                <span>Profile</span>
-            </a>
-        </div>
-        <div class="sidebar-footer">
-            <button id="logoutBtn" class="logout-btn">
-                <i class="bx bx-log-out"></i>
-                <span>Logout</span>
-            </button>
-        </div>
+      <div class="sidebar-header">
+        <h2>Corosa Driver</h2>
+        <button id="sidebarToggle" class="sidebar-toggle">
+          <i class="bx bx-menu"></i>
+        </button>
+      </div>
+      <div class="sidebar-menu">
+        <a href="driver-Homepage.html">
+          <i class="bx bx-home-alt"></i>
+          <span>Home</span>
+        </a>
+        <a href="driver-makeride.html" class="active">
+          <i class="bx bx-plus-circle"></i>
+          <span>Offer a Ride</span>
+        </a>
+        <a href="driver-ridestatus.html">
+          <i class="bx bx-car"></i>
+          <span>My Rides</span>
+        </a>
+        <a href="driver-requests.html">
+          <i class="bx bx-bell"></i>
+          <span>Booking Requests</span>
+        </a>
+        <a href="driver-ratepassengers.html">
+          <i class="bx bx-star"></i>
+          <span>Rate Passengers</span>
+        </a>
+        <a href="user-profile.html">
+          <i class="bx bx-user"></i>
+          <span>Profile</span>
+        </a>
+      </div>
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="logout-btn">
+          <i class="bx bx-log-out"></i>
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
 
     <!-- Main Page Container -->
     <div class="page-container">
-        <div class="page-wrapper">
-            <!-- Error Banner -->
-            <div id="errorBanner" class="error-banner"></div>
+      <div class="page-wrapper">
+        <!-- Error Banner -->
+        <div id="errorBanner" class="error-banner"></div>
 
-            <!-- Route Display Card -->
-            <div class="card route-card">
-                <h2>
-                    <i class="bx bx-map"></i> Your Route
-                </h2>
+        <!-- Route Display Card -->
+        <div class="card route-card">
+          <h2><i class="bx bx-map"></i> Your Route</h2>
 
-                <div class="route-summary">
-                    <!-- Pickup Location -->
-                    <div class="location-display">
-                        <div class="location-icon pickup">
-                            <i class="bx bx-map-pin"></i>
-                        </div>
-                        <div class="location-info">
-                            <div class="location-label">Pickup</div>
-                            <div class="location-address" id="pickupDisplay">Loading...</div>
-                        </div>
-                    </div>
-
-                    <!-- Route Line -->
-                    <div class="route-line"></div>
-
-                    <!-- Dropoff Location -->
-                    <div class="location-display">
-                        <div class="location-icon dropoff">
-                            <i class="bx bx-location-plus"></i>
-                        </div>
-                        <div class="location-info">
-                            <div class="location-label">Destination</div>
-                            <div class="location-address" id="dropoffDisplay">Loading...</div>
-                        </div>
-                    </div>
+          <div class="route-summary">
+            <!-- Pickup Location -->
+            <div class="location-display">
+              <div class="location-icon pickup">
+                <i class="bx bx-map-pin"></i>
+              </div>
+              <div class="location-info">
+                <div class="location-label">Pickup</div>
+                <div class="location-address" id="pickupDisplay">
+                  Loading...
                 </div>
-
-                <div class="route-notice">
-                    <i class="bx bx-info-circle"></i>
-                    Route selected in previous steps. To change, go back to location selection.
-                </div>
+              </div>
             </div>
 
-            <!-- Ride Details Form Card -->
-            <div class="card">
-                <h2>
-                    <i class="bx bx-time"></i> Ride Details
-                </h2>
+            <!-- Route Line -->
+            <div class="route-line"></div>
 
-                <form id="rideDetailsForm">
-                    <!-- Departure Date & Time -->
-                    <div class="form-section">
-                        <div class="form-group">
-                            <label for="departureDateTime">
-                                Departure Date & Time
-                            </label>
-                            <input 
-                                type="datetime-local" 
-                                id="departureDateTime" 
-                                required
-                            >
-                            <div class="field-help">When will you depart?</div>
-                        </div>
-                    </div>
-
-                    <!-- Available Seats -->
-                    <div class="form-section">
-                        <div class="form-group">
-                            <label for="seatCount">
-                                Available Seats
-                            </label>
-                            <select id="seatCount" required>
-                                <option value="">Select number of seats</option>
-                                <option value="1">1 seat available</option>
-                                <option value="2">2 seats available</option>
-                                <option value="3">3 seats available</option>
-                                <option value="4">4 seats available</option>
-                                <option value="5">5 seats available</option>
-                                <option value="6">6 seats available</option>
-                                <option value="7">7 seats available</option>
-                                <option value="8">8 seats available</option>
-                            </select>
-                            <div class="field-help">How many seats can you offer to passengers?</div>
-                        </div>
-                    </div>
-
-                    <!-- Loading State -->
-                    <div class="loading-state" id="loadingState">
-                        <div class="spinner"></div>
-                        <p>Creating your ride...</p>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="button-group">
-                        <button type="button" class="btn btn-secondary" onclick="window.history.back()">
-                            <i class="bx bx-chevron-left"></i> Back
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="createRideBtn" disabled>
-                            <i class="bx bx-check"></i> Create Ride
-                        </button>
-                    </div>
-                </form>
+            <!-- Dropoff Location -->
+            <div class="location-display">
+              <div class="location-icon dropoff">
+                <i class="bx bx-location-plus"></i>
+              </div>
+              <div class="location-info">
+                <div class="location-label">Destination</div>
+                <div class="location-address" id="dropoffDisplay">
+                  Loading...
+                </div>
+              </div>
             </div>
+          </div>
+
+          <div class="route-notice">
+            <i class="bx bx-info-circle"></i>
+            Route selected in previous steps. To change, go back to location
+            selection.
+          </div>
         </div>
+
+        <!-- Ride Details Form Card -->
+        <div class="card">
+          <h2><i class="bx bx-time"></i> Ride Details</h2>
+
+          <form id="rideDetailsForm">
+            <!-- Departure Date & Time -->
+            <div class="form-section">
+              <div class="form-group">
+                <label for="departureDateTime"> Departure Date & Time </label>
+                <input type="datetime-local" id="departureDateTime" required />
+                <div class="field-help">When will you depart?</div>
+              </div>
+            </div>
+
+            <!-- Available Seats -->
+            <div class="form-section">
+              <div class="form-group">
+                <label for="seatCount"> Available Seats </label>
+                <select id="seatCount" required>
+                  <option value="">Select number of seats</option>
+                  <option value="1">1 seat available</option>
+                  <option value="2">2 seats available</option>
+                  <option value="3">3 seats available</option>
+                  <option value="4">4 seats available</option>
+                  <option value="5">5 seats available</option>
+                  <option value="6">6 seats available</option>
+                  <option value="7">7 seats available</option>
+                  <option value="8">8 seats available</option>
+                </select>
+                <div class="field-help">
+                  How many seats can you offer to passengers?
+                </div>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+              <div class="spinner"></div>
+              <p>Creating your ride...</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="window.history.back()"
+              >
+                <i class="bx bx-chevron-left"></i> Back
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="createRideBtn"
+                disabled
+              >
+                <i class="bx bx-check"></i> Create Ride
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <!-- Scripts -->
     <script src="../../shared/js/header-auth.js"></script>
     <script src="../js/sidebar-manager.js"></script>
     <script src="../js/driver-create-ride.js"></script>
-</body>
+  </body>
 </html>
