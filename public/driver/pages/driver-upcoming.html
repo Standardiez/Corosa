@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Driver Dashboard — Corosa</title>
+    <link rel="stylesheet" href="../../styles/styles.css" />
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- ADDED STYLES FOR ACCEPT/DECLINE ACTIONS --- */
+      .ride-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+      }
+
+      .btn-action {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .btn-accept {
+        background-color: #10b981; /* Green */
+        color: white;
+      }
+      .btn-accept:hover {
+        background-color: #059669;
+      }
+
+      .btn-decline {
+        background-color: transparent;
+        border: 1px solid #ef4444; /* Red */
+        color: #ef4444;
+      }
+      .btn-decline:hover {
+        background-color: #fef2f2;
+      }
+
+      /* Status Badges */
+      .ride-status.pending {
+        background-color: #fff7ed;
+        color: #c2410c;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 20px;
+        color: #6b7280;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-content">
+        <img
+          src="../../assets/corosa-logo.png"
+          alt="Corosa Logo"
+          class="logo"
+        />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="../../shared/pages/index.html">Back</a>
+          <a
+            class="btn btn-primary"
+            id="offer-ride-nav"
+            href="../../passenger/pages/select-pickup.html"
+            ><i class="bx bx-car"></i> Offer a Ride</a
+          >
+          <div class="profile-menu-wrapper">
+            <button
+              class="btn btn-outline profile-btn"
+              id="profile-menu-btn"
+              aria-label="Profile menu"
+            >
+              <i class="bx bx-user-circle"></i>
+            </button>
+            <div class="profile-dropdown" id="profile-dropdown">
+              <a
+                href="../../shared/pages/user-profile.html"
+                class="dropdown-item"
+              >
+                <i class="bx bx-user"></i> Profile
+              </a>
+              <a href="driver-settings.html" class="dropdown-item">
+                <i class="bx bx-cog"></i> Settings
+              </a>
+              <button class="dropdown-item logout-btn" id="logout-btn">
+                <i class="bx bx-log-out"></i> Logout
+              </button>
+            </div>
+          </div>
+        </nav>
+        <button
+          class="btn mobile-menu"
+          id="mobile-menu-btn"
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+      </div>
+    </header>
+
+    <main class="driver-dashboard">
+      <aside class="dashboard-sidebar" id="dashboard-sidebar">
+        <div class="sidebar-header">
+          <button
+            class="sidebar-toggle"
+            id="sidebar-toggle"
+            aria-label="Toggle sidebar"
+          >
+            <i class="bx bx-chevron-left"></i>
+          </button>
+        </div>
+        <nav class="sidebar-nav">
+          <a
+            href="driver-Homepage.html"
+            class="sidebar-link active"
+            title="Dashboard"
+          >
+            <i class="bx bx-home"></i>
+            <span class="sidebar-text">Dashboard</span>
+          </a>
+          <a
+            href="driver-rideconfirmation.html"
+            class="sidebar-link"
+            title="Ride Requests"
+          >
+            <i class="bx bx-bell"></i>
+            <span class="sidebar-text">Ride Requests</span>
+            <span class="badge" id="sidebar-badge">2</span>
+          </a>
+          <a
+            href="driver-passengerstatus.html"
+            class="sidebar-link"
+            title="Active Trip"
+          >
+            <i class="bx bx-navigation"></i>
+            <span class="sidebar-text">Active Trip</span>
+          </a>
+          <a
+            href="driver-history.html"
+            class="sidebar-link"
+            title="Trip History"
+          >
+            <i class="bx bx-history"></i>
+            <span class="sidebar-text">Trip History</span>
+          </a>
+          <a
+            href="driver-passengerfeedback.html"
+            class="sidebar-link"
+            title="Ratings"
+          >
+            <i class="bx bx-star"></i>
+            <span class="sidebar-text">Ratings</span>
+          </a>
+          <a href="driver-settings.html" class="sidebar-link" title="Settings">
+            <i class="bx bx-cog"></i>
+            <span class="sidebar-text">Settings</span>
+          </a>
+        </nav>
+      </aside>
+
+      <div class="dashboard-content">
+        <div class="welcome-section">
+          <div>
+            <h2>Welcome back! 👋</h2>
+            <p>Manage your incoming ride requests below.</p>
+          </div>
+        </div>
+
+        <div class="stats-section">
+          <h3>Quick Stats</h3>
+          <div class="dashboard-grid">
+            <div class="dashboard-card">
+              <div class="dashboard-icon"><i class="bx bx-bell"></i></div>
+              <div class="dashboard-value" id="pending-count">0</div>
+              <div class="dashboard-label">Pending Requests</div>
+            </div>
+            <div class="dashboard-card">
+              <div class="dashboard-icon">
+                <i class="bx bx-check-circle"></i>
+              </div>
+              <div class="dashboard-value">24</div>
+              <div class="dashboard-label">Total Rides</div>
+            </div>
+            <div class="dashboard-card">
+              <div class="dashboard-icon"><i class="bx bx-star"></i></div>
+              <div class="dashboard-value">4.8</div>
+              <div class="dashboard-label">Avg. Rating</div>
+            </div>
+            <div class="dashboard-card">
+              <div class="dashboard-icon"><i class="bx bx-coin"></i></div>
+              <div class="dashboard-value">₱3,240</div>
+              <div class="dashboard-label">This Week</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-main-grid">
+          <section class="dashboard-section">
+            <h3>Incoming Requests</h3>
+            <div class="upcoming-rides" id="rides-list-container">
+               </div>
+          </section>
+
+          <section class="dashboard-section">
+            <h3>Recent Activity</h3>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon"><i class="bx bx-check"></i></div>
+                <div class="activity-details">
+                  <div class="activity-title">
+                    Completed ride with Juan Dela Cruz
+                  </div>
+                  <div class="activity-time">Today at 2:30 PM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon"><i class="bx bx-star"></i></div>
+                <div class="activity-details">
+                  <div class="activity-title">
+                    Received 5-star rating from Maria Clara
+                  </div>
+                  <div class="activity-time">Today at 2:15 PM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon"><i class="bx bx-coin"></i></div>
+                <div class="activity-details">
+                  <div class="activity-title">Payment received: ₱450.00</div>
+                  <div class="activity-time">Yesterday at 4:50 PM</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="welcome-footer">
+      <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+      sessionStorage.setItem("flowIntent", "driver");
+
+      // --- MOCK DATA FOR DEMONSTRATION ---
+      // In a real app, this comes from your PHP API
+      let rideRequests = [
+        {
+          id: 101,
+          passengerName: "Juan Dela Cruz",
+          time: "Now",
+          from: "Maryheights Campus",
+          to: "SM Baguio Downtown",
+          fare: "₱85.00",
+          status: "pending"
+        },
+        {
+          id: 102,
+          passengerName: "Maria Santos",
+          time: "In 15 mins",
+          from: "Bakakeng Sur",
+          to: "Session Road",
+          fare: "₱60.00",
+          status: "pending"
+        }
+      ];
+
+      // --- RENDER FUNCTION ---
+      function renderRides() {
+        const container = document.getElementById("rides-list-container");
+        const pendingCountEl = document.getElementById("pending-count");
+        const badgeEl = document.getElementById("sidebar-badge");
+        
+        container.innerHTML = ""; // Clear existing
+
+        // Filter for pending rides
+        const pendingRides = rideRequests.filter(r => r.status === "pending");
+        
+        // Update Stats
+        pendingCountEl.textContent = pendingRides.length;
+        badgeEl.textContent = pendingRides.length;
+
+        if (pendingRides.length === 0) {
+          container.innerHTML = `<div class="empty-state">No new ride requests.</div>`;
+          return;
+        }
+
+        pendingRides.forEach(ride => {
+          const card = document.createElement("div");
+          card.className = "ride-card";
+          card.innerHTML = `
+            <div class="ride-header">
+              <span class="ride-time"><i class='bx bx-time-five'></i> ${ride.time}</span>
+              <span class="ride-status pending">Pending Request</span>
+            </div>
+            <div class="ride-details">
+              <p style="font-size: 1.1rem; margin-bottom: 5px;"><strong>${ride.passengerName}</strong></p>
+              <p class="route">
+                <i class="bx bx-map" style="color:var(--primary-color)"></i> ${ride.from} <br>
+                <i class="bx bx-map-pin" style="color:var(--primary-color)"></i> ${ride.to}
+              </p>
+              <p style="margin-top: 5px; font-weight:600; color: #10b981;">Estimated Fare: ${ride.fare}</p>
+            </div>
+            <div class="ride-actions">
+              <button class="btn-action btn-decline" onclick="declineRide(${ride.id})">
+                <i class='bx bx-x'></i> Decline
+              </button>
+              <button class="btn-action btn-accept" onclick="acceptRide(${ride.id})">
+                <i class='bx bx-check'></i> Accept
+              </button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      // --- ACTION FUNCTIONS ---
+
+      function acceptRide(rideId) {
+        // 1. In a real app, perform fetch/AJAX call here to update backend
+        /*
+        fetch('../backend/api/accept_ride.php', {
+            method: 'POST',
+            body: JSON.stringify({ ride_id: rideId, driver_id: currentUser.id })
+        })...
+        */
+
+        // 2. For UI Demo:
+        if(confirm("Accept this ride?")) {
+           // Remove from list or change status
+           const rideIndex = rideRequests.findIndex(r => r.id === rideId);
+           if(rideIndex > -1) {
+             rideRequests[rideIndex].status = "accepted"; // updates local data
+             alert("Ride Accepted! Redirecting to navigation...");
+             // Update UI
+             renderRides();
+             
+             // Optional: Redirect to active trip page
+             // window.location.href = "driver-passengerstatus.html";
+           }
+        }
+      }
+
+      function declineRide(rideId) {
+        if(confirm("Are you sure you want to decline this request?")) {
+           // Remove from list
+           const rideIndex = rideRequests.findIndex(r => r.id === rideId);
+           if(rideIndex > -1) {
+             rideRequests[rideIndex].status = "declined"; // updates local data
+             renderRides();
+           }
+        }
+      }
+
+      // --- INITIALIZATION ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // Render initial mock data
+        renderRides();
+
+        // (Optional) Attempt to load real data if backend exists
+        // loadDashboardData(); 
+      });
+
+      // --- SIDEBAR & MENU LOGIC (Existing) ---
+      const sidebarToggle = document.getElementById("sidebar-toggle");
+      const sidebar = document.getElementById("dashboard-sidebar");
+
+      sidebarToggle.addEventListener("click", function () {
+        sidebar.classList.toggle("collapsed");
+        localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+      });
+
+      if (localStorage.getItem("sidebarCollapsed") === "true") {
+        sidebar.classList.add("collapsed");
+      }
+
+      const profileBtn = document.getElementById("profile-menu-btn");
+      const profileDropdown = document.getElementById("profile-dropdown");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      profileBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle("active");
+      });
+
+      document.addEventListener("click", function (e) {
+        if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+          profileDropdown.classList.remove("active");
+        }
+      });
+
+      logoutBtn.addEventListener("click", function () {
+        localStorage.removeItem("userData");
+        localStorage.removeItem("userToken");
+        window.location.href = "index.html";
+      });
+
+      // Async loader for real data (Kept for reference/future integration)
+      async function loadDashboardData() {
+        try {
+          const userDataStr = localStorage.getItem("userData");
+          if (!userDataStr) return; // Not logged in
+
+          const userData = JSON.parse(userDataStr);
+          
+          // Example: Fetch Pending from API
+          // const res = await fetch(`../backend/api/trip_assignment.php?driver_id=${userData.id}&status=pending`);
+          // const data = await res.json();
+          // if(data.success) { 
+          //    rideRequests = data.data; // Override mock data
+          //    renderRides();
+          // }
+
+        } catch (error) {
+          console.error("Error loading dashboard data:", error);
+        }
+      }
+    </script>
+    <script src="../../shared/js/header-auth.js"></script>
+  </body>
+</html>
