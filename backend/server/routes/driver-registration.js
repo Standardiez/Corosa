@@ -229,7 +229,7 @@ router.post("/get-driver-id", express.json(), async (req, res) => {
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: "userId is required"
+        message: "userId is required",
       });
     }
 
@@ -249,13 +249,13 @@ router.post("/get-driver-id", express.json(), async (req, res) => {
       if (rows.length === 0) {
         return res.status(404).json({
           success: false,
-          message: "Driver not found for this user"
+          message: "Driver not found for this user",
         });
       }
 
       res.status(200).json({
         success: true,
-        driverId: rows[0].driver_id
+        driverId: rows[0].driver_id,
       });
     } finally {
       await connection.end();
@@ -264,10 +264,9 @@ router.post("/get-driver-id", express.json(), async (req, res) => {
     console.error("Get driver ID error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error: " + error.message
+      message: "Server error: " + error.message,
     });
   }
 });
 
 module.exports = router;
-

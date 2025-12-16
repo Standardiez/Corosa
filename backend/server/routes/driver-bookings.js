@@ -31,26 +31,22 @@ router.get("/bookings/:driverId", async (req, res) => {
       const [bookings] = await connection.execute(
         `SELECT 
           b.booking_id,
-          b.trip_id,
-          b.passenger_id,
-          b.pickup_lat,
-          b.pickup_long,
-          b.dropoff_lat,
-          b.dropoff_long,
-          b.booking_status,
+          b.start_lat as pickup_lat,
+          b.start_long as pickup_long,
+          b.end_lat as dropoff_lat,
+          b.end_long as dropoff_long,
           b.created_at,
-          t.start_address,
-          t.end_address,
-          t.departure_time,
+          t.trip_id,
           t.available_seats,
           u.first_name,
           u.last_name,
           u.mobile_number
         FROM bookings b
-        JOIN trips t ON b.trip_id = t.trip_id
+        JOIN trip_assignment ta ON b.booking_id = ta.booking_id
+        JOIN trips t ON ta.trip_id = t.trip_id
         JOIN users u ON b.passenger_id = u.user_id
         WHERE t.driver_id = ?
-        AND b.booking_status = 'pending'
+        AND ta.assignment_status = 'pending'
         ORDER BY b.created_at DESC`,
         [driverId]
       );

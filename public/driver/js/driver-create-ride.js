@@ -160,52 +160,109 @@ function setupFormSubmission() {
       return;
     }
 
-    // Get form data
-    const departureDateTime =
-      document.getElementById("departureDateTime").value;
-    const seatCount = document.getElementById("seatCount").value;
-    const pickupLocation = sessionStorage.getItem("driverPickupLocation");
-    const dropoffLocation = sessionStorage.getItem("driverDropoffLocation");
-    const pickupCoords =
-      sessionStorage.getItem("driverPickupCoordsForSubmit") || "";
-    const dropoffCoords =
-      sessionStorage.getItem("driverDropoffCoordsForSubmit") || "";
-
-    console.log("[Driver Create Ride] Collecting ride data:", {
-      driverId: userId,
-      pickupLocation,
-      dropoffLocation,
-      departureDateTime,
-      seatCount,
-    });
-
-    // Disable button and show loading state
-    createRideBtn.disabled = true;
-    createRideBtn.innerHTML = '<span class="spinner"></span> Creating...';
-    document.getElementById("loadingState").style.display = "flex";
-
+    // Get driver ID from user ID
     try {
-      // Create ride via API
-      const response = await fetch("../../../../backend/api/driver/create-trip.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          driverId: userId,
-          startLocation: pickupLocation,
-          endLocation: dropoffLocation,
-          startCoordinates: pickupCoords,
-          endCoordinates: dropoffCoords,
-          departureTime: departureDateTime,
-          availableSeats: parseInt(seatCount),
-        }),
+      const driverIdResponse = await fetch(
+        "http://localhost:3000/api/driver/get-driver-id",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: userId })
+        }
+      );
+
+      if (!driverIdResponse.ok) {
+        throw new Error(`Failed to get driver ID: ${driverIdResponse.status}`);
+      }
+
+      const driverIdData = await driverIdResponse.json();
+      const driverId = driverIdData.driverId;
+
+      if (!driverId) {
+        showError("Driver profile not found. Please register as a driver first.");
+        return;
+      }
+
+      console.log("[Driver Create Ride] Got driver ID:", driverId);
+
+      // Get form data
+      const departureDateTime =
+        document.getElementById("departureDateTime").value;
+      const seatCount = document.getElementById("seatCount").value;
+      const pickupLocation = sessionStorage.getItem("driverPickupLocation");
+      const dropoffLocation = sessionStorage.getItem("driverDropoffLocation");
+      const pickupCoords =
+        sessionStorage.getItem("driverPickupCoordsForSubmit") || "";
+      const dropoffCoords =
+        sessionStorage.getItem("driverDropoffCoordsForSubmit") || "";
+
+      console.log("[Driver Create Ride] Collecting ride data:", {
+        driverId: driverId,
+        pickupLocation,
+        dropoffLocation,
+        departureDateTime,
+        seatCount,
       });
+
+      // Disable button and show loading state
+      createRideBtn.disabled = true;
+      createRideBtn.innerHTML = '<span class="spinner"></span> Creating...';
+      document.getElementById("loadingState").style.display = "flex";
+
+      // Parse coordinates from sessionStorage
+      let startLat = 0, startLong = 0, endLat = 0, endLong = 0;
+      
+      if (pickupCoords) {
+        try {
+          const pickupCoordsObj = JSON.parse(pickupCoords);
+          startLat = parseFloat(pickupCoordsObj.lat) || 0;
+          startLong = parseFloat(pickupCoordsObj.lng) || 0;
+          console.log("[Driver Create Ride] Parsed pickup coords:", { startLat, startLong });
+        } catch (e) {
+          console.warn("[Driver Create Ride] Invalid pickup coordinates format:", pickupCoords, e);
+        }
+      }
+      
+      if (dropoffCoords) {
+        try {
+          const dropoffCoordsObj = JSON.parse(dropoffCoords);
+          endLat = parseFloat(dropoffCoordsObj.lat) || 0;
+          endLong = parseFloat(dropoffCoordsObj.lng) || 0;
+          console.log("[Driver Create Ride] Parsed dropoff coords:", { endLat, endLong });
+        } catch (e) {
+          console.warn("[Driver Create Ride] Invalid dropoff coordinates format:", dropoffCoords, e);
+        }
+      }
+
+      const requestBody = {
+        driverId: driverId,
+        startLat: startLat,
+        startLong: startLong,
+        endLat: endLat,
+        endLong: endLong,
+        availableSeats: parseInt(seatCount),
+      };
+
+      console.log("[Driver Create Ride] Request body:", requestBody);
+
+      // Create ride via Node.js API
+      const response = await fetch(
+        "http://localhost:3000/api/driver/rides",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       // Check if response is OK before parsing JSON
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Server error: ${response.status} - ${errorText.substring(0, 100)}`);
+        throw new Error(
+          `Server error: ${response.status} - ${errorText.substring(0, 100)}`
+        );
       }
 
       const result = await response.json();
@@ -248,7 +305,7 @@ function setupFormSubmission() {
         document.getElementById("loadingState").style.display = "none";
       }
     } catch (error) {
-      console.error("[Driver Create Ride] Network/submission error:", error);
+      console.error("[Driver Create Ride] Error:", error);
       showError("Error creating ride: " + error.message);
 
       // Re-enable button

@@ -15,7 +15,7 @@ const router = express.Router();
 
 /**
  * POST /api/driver/rides
- * Create a new ride with start location, destination, time, and seats
+ * Create a new ride with start location, destination, and seats
  */
 router.post("/rides", async (req, res) => {
   try {
@@ -23,13 +23,12 @@ router.post("/rides", async (req, res) => {
       driverId,
       startLat,
       startLong,
-      startAddress,
       endLat,
       endLong,
-      endAddress,
-      departureTime,
       availableSeats,
     } = req.body;
+
+    console.log("[POST /api/driver/rides] Request body:", req.body);
 
     // ====================================================================
     // VALIDATION
@@ -37,17 +36,20 @@ router.post("/rides", async (req, res) => {
     const errors = {};
 
     if (!driverId) errors.driverId = "Driver ID is required";
-    if (!startLat || !startLong)
-      errors.start = "Start location coordinates required";
-    if (!startAddress) errors.startAddress = "Start address required";
-    if (!endLat || !endLong) errors.end = "End location coordinates required";
-    if (!endAddress) errors.endAddress = "End address required";
-    if (!departureTime) errors.departureTime = "Departure time required";
+    if (startLat === undefined || startLat === null)
+      errors.startLat = "Start latitude required";
+    if (startLong === undefined || startLong === null)
+      errors.startLong = "Start longitude required";
+    if (endLat === undefined || endLat === null)
+      errors.endLat = "End latitude required";
+    if (endLong === undefined || endLong === null)
+      errors.endLong = "End longitude required";
     if (!availableSeats || availableSeats < 1 || availableSeats > 8) {
       errors.availableSeats = "Available seats must be between 1 and 8";
     }
 
     if (Object.keys(errors).length > 0) {
+      console.log("[POST /api/driver/rides] Validation errors:", errors);
       return res.status(400).json({
         success: false,
         message: "Validation failed",
@@ -90,23 +92,17 @@ router.post("/rides", async (req, res) => {
           driver_id, 
           start_lat, 
           start_long, 
-          start_address,
           end_lat, 
           end_long,
-          end_address,
-          departure_time, 
           available_seats,
-          trip_status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ride_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           driverId,
           parseFloat(startLat),
           parseFloat(startLong),
-          startAddress,
           parseFloat(endLat),
           parseFloat(endLong),
-          endAddress,
-          departureTime,
           parseInt(availableSeats),
           "available",
         ]
@@ -156,17 +152,14 @@ router.get("/rides/:driverId", async (req, res) => {
           driver_id,
           start_lat,
           start_long,
-          start_address,
           end_lat,
           end_long,
-          end_address,
-          departure_time,
           available_seats,
-          trip_status,
+          ride_status,
           created_at
         FROM trips
         WHERE driver_id = ?
-        ORDER BY departure_time DESC`,
+        ORDER BY created_at DESC`,
         [driverId]
       );
 

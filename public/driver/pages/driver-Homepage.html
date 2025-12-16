@@ -165,18 +165,34 @@
           <!-- Left Column: Pending Ride Requests -->
           <section class="dashboard-section">
             <h3>Pending Ride Requests</h3>
-            <div class="pending-requests-container" id="pending-requests-container">
+            <div
+              class="pending-requests-container"
+              id="pending-requests-container"
+            >
               <div class="loading-spinner">
                 <p>Loading requests...</p>
               </div>
             </div>
           </section>
 
-          <!-- Right Column: Route Map -->
+          <!-- Right Column: Route Map & Passengers -->
           <section class="dashboard-section">
             <h3>Your Route Map</h3>
             <div class="map-container" id="map-container">
-              <div id="route-map" style="width: 100%; height: 100%; border-radius: 8px;"></div>
+              <div
+                id="route-map"
+                style="width: 100%; height: 100%; border-radius: 8px"
+              ></div>
+            </div>
+            
+            <!-- Passengers Section -->
+            <div id="passengers-section" style="display: none; margin-top: 20px;">
+              <h4 style="margin-bottom: 15px;">Passengers Booked</h4>
+              <div id="passengers-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+              </div>
+              <button id="cancel-ride-btn" class="btn btn-danger" style="width: 100%; background-color: #dc3545;">
+                <i class="bx bx-x"></i> Cancel This Ride
+              </button>
             </div>
           </section>
         </div>
@@ -187,7 +203,7 @@
       <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvKPLAZzNR4f5qFpkGCr2p0w7Gv-Cl9GA"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsoZUgOFGSg7oXvdgstZuduXjNPIp_S3k"></script>
     <script src="../../shared/js/header-auth.js"></script>
     <script src="../js/driver-dashboard.js"></script>
     <script>
@@ -241,6 +257,9 @@
       });
 
       // Load dashboard data from API
+      // Old code - now handled by DriverDashboard class in driver-dashboard.js
+      // This function is kept for reference but is no longer used
+      /*
       async function loadDashboardData() {
         try {
           const userDataStr = localStorage.getItem("userData");
@@ -286,6 +305,7 @@
 
       // Load data on page load
       document.addEventListener("DOMContentLoaded", loadDashboardData);
+      */
     </script>
     <script src="../../shared/js/header-auth.js"></script>
   </body>

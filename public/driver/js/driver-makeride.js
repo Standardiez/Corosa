@@ -274,21 +274,40 @@ class DriverRideFlow {
     try {
       // Get driver ID from localStorage
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const driverId = userData.userId;
+      const userId = userData.userId || userData.id;
 
-      // TODO: Get actual coordinates from location picker
-      // For now, using placeholder coordinates
+      // Get driver ID from user ID
+      const driverIdResponse = await fetch(
+        "http://localhost:3000/api/driver/get-driver-id",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: userId }),
+        }
+      );
+
+      if (!driverIdResponse.ok) {
+        throw new Error("Failed to get driver ID");
+      }
+
+      const driverIdData = await driverIdResponse.json();
+      const driverId = driverIdData.driverId;
+
+      if (!driverId) {
+        throw new Error("Driver profile not found. Please register first.");
+      }
+
+      // Parse coordinates - only send lat/long, no addresses
       const payload = {
         driverId: driverId,
-        startLat: this.rideData.startLat || 14.5995, // Manila default
-        startLong: this.rideData.startLong || 120.9842,
-        startAddress: this.rideData.startAddress,
-        endLat: this.rideData.endLat || 14.5995,
-        endLong: this.rideData.endLong || 120.9842,
-        endAddress: this.rideData.endAddress,
-        departureTime: this.rideData.departureTime,
-        availableSeats: this.rideData.availableSeats,
+        startLat: parseFloat(this.rideData.startLat) || 16.4023,
+        startLong: parseFloat(this.rideData.startLong) || 120.596,
+        endLat: parseFloat(this.rideData.endLat) || 16.4023,
+        endLong: parseFloat(this.rideData.endLong) || 120.596,
+        availableSeats: parseInt(this.rideData.availableSeats) || 1,
       };
+
+      console.log("Creating ride with payload:", payload);
 
       // Send to backend
       const response = await fetch("http://localhost:3000/api/driver/rides", {
