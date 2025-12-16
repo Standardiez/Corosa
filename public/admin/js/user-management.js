@@ -3,7 +3,7 @@ let searchQuery = '';
 
 // Add event listeners for search and sort (apply only on button press)
 document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('vehicle-search-input');
+    const searchInput = document.getElementById('user-search-input');
     if (searchInput) {
         searchInput.addEventListener('input', function(e) {
             searchQuery = e.target.value.toLowerCase();
@@ -17,20 +17,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
+/**
+ * Rides & Transactions Management
+ * Admin page for monitoring active rides and transaction history
+ */
 
 // State management
-let currentTab = 'vehicles';
+let currentTab = 'users';
 let currentPage = 1;
 let itemsPerPage = 10;
-let allVehicles = [];
+let allUsers = [];
 let filteredData = [];
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
     loadStatistics();
-    loadVehicleData();
+    loadUserData();
     setActiveNavLink();
 });
 
@@ -38,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
  * Initialize all event listeners
  */
 function initializeEventListeners() {
-    // Tab switching
+    // Tab switching (only one tab for users)
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', function() {
             switchTab(this.dataset.tab);
@@ -65,7 +68,8 @@ function switchTab(tab) {
         btn.classList.toggle('active', btn.dataset.tab === tab);
     });
 
-    loadVehicleData();
+    // Only one tab: users
+    loadUserData();
 }
 
 /**
@@ -73,60 +77,74 @@ function switchTab(tab) {
  */
 async function loadStatistics() {
     // TODO: Replace with actual API call
-    // const response = await fetch('/Corosa/backend/api/rides-stats.php');
+    // const response = await fetch('/Corosa/backend/api/users-stats.php');
 
     // Mock statistics
     const stats = {
-        totalVehicles: 248,
-        verified: 8,
-        pending: 5,
-        declined: 12
+        totalUsers: 120,
+        verified: 80,
+        pending: 30,
+        declined: 10
     };
 
-    document.getElementById('stat-total-vehicles').textContent = stats.totalVehicles;
-    document.getElementById('stat-verified-vehicles').textContent = stats.verified;
-    document.getElementById('stat-pending-vehicles').textContent = stats.pending;
-    document.getElementById('stat-declined-vehicles').textContent = stats.declined;
+    document.getElementById('stat-total-users').textContent = stats.totalUsers;
+    document.getElementById('stat-verified-users').textContent = stats.verified;
+    document.getElementById('stat-pending-users').textContent = stats.pending;
+    document.getElementById('stat-declined-users').textContent = stats.declined;
 }
 
 /**
  * Load vehicle data
  */
-async function loadVehicleData() {
+async function loadUserData() {
     try {
-        // Fetch vehicle data from backend API endpoint=
-        const response = await fetch('../../../backend/api/shared/js/vehicle');
-        const result = await response.json();
-        if (result.success && Array.isArray(result.data)) {
-            allVehicles = result.data.map(vehicle => ({
-                owner: vehicle.driver_id || '',
-                model: vehicle.vehicle_model || '',
-                plate: vehicle.plate_number || '',
-                seatCapacity: vehicle.seat_capacity || '',
-                status: vehicle.vehicle_status || ''
-            }));
-        } else {
-            allVehicles = [];
-        }
-        filteredData = [...allVehicles];
-        renderVehiclesTable();
+        // TODO: Replace with actual API call
+        // const response = await fetch('/Corosa/backend/api/users.php?action=getAll');
+        // allUsers = await response.json();
+
+        // Mock users data
+        allUsers = generateMockUsers();
+        filteredData = [...allUsers];
+
+        renderUsersTable();
         updatePagination();
+
     } catch (error) {
-        console.error('Error loading vehicles:', error);
-        showError('Failed to load vehicles data');
+        console.error('Error loading users:', error);
+        showError('Failed to load users data');
     }
 }
 
 /**
  * Generate mock vehicle data
  */
+function generateMockUsers() {
+    const statuses = ['verified', 'pending', 'declined'];
+    const names = ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Garcia', 'Carlos Lim', 'Sofia Tan'];
+    const emails = ['juan@email.com', 'maria@email.com', 'pedro@email.com', 'ana@email.com', 'carlos@email.com', 'sofia@email.com'];
+    const mobiles = ['09171234567', '09181234567', '09191234567', '09201234567', '09211234567', '09221234567'];
+    const birthdates = ['1990-01-01', '1985-05-12', '1992-07-23', '1988-11-30', '1995-03-15', '1993-09-09'];
+    const occupations = ['Teacher', 'Student'];
 
+    const users = [];
+    for (let i = 1; i <= 25; i++) {
+        users.push({
+            name: names[Math.floor(Math.random() * names.length)],
+            email: emails[Math.floor(Math.random() * emails.length)],
+            mobile: mobiles[Math.floor(Math.random() * mobiles.length)],
+            birthdate: birthdates[Math.floor(Math.random() * birthdates.length)],
+            occupation: occupations[Math.floor(Math.random() * occupations.length)],
+            status: statuses[Math.floor(Math.random() * statuses.length)]
+        });
+    }
+    return users;
+}
 
 /**
  * Render vehicles table
  */
-function renderVehiclesTable() {
-    const tbody = document.getElementById('vehicles-table-body');
+function renderUsersTable() {
+    const tbody = document.getElementById('users-table-body');
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const pageData = filteredData.slice(start, end);
@@ -134,10 +152,10 @@ function renderVehiclesTable() {
     if (pageData.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8">
+                <td colspan="7">
                     <div class="empty-state">
                         <i class='bx bx-inbox'></i>
-                        <p>No vehicles found</p>
+                        <p>No users found</p>
                     </div>
                 </td>
             </tr>
@@ -145,17 +163,17 @@ function renderVehiclesTable() {
         return;
     }
 
-    tbody.innerHTML = pageData.map(vehicle => `
+    tbody.innerHTML = pageData.map(user => `
         <tr>
-            <td>${vehicle.owner || ''}</td>
-            <td>${vehicle.license || ''}</td>
-            <td>${vehicle.model || ''}</td>
-            <td>${vehicle.plate || ''}</td>
-            <td>${vehicle.seatCapacity || ''}</td>
-            <td><span class="status-badge ${vehicle.status}">${vehicle.status}</span></td>
+            <td>${user.name || ''}</td>
+            <td>${user.email || ''}</td>
+            <td>${user.mobile || ''}</td>
+            <td>${user.birthdate || ''}</td>
+            <td>${user.occupation || ''}</td>
+            <td><span class="status-badge ${user.status}">${user.status}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewVehicleDetails(${vehicle.id})" title="View Details">
+                    <button class="action-btn" onclick="viewUserDetails('${user.email}')" title="View Details">
                         <i class='bx bx-eye'></i>
                     </button>
                 </div>
@@ -171,15 +189,15 @@ function applyFilters() {
     const status = document.getElementById('filter-status').value;
 
     // Always apply status filter first
-    let tempData = allVehicles;
+    let tempData = allUsers;
     if (status !== 'all') {
-        tempData = tempData.filter(vehicle => vehicle.status === status);
+        tempData = tempData.filter(user => user.status === status);
     }
 
     // Then apply search filter
     if (searchQuery) {
-        tempData = tempData.filter(vehicle => {
-            const searchFields = [vehicle.owner, vehicle.license, vehicle.model, vehicle.plate]
+        tempData = tempData.filter(user => {
+            const searchFields = [user.name, user.email, user.mobile, user.birthdate, user.occupation]
                 .map(f => (f || '').toLowerCase()).join(' ');
             return searchFields.includes(searchQuery);
         });
@@ -188,7 +206,7 @@ function applyFilters() {
     filteredData = tempData;
 
     currentPage = 1;
-    renderVehiclesTable();
+    renderUsersTable();
     updatePagination();
 }
 
@@ -205,8 +223,7 @@ function changePage(delta) {
 
     currentPage = newPage;
 
-    renderVehiclesTable();
-
+    renderUsersTable();
     updatePagination();
 }
 
@@ -223,7 +240,13 @@ function updatePagination() {
     document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;
 }
 
-
+/**
+ * View user details (placeholder)
+ */
+function viewUserDetails(email) {
+    alert(`View details for User: ${email}\n\nThis will open a modal with full user information.`);
+    // TODO: Implement modal with user details
+}
 
 /**
  * Format currency
