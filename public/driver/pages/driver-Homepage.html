@@ -160,77 +160,23 @@
           </div>
         </div>
 
-        <!-- Two Column Layout: Stats and Activity -->
+        <!-- Two Column Layout: Pending Requests and Map -->
         <div class="dashboard-main-grid">
-          <!-- Left Column: Upcoming Rides -->
+          <!-- Left Column: Pending Ride Requests -->
           <section class="dashboard-section">
-            <h3>Upcoming Rides</h3>
-            <div class="upcoming-rides">
-              <div class="ride-card">
-                <div class="ride-header">
-                  <span class="ride-time">2:30 PM</span>
-                  <span class="ride-status pending">Incoming</span>
-                </div>
-                <div class="ride-details">
-                  <p><strong>Juan Dela Cruz</strong></p>
-                  <p class="route">
-                    <i class="bx bx-map"></i> Maryheights → Downtown
-                  </p>
-                </div>
-              </div>
-              <div class="ride-card">
-                <div class="ride-header">
-                  <span class="ride-time">4:15 PM</span>
-                  <span class="ride-status confirmed">Confirmed</span>
-                </div>
-                <div class="ride-details">
-                  <p><strong>Maria Santos</strong></p>
-                  <p class="route">
-                    <i class="bx bx-map"></i> University → BGC
-                  </p>
-                </div>
+            <h3>Pending Ride Requests</h3>
+            <div class="pending-requests-container" id="pending-requests-container">
+              <div class="loading-spinner">
+                <p>Loading requests...</p>
               </div>
             </div>
           </section>
 
-          <!-- Right Column: Recent Activity -->
+          <!-- Right Column: Route Map -->
           <section class="dashboard-section">
-            <h3>Recent Activity</h3>
-            <div class="activity-list">
-              <div class="activity-item">
-                <div class="activity-icon"><i class="bx bx-check"></i></div>
-                <div class="activity-details">
-                  <div class="activity-title">
-                    Completed ride with Juan Dela Cruz
-                  </div>
-                  <div class="activity-time">Today at 2:30 PM</div>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-icon"><i class="bx bx-star"></i></div>
-                <div class="activity-details">
-                  <div class="activity-title">
-                    Received 5-star rating from Maria Clara
-                  </div>
-                  <div class="activity-time">Today at 2:15 PM</div>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-icon"><i class="bx bx-check"></i></div>
-                <div class="activity-details">
-                  <div class="activity-title">
-                    Completed ride with Robert Garcia
-                  </div>
-                  <div class="activity-time">Yesterday at 4:45 PM</div>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-icon"><i class="bx bx-coin"></i></div>
-                <div class="activity-details">
-                  <div class="activity-title">Payment received: ₱450.00</div>
-                  <div class="activity-time">Yesterday at 4:50 PM</div>
-                </div>
-              </div>
+            <h3>Your Route Map</h3>
+            <div class="map-container" id="map-container">
+              <div id="route-map" style="width: 100%; height: 100%; border-radius: 8px;"></div>
             </div>
           </section>
         </div>
@@ -241,6 +187,9 @@
       <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvKPLAZzNR4f5qFpkGCr2p0w7Gv-Cl9GA"></script>
+    <script src="../../shared/js/header-auth.js"></script>
+    <script src="../js/driver-dashboard.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
 

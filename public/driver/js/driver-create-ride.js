@@ -186,23 +186,27 @@ function setupFormSubmission() {
 
     try {
       // Create ride via API
-      const response = await fetch("../../backend/api/trip.php", {
+      const response = await fetch("../../../../backend/api/driver/create-trip.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: "createTrip",
           driverId: userId,
           startLocation: pickupLocation,
           endLocation: dropoffLocation,
           startCoordinates: pickupCoords,
           endCoordinates: dropoffCoords,
-          departureTime: new Date(departureDateTime).toISOString(),
+          departureTime: departureDateTime,
           availableSeats: parseInt(seatCount),
-          status: "scheduled",
         }),
       });
+
+      // Check if response is OK before parsing JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} - ${errorText.substring(0, 100)}`);
+      }
 
       const result = await response.json();
       console.log("[Driver Create Ride] API Response:", result);

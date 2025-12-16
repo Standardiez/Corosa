@@ -88,12 +88,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // ============================================================================
 // STEP 2: Get input data
 // ============================================================================
-$userId = isset($_POST['userId']) ? intval($_POST['userId']) : null;
-$email = isset($_POST['email']) ? trim($_POST['email']) : null;
-$plateNumber = isset($_POST['plateNumber']) ? strtoupper(trim($_POST['plateNumber'])) : null;
-$vehicleModel = isset($_POST['vehicleModel']) ? trim($_POST['vehicleModel']) : null;
-$seatCapacity = isset($_POST['seatCapacity']) ? intval($_POST['seatCapacity']) : null;
-$driverLicenseFile = isset($_FILES['driverLicenseImage']) ? $_FILES['driverLicenseImage'] : null;
+// Parse JSON input (from frontend with base64 image)
+$inputData = json_decode(file_get_contents('php://input'), true);
+
+$userId = isset($inputData['userId']) ? intval($inputData['userId']) : null;
+$email = isset($inputData['email']) ? trim($inputData['email']) : null;
+$plateNumber = isset($inputData['plateNumber']) ? strtoupper(trim($inputData['plateNumber'])) : null;
+$vehicleModel = isset($inputData['vehicleModel']) ? trim($inputData['vehicleModel']) : null;
+$seatCapacity = isset($inputData['seatCapacity']) ? intval($inputData['seatCapacity']) : null;
+$driverLicenseBase64 = isset($inputData['driverLicenseBase64']) ? $inputData['driverLicenseBase64'] : null;
+$driverLicenseType = isset($inputData['driverLicenseType']) ? $inputData['driverLicenseType'] : 'image/jpeg';
 
 // ============================================================================
 // STEP 3: Validate inputs
@@ -122,9 +126,9 @@ if (!$seatCapacity || $seatCapacity < 2 || $seatCapacity > 8) {
     $errors['seatCapacity'] = 'Valid seat capacity (2-8) is required';
 }
 
-// Validate file
-if (!$driverLicenseFile || $driverLicenseFile['error'] !== UPLOAD_ERR_OK) {
-    $errors['driverLicenseImage'] = 'Driver license image upload failed';
+// Validate base64 image
+if (!$driverLicenseBase64) {
+    $errors['driverLicenseBase64'] = 'Driver license image is required';
 }
 
 if (!empty($errors)) {
@@ -208,23 +212,31 @@ try {
 }
 
 // ============================================================================
-// STEP 7: Handle file upload
+// STEP 7: Handle base64 image
 // ============================================================================
 $uploadDir = '../../../assets/driver-licenses/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
 
-$fileExt = pathinfo($driverLicenseFile['name'], PATHINFO_EXTENSION);
-$allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
-$fileExt = strtolower($fileExt);
+// Determine file extension from MIME type
+$mimeToExt = [
+    'image/jpeg' => 'jpg',
+    'image/jpg' => 'jpg',
+    'image/png' => 'png',
+    'image/gif' => 'gif'
+];
 
-if (!in_array($fileExt, $allowedExts)) {
+$fileExt = $mimeToExt[$driverLicenseType] ?? 'jpg';
+
+// Decode base64 and save file
+$imageData = base64_decode($driverLicenseBase64);
+if ($imageData === false) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "Invalid file type",
-        "errors" => ["driverLicenseImage" => "invalid_file_type"]
+        "message" => "Invalid base64 image data",
+        "errors" => ["driverLicenseBase64" => "invalid_base64"]
     ]);
     exit;
 }
@@ -232,12 +244,12 @@ if (!in_array($fileExt, $allowedExts)) {
 $fileName = "DL_" . $userId . "_" . time() . "." . $fileExt;
 $uploadPath = $uploadDir . $fileName;
 
-if (!move_uploaded_file($driverLicenseFile['tmp_name'], $uploadPath)) {
+if (file_put_contents($uploadPath, $imageData) === false) {
     http_response_code(500);
     echo json_encode([
         "success" => false,
         "message" => "Failed to save driver license image",
-        "errors" => ["driverLicenseImage" => "save_failed"]
+        "errors" => ["driverLicenseBase64" => "save_failed"]
     ]);
     exit;
 }

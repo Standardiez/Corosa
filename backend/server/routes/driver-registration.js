@@ -218,4 +218,56 @@ router.post("/register", express.json({ limit: "50mb" }), async (req, res) => {
   }
 });
 
+/**
+ * POST /api/driver/get-driver-id
+ * Convert user_id to driver_id
+ */
+router.post("/get-driver-id", express.json(), async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "userId is required"
+      });
+    }
+
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "",
+      database: process.env.DB_NAME || "corosa_db",
+    });
+
+    try {
+      const [rows] = await connection.execute(
+        "SELECT driver_id FROM driver WHERE user_id = ? LIMIT 1",
+        [userId]
+      );
+
+      if (rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Driver not found for this user"
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        driverId: rows[0].driver_id
+      });
+    } finally {
+      await connection.end();
+    }
+  } catch (error) {
+    console.error("Get driver ID error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error: " + error.message
+    });
+  }
+});
+
 module.exports = router;
+
