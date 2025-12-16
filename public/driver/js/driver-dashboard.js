@@ -588,7 +588,7 @@ class DriverDashboard {
   async handleAcceptRequest(bookingId, tripId) {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/driver/bookings/${bookingId}/accept`,
+        `http://localhost:3000/api/bookings/${bookingId}/accept`,
         {
           method: "POST",
           headers: {
@@ -623,7 +623,7 @@ class DriverDashboard {
   async handleDeclineRequest(bookingId, tripId) {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/driver/bookings/${bookingId}/reject`,
+        `http://localhost:3000/api/bookings/${bookingId}/reject`,
         {
           method: "POST",
           headers: {
