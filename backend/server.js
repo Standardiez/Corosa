@@ -31,7 +31,7 @@ const driverBookingsRouter = require("./server/routes/driver-bookings");
 // Mount routes
 app.use("/api/driver", driverRegistrationRouter);
 app.use("/api/driver", driverRidesRouter);
-app.use("/api/driver", driverBookingsRouter);
+app.use("/api", driverBookingsRouter);  // Bookings at /api level (POST /api/bookings)
 
 // Start server
 const PORT = 3000;

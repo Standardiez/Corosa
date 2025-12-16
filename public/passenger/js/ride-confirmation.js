@@ -362,17 +362,17 @@
          * - booking_confirmation: true = confirmed booking (vs. pending/draft)
          */
         const bookingPayload = {
-            passenger_id: Number(userId),      // Convert string to number
+            passenger_id: Number(userId),
+            trip_id: Number(tripId),
             start_lat: pickupCoords.lat,
             start_long: pickupCoords.lng,
             end_lat: dropoffCoords.lat,
             end_long: dropoffCoords.lng,
             payment_type: paymentMethod,
-            total_cost: fare.total,
-            booking_confirmation: true         // Mark as confirmed immediately
+            total_cost: fare.total
         };
 
-        console.log("Booking Payload: " + JSON.stringify(bookingPayload));
+        console.log("[ConfirmRide] Booking Payload: " + JSON.stringify(bookingPayload));
 
         try {
             // ================================================================
@@ -413,75 +413,9 @@
                 throw new Error('Booking created but no booking_id returned.');
             }
 
-            // Store booking_id for next page (ride-status.html will need it)
+            // Store booking_id and assignment_id for next page
             sessionStorage.setItem('bookingId', bookingId);
-
-            // ================================================================
-            // PHASE 2: CREATE TRIP ASSIGNMENT RECORD
-            // ================================================================
-
-            /*
-             * Build trip assignment payload
-             *
-             * FIELD EXPLANATIONS:
-             * - booking_id: Links to the booking we just created (foreign key)
-             * - trip_id: Links to driver's trip (foreign key)
-             * - seat_number: null = let backend auto-assign seat number
-             * - assignment_status: "confirmed" = booking is finalizedz
-             * - payment_type: Same as booking (for redundancy/reporting)
-             * - total_cost: Same as booking (for redundancy/reporting)
-             * - booking_confirmation: true triggers seat decrement in backend
-             *
-             * WHY DUPLICATE payment_type AND total_cost:
-             * - Trip assignment table stores its own copy for data integrity
-             * - Allows querying assignments without joining bookings table
-             * - Provides audit trail if booking gets modified later
-             */
-            const tripAssignmentPayload = {
-                booking_id: bookingId,
-                trip_id: Number(tripId),
-                seat_number: null,              // Backend will auto-assign
-                assignment_status: 'confirmed',
-                payment_type: paymentMethod,
-                total_cost: fare.total,
-                booking_confirmation: true
-            };
-
-            // ================================================================
-            // API CALL 2: Create trip assignment
-            // ================================================================
-            /*
-             * POST request to trip_assignment API
-             *
-             * WHAT HAPPENS ON BACKEND:
-             * 1. trip_assignment.php receives JSON data
-             * 2. Validates required fields
-             * 3. Creates TripAssignment class instance
-             * 4. Calls TripAssignment::create() method
-             * 5. Executes INSERT INTO trip_assignment (...) VALUES (...)
-             * 6. Executes UPDATE trips SET available_seats = available_seats - 1
-             *    (This is the CRITICAL seat management step!)
-             * 7. Returns auto-generated assignment_id
-             *
-             * SEAT DECREMENT LOGIC:
-             * - Only happens when booking_confirmation is true
-             * - Prevents overbooking (more passengers than seats)
-             * - Updates in real-time so next user sees reduced availability
-             */
-            const assignmentResponse = await fetch('http://localhost:3000/api/trip-assignments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(tripAssignmentPayload)
-            });
-            const assignmentResult = await assignmentResponse.json();
-
-            // Check if assignment creation was successful
-            if (!assignmentResult.success) {
-                throw new Error(assignmentResult.message || 'Failed to create trip assignment');
-            }
-
-            // Extract assignment_id from response (optional but useful)
-            const assignmentId = assignmentResult.data && assignmentResult.data.assignment_id;
+            const assignmentId = bookingResult.data && bookingResult.data.assignment_id;
             if (assignmentId) {
                 sessionStorage.setItem('assignmentId', assignmentId);
             }
@@ -504,8 +438,12 @@
             sessionStorage.setItem('confirmedPaymentMethod', paymentMethod);
             sessionStorage.setItem('fareTotal', fare.total.toString());
 
-            // Show success message and navigate to ride status page
-            alert('Ride confirmed! Opening live ride status...');
+            // Store confirmation data and navigate to ride status page
+            sessionStorage.setItem('bookingStatus', 'pending');
+            sessionStorage.setItem('bookingCreatedAt', new Date().toISOString());
+            console.log('[ConfirmRide] Booking created with status: pending. Navigating to ride-status...');
+            
+            // Navigate to ride status page to show "Waiting for driver's approval" message
             window.location.href = 'ride-status.html';
 
         } catch (error) {

@@ -768,11 +768,98 @@
     function initialize(){
         const data = loadData();
         if(!data) return;
+
+        // CHECK IF BOOKING IS STILL PENDING
+        const bookingStatus = sessionStorage.getItem('bookingStatus');
+        if (bookingStatus === 'pending') {
+            console.log('[RideStatus] Booking status is pending - showing waiting message');
+            showPendingApprovalMessage();
+            return; // Don't load the map yet
+        }
+
+        // If not pending, load the map normally
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent('AIzaSyBsoZUgOFGSg7oXvdgstZuduXjNPIp_S3k')}&callback=initMap`;
         script.async = true;
         script.defer = true;
         document.head.appendChild(script);
+    }
+
+    /**
+     * Show "Waiting for driver's approval" message when booking is pending
+     */
+    function showPendingApprovalMessage() {
+        const mapContainer = document.getElementById('map');
+        const stagesContainer = document.getElementById('stages');
+
+        if (mapContainer) {
+            mapContainer.innerHTML = `
+                <div style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    text-align: center;
+                    padding: 40px 20px;
+                    border-radius: 8px;
+                ">
+                    <div style="font-size: 48px; margin-bottom: 16px;">⏳</div>
+                    <h2 style="margin: 0 0 8px 0; font-size: 24px;">Waiting for driver's approval…</h2>
+                    <p style="margin: 0 0 20px 0; opacity: 0.9; max-width: 400px;">
+                        Your ride request has been sent. The driver will accept or decline shortly.
+                    </p>
+                    <div style="
+                        display: inline-block;
+                        width: 40px;
+                        height: 40px;
+                        border: 4px solid rgba(255,255,255,0.3);
+                        border-top: 4px solid white;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                    "></div>
+                </div>
+            `;
+        }
+
+        // Hide stages initially since we're in pending state
+        if (stagesContainer) {
+            stagesContainer.style.display = 'none';
+        }
+
+        // Add loading spinner animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Set up auto-refresh to check if booking has been accepted
+        const checkApprovalInterval = setInterval(async () => {
+            try {
+                const bookingId = sessionStorage.getItem('bookingId');
+                if (!bookingId) return;
+
+                // Check booking status via backend
+                const response = await fetch(`http://localhost:3000/api/bookings/${bookingId}/status`);
+                const result = await response.json();
+
+                console.log('[RideStatus] Booking status check:', result);
+
+                if (result.success && result.data && result.data.assignment_status === 'accepted') {
+                    console.log('[RideStatus] Booking has been accepted! Reloading...');
+                    clearInterval(checkApprovalInterval);
+                    sessionStorage.setItem('bookingStatus', 'accepted');
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('[RideStatus] Error checking booking status:', error);
+            }
+        }, 3000); // Check every 3 seconds
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize); else initialize();

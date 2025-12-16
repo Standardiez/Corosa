@@ -11,6 +11,7 @@ class DriverDashboard {
     this.driverId = null;
     this.hasRides = false;
     this.currentRide = null;
+    this.refreshInterval = null; // Store interval ID for cleanup
     this.initializeOnLoad();
   }
 
@@ -81,11 +82,38 @@ class DriverDashboard {
 
       // Load and display pending requests
       await this.loadPendingRequests();
+
+      // Set up auto-refresh: reload pending requests and accepted passengers every 2 seconds
+      this.setupAutoRefresh();
     } catch (error) {
       console.error("[Dashboard] Fatal error loading dashboard:", error);
       this.showMapFallback();
       this.showRequestsFallback();
     }
+  }
+
+  setupAutoRefresh() {
+    // Clear existing interval if any
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+
+    // Set up auto-refresh every 5 seconds (more reasonable than 2s)
+    this.refreshInterval = setInterval(async () => {
+      try {
+        // Refresh pending requests
+        await this.loadPendingRequests();
+
+        // Refresh accepted passengers if we have a current ride
+        if (this.currentRide && this.currentRide.trip_id) {
+          await this.displayPassengersForRide(this.currentRide.trip_id);
+        }
+      } catch (error) {
+        console.error("[Dashboard] Auto-refresh error:", error);
+      }
+    }, 5000); // 5 second refresh interval (was 2 seconds)
+
+    console.log("[Dashboard] Auto-refresh enabled (5 second interval)");
   }
 
   async loadCurrentRide() {
@@ -281,8 +309,9 @@ class DriverDashboard {
 
   async displayPassengersForRide(tripId) {
     try {
+      // Fetch accepted passengers (not pending requests)
       const response = await fetch(
-        `http://localhost:3000/api/driver/bookings/${this.driverId}`
+        `http://localhost:3000/api/accepted-passengers/${this.driverId}`
       );
 
       if (!response.ok) {
@@ -290,15 +319,19 @@ class DriverDashboard {
       }
 
       const data = await response.json();
-      console.log("[Dashboard] Bookings response:", data);
+      console.log("[Dashboard] Accepted passengers response:", data);
 
-      if (data.success && data.bookings) {
-        // Filter bookings for this specific trip
-        const tripBookings = data.bookings.filter((b) => b.trip_id === tripId);
-        this.displayPassengersList(tripBookings);
+      if (data.success && data.passengers) {
+        // Filter passengers for this specific trip ONLY
+        const tripPassengers = data.passengers.filter((p) => p.trip_id === tripId);
+        console.log(`[Dashboard] Filtered ${tripPassengers.length} passengers for trip ${tripId}`);
+        this.displayPassengersList(tripPassengers);
+      } else {
+        this.displayPassengersList([]);
       }
     } catch (error) {
-      console.error("[Dashboard] Error loading passengers:", error);
+      console.error("[Dashboard] Error loading accepted passengers:", error);
+      this.displayPassengersList([]);
     }
   }
 
@@ -309,8 +342,8 @@ class DriverDashboard {
 
     if (!passengersSection || !passengersList) return;
 
-    if (passengers.length > 0) {
-      // Show passengers section
+    if (passengers && passengers.length > 0) {
+      // Show passengers section with accepted passengers
       passengersSection.style.display = "block";
       passengersList.innerHTML = "";
 
@@ -358,8 +391,15 @@ class DriverDashboard {
         cancelBtn.onclick = () => this.handleCancelRide();
       }
     } else {
-      // Hide passengers section if no passengers
-      passengersSection.style.display = "none";
+      // Show "No confirmed passengers yet" message
+      passengersSection.style.display = "block";
+      passengersList.innerHTML = `
+        <div style="text-align: center; padding: 20px; color: var(--color-muted-foreground);">
+          <i class="bx bx-user-x" style="font-size: 32px; opacity: 0.5;"></i>
+          <p style="margin: 10px 0 5px 0;">No confirmed passengers yet.</p>
+          <small>Passengers will appear here once you accept their ride requests.</small>
+        </div>
+      `;
     }
   }
 
@@ -415,8 +455,10 @@ class DriverDashboard {
         throw new Error("Driver ID not available");
       }
 
+      console.log(`[Dashboard] Loading pending requests for driver ${this.driverId}...`);
+
       const response = await fetch(
-        `http://localhost:3000/api/driver/bookings/${this.driverId}`
+        `http://localhost:3000/api/bookings/${this.driverId}`
       );
 
       if (!response.ok) {
@@ -435,6 +477,7 @@ class DriverDashboard {
       container.innerHTML = "";
 
       if (data.success && data.bookings && data.bookings.length > 0) {
+        console.log(`[Dashboard] Displaying ${data.bookings.length} pending requests`);
         data.bookings.forEach((request) => {
           const card = this.createRequestCard(request);
           container.appendChild(card);
@@ -450,6 +493,7 @@ class DriverDashboard {
           `[Dashboard] Loaded ${data.bookings.length} pending requests`
         );
       } else {
+        console.log("[Dashboard] No pending requests found");
         this.showRequestsFallback();
       }
     } catch (error) {
