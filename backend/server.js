@@ -24,11 +24,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Import routers
+<<<<<<< Updated upstream
+=======
+const tripsRouter = require("./api/shared/js/trip");
+const bookingsRouter = require("./api/pasenger/php/bookings");
+const tripAssignmentsRouter = require("./api/shared/js/trip-assignment");
+const vehicleRouter = require("./api/shared/js/vehicle");
+>>>>>>> Stashed changes
 const driverRegistrationRouter = require("./server/routes/driver-registration");
 const driverRidesRouter = require("./server/routes/driver-rides");
 const driverBookingsRouter = require("./server/routes/driver-bookings");
 
 // Mount routes
+<<<<<<< Updated upstream
+=======
+app.use("/api/trips", tripsRouter);
+app.use("/api/bookings", bookingsRouter);
+app.use("/api/trip-assignments", tripAssignmentsRouter);
+app.use("/api/vehicle", vehicleRouter);
+>>>>>>> Stashed changes
 app.use("/api/driver", driverRegistrationRouter);
 app.use("/api/driver", driverRidesRouter);
 app.use("/api", driverBookingsRouter); // Bookings at /api level (POST /api/bookings)
