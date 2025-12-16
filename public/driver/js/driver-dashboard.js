@@ -231,7 +231,9 @@ class DriverDashboard {
             directionsRenderer.setDirections(result);
           } else {
             // Fallback to simple polyline if directions not available
-            console.warn("[Dashboard] Directions not available, using simple polyline");
+            console.warn(
+              "[Dashboard] Directions not available, using simple polyline"
+            );
             const routePath = [startPos, endPos];
             new google.maps.Polyline({
               path: routePath,

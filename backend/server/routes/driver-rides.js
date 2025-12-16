@@ -292,7 +292,7 @@ router.delete("/rides/:rideId", async (req, res) => {
  */
 router.get("/available-rides", async (req, res) => {
   console.log("[GET /api/driver/available-rides] Request received");
-  
+
   try {
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST || "localhost",
@@ -328,12 +328,19 @@ router.get("/available-rides", async (req, res) => {
           AND t.available_seats > 0
         ORDER BY t.created_at DESC
       `;
-      
+
       console.log("[GET /api/driver/available-rides] Executing query...");
       const [rides] = await connection.execute(query);
-      
-      console.log("[GET /api/driver/available-rides] Found", rides.length, "available rides");
-      console.log("[GET /api/driver/available-rides] Ride data:", JSON.stringify(rides, null, 2));
+
+      console.log(
+        "[GET /api/driver/available-rides] Found",
+        rides.length,
+        "available rides"
+      );
+      console.log(
+        "[GET /api/driver/available-rides] Ride data:",
+        JSON.stringify(rides, null, 2)
+      );
 
       res.status(200).json({
         success: true,

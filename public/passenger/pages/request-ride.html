@@ -1,78 +1,155 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Request a Ride — Corosa</title>
-    <link rel="stylesheet" href="../../styles/styles.css">
-    <link href='https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../styles/styles.css" />
+    <link
+      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
     <style>
-        /* Compact layout matching other pages: map on top, rides below */
-        .map-card { margin-bottom: var(--spacing-md); }
-        #map { width: 100%; height: 360px; border-radius: var(--radius-md); }
-        .ride-list { display: grid; gap: var(--spacing-md); }
-        .ride-card { display: flex; gap: var(--spacing-md); align-items: center; padding: var(--spacing-md); border-radius: var(--radius-md); border:1px solid var(--color-border); background: var(--color-background); }
-        .driver-avatar { width:56px; height:56px; border-radius:50%; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; color:var(--color-muted-foreground); flex-shrink:0; }
-        .ride-meta { flex:1; }
-        .vehicle-row { color:var(--color-muted-foreground); font-size:var(--font-size-sm); display:flex; gap:var(--spacing-md); align-items:center; }
-        .capacity { font-weight:600; }
-        .request-col { width:140px; }
+      /* Compact layout matching other pages: map on top, rides below */
+      .map-card {
+        margin-bottom: var(--spacing-md);
+      }
+      #map {
+        width: 100%;
+        height: 360px;
+        border-radius: var(--radius-md);
+      }
+      .ride-list {
+        display: grid;
+        gap: var(--spacing-md);
+      }
+      .ride-card {
+        display: flex;
+        gap: var(--spacing-md);
+        align-items: center;
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-border);
+        background: var(--color-background);
+      }
+      .driver-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--color-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-muted-foreground);
+        flex-shrink: 0;
+      }
+      .ride-meta {
+        flex: 1;
+      }
+      .vehicle-row {
+        color: var(--color-muted-foreground);
+        font-size: var(--font-size-sm);
+        display: flex;
+        gap: var(--spacing-md);
+        align-items: center;
+      }
+      .capacity {
+        font-weight: 600;
+      }
+      .request-col {
+        width: 140px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header class="header">
-        <div class="container header-content">
-            <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
-            <nav class="nav header-nav">
-                <a class="btn btn-outline" href="select-dropoff.html">Back</a>
-                <a class="btn btn-outline" id="signup-link" href="../../shared/pages/signup.html">Create account</a>
-                <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
-                    <i class='bx bx-user' style='color:#806600'></i>
-                    <span id="user-initials" style="margin-left:0.5rem;"></span>
-                </button>
-            </nav>
-        </div>
+      <div class="container header-content">
+        <img
+          src="../../assets/corosa-logo.png"
+          alt="Corosa Logo"
+          class="logo"
+        />
+        <nav class="nav header-nav">
+          <a class="btn btn-outline" href="select-dropoff.html">Back</a>
+          <a
+            class="btn btn-outline"
+            id="signup-link"
+            href="../../shared/pages/signup.html"
+            >Create account</a
+          >
+          <button
+            class="btn btn-outline user-menu-btn"
+            id="user-menu-btn"
+            style="display: none"
+            aria-label="User menu"
+          >
+            <i class="bx bx-user" style="color: #806600"></i>
+            <span id="user-initials" style="margin-left: 0.5rem"></span>
+          </button>
+        </nav>
+      </div>
     </header>
 
-    <main class="container" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
-        <section class="card map-card">
-            <h3 style="margin:0 0 var(--spacing-sm) 0;">Your route</h3>
-            <p class="text-muted">Pickup and drop-off locations are shown on the map below.</p>
-            <div id="map" class="map-placeholder">Loading map…</div>
+    <main
+      class="container"
+      style="padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xl)"
+    >
+      <section class="card map-card">
+        <h3 style="margin: 0 0 var(--spacing-sm) 0">Your route</h3>
+        <p class="text-muted">
+          Pickup and drop-off locations are shown on the map below.
+        </p>
+        <div id="map" class="map-placeholder">Loading map…</div>
 
-            <div style="display:flex; gap:var(--spacing-md); margin-top:var(--spacing-sm);">
-                <div style="flex:1">
-                    <small class="text-muted">Pickup</small>
-                    <div id="pickup-location">Loading...</div>
-                </div>
-                <div style="flex:1">
-                    <small class="text-muted">Drop-off</small>
-                    <div id="dropoff-location">Loading...</div>
-                </div>
-            </div>
-        </section>
+        <div
+          style="
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-sm);
+          "
+        >
+          <div style="flex: 1">
+            <small class="text-muted">Pickup</small>
+            <div id="pickup-location">Loading...</div>
+          </div>
+          <div style="flex: 1">
+            <small class="text-muted">Drop-off</small>
+            <div id="dropoff-location">Loading...</div>
+          </div>
+        </div>
+      </section>
 
-        <section>
-            <h3>Available rides</h3>
-            <div class="ride-list" id="ride-list">
-                <!-- Ride cards will be injected here by JS -->
-            </div>
-        </section>
+      <section>
+        <h3>Available rides</h3>
+        <div class="ride-list" id="ride-list">
+          <!-- Ride cards will be injected here by JS -->
+        </div>
+      </section>
     </main>
 
-    <footer class="container" style="padding:var(--spacing-md) 0; text-align:center; color:var(--color-muted-foreground);">
-        <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
+    <footer
+      class="container"
+      style="
+        padding: var(--spacing-md) 0;
+        text-align: center;
+        color: var(--color-muted-foreground);
+      "
+    >
+      <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
-    <script>document.getElementById('year').textContent = new Date().getFullYear();
-    
-    // Clear user role when going back
-    document.querySelector('a[href="select-dropoff.html"]').addEventListener('click', function(e) {
-      // Allow normal navigation, role will be preserved for back button within the flow
-    });
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Clear user role when going back
+      document
+        .querySelector('a[href="select-dropoff.html"]')
+        .addEventListener("click", function (e) {
+          // Allow normal navigation, role will be preserved for back button within the flow
+        });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsoZUgOFGSg7oXvdgstZuduXjNPIp_S3k"></script>
     <script src="../js/request-ride.js"></script>
     <script src="../../shared/js/header-auth.js"></script>
-</body>
+  </body>
 </html>

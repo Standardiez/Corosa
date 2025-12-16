@@ -39,10 +39,14 @@ async function checkDatabase() {
     console.log("\nAll trips:");
     trips.forEach((trip, index) => {
       console.log(`\n${index + 1}. Trip ID: ${trip.trip_id}`);
-      console.log(`   Driver: ${trip.first_name} ${trip.last_name} (${trip.driver_id})`);
+      console.log(
+        `   Driver: ${trip.first_name} ${trip.last_name} (${trip.driver_id})`
+      );
       console.log(`   Status: ${trip.ride_status}`);
       console.log(`   Available seats: ${trip.available_seats}`);
-      console.log(`   Route: (${trip.start_lat}, ${trip.start_long}) -> (${trip.end_lat}, ${trip.end_long})`);
+      console.log(
+        `   Route: (${trip.start_lat}, ${trip.start_long}) -> (${trip.end_lat}, ${trip.end_long})`
+      );
     });
 
     // Check available rides (what passengers will see)
@@ -60,7 +64,6 @@ async function checkDatabase() {
     console.log("\n\n=== RIDES AVAILABLE FOR PASSENGERS ===");
     console.log("Count:", availableRides.length);
     console.log(JSON.stringify(availableRides, null, 2));
-
   } catch (error) {
     console.error("Error:", error);
   } finally {

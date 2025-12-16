@@ -273,8 +273,7 @@
 
         if (currentLocation.coords) {
           // Get user role from sessionStorage
-          const userRole =
-            sessionStorage.getItem("userRole") || "passenger";
+          const userRole = sessionStorage.getItem("userRole") || "passenger";
 
           console.log("DEBUG: userRole =", userRole);
           console.log(

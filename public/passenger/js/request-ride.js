@@ -166,11 +166,11 @@
       })
       .then((result) => {
         console.log("[RequestRide] Full response data:", result);
-        
+
         if (result.success && Array.isArray(result.data)) {
           console.log("[RequestRide] Found", result.data.length, "rides");
           console.log("[RequestRide] Raw rides from backend:", result.data);
-          
+
           // Display all rides with available seats (filtering already done on backend)
           availableRides = result.data.map((trip) => {
             console.log("[RequestRide] Processing trip:", {
@@ -181,7 +181,7 @@
               available_seats: trip.available_seats,
               seat_capacity: trip.seat_capacity,
             });
-            
+
             return {
               id: trip.trip_id,
               tripId: trip.trip_id,
@@ -205,13 +205,20 @@
               createdAt: trip.created_at,
             };
           });
-          
-          console.log(`[RequestRide] Mapped ${availableRides.length} rides for display`);
+
+          console.log(
+            `[RequestRide] Mapped ${availableRides.length} rides for display`
+          );
           console.log("[RequestRide] Mapped rides:", availableRides);
           displayAvailableRides();
         } else {
           console.error("[RequestRide] Invalid response format:", result);
-          console.error("[RequestRide] Success:", result.success, "Is array:", Array.isArray(result.data));
+          console.error(
+            "[RequestRide] Success:",
+            result.success,
+            "Is array:",
+            Array.isArray(result.data)
+          );
           displayAvailableRides(); // Display empty list
         }
       })
@@ -239,14 +246,22 @@
     meta.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:var(--spacing-md);">
                 <div>
-                    <div style="font-weight:700">${ride.driver.firstName} ${ride.driver.lastName}</div>
-                    <div class="employment-status" style="font-size:0.85rem; color:var(--color-muted-foreground);">${ride.driver.mobile || "N/A"}</div>
+                    <div style="font-weight:700">${ride.driver.firstName} ${
+      ride.driver.lastName
+    }</div>
+                    <div class="employment-status" style="font-size:0.85rem; color:var(--color-muted-foreground);">${
+                      ride.driver.mobile || "N/A"
+                    }</div>
                 </div>
             </div>
             <div class="vehicle-row" style="margin-top:var(--spacing-sm);">
-                <div>${ride.vehicle.model}${ride.vehicle.year ? ' (' + ride.vehicle.year + ')' : ''}</div>
+                <div>${ride.vehicle.model}${
+      ride.vehicle.year ? " (" + ride.vehicle.year + ")" : ""
+    }</div>
                 <div style="width:1px; height:16px; background:var(--color-border);"></div>
-                <div class="capacity"><span>${ride.vehicle.availableSeats}/${ride.vehicle.totalCapacity}</span> seats</div>
+                <div class="capacity"><span>${ride.vehicle.availableSeats}/${
+      ride.vehicle.totalCapacity
+    }</span> seats</div>
             </div>`;
 
     const actionCol = document.createElement("div");
@@ -276,7 +291,7 @@
     if (!container) return;
 
     container.innerHTML = "";
-    
+
     if (availableRides.length === 0) {
       container.innerHTML = `
         <div style="text-align:center; padding:var(--spacing-lg); color:var(--color-muted-foreground);">
@@ -287,7 +302,7 @@
       `;
       return;
     }
-    
+
     availableRides.forEach((ride) => {
       const card = createRideCard(ride);
       container.appendChild(card);

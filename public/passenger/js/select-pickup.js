@@ -67,8 +67,7 @@
       nextBtn.addEventListener("click", function () {
         if (currentLocation.coords) {
           // Get user role from sessionStorage
-          const userRole =
-            sessionStorage.getItem("userRole") || "passenger";
+          const userRole = sessionStorage.getItem("userRole") || "passenger";
 
           // Store location based on user role
           if (userRole === "driver") {

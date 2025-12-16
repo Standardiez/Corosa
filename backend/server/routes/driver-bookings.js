@@ -117,7 +117,9 @@ router.post("/bookings/:bookingId/accept", async (req, res) => {
           [trip_id]
         );
 
-        console.log(`[Accept Booking] Booking ${bookingId} accepted, seats deducted for trip ${trip_id}`);
+        console.log(
+          `[Accept Booking] Booking ${bookingId} accepted, seats deducted for trip ${trip_id}`
+        );
 
         await connection.commit();
 
