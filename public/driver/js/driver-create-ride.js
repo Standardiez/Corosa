@@ -167,7 +167,7 @@ function setupFormSubmission() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: userId })
+          body: JSON.stringify({ userId: userId }),
         }
       );
 
@@ -179,7 +179,9 @@ function setupFormSubmission() {
       const driverId = driverIdData.driverId;
 
       if (!driverId) {
-        showError("Driver profile not found. Please register as a driver first.");
+        showError(
+          "Driver profile not found. Please register as a driver first."
+        );
         return;
       }
 
@@ -210,27 +212,44 @@ function setupFormSubmission() {
       document.getElementById("loadingState").style.display = "flex";
 
       // Parse coordinates from sessionStorage
-      let startLat = 0, startLong = 0, endLat = 0, endLong = 0;
-      
+      let startLat = 0,
+        startLong = 0,
+        endLat = 0,
+        endLong = 0;
+
       if (pickupCoords) {
         try {
           const pickupCoordsObj = JSON.parse(pickupCoords);
           startLat = parseFloat(pickupCoordsObj.lat) || 0;
           startLong = parseFloat(pickupCoordsObj.lng) || 0;
-          console.log("[Driver Create Ride] Parsed pickup coords:", { startLat, startLong });
+          console.log("[Driver Create Ride] Parsed pickup coords:", {
+            startLat,
+            startLong,
+          });
         } catch (e) {
-          console.warn("[Driver Create Ride] Invalid pickup coordinates format:", pickupCoords, e);
+          console.warn(
+            "[Driver Create Ride] Invalid pickup coordinates format:",
+            pickupCoords,
+            e
+          );
         }
       }
-      
+
       if (dropoffCoords) {
         try {
           const dropoffCoordsObj = JSON.parse(dropoffCoords);
           endLat = parseFloat(dropoffCoordsObj.lat) || 0;
           endLong = parseFloat(dropoffCoordsObj.lng) || 0;
-          console.log("[Driver Create Ride] Parsed dropoff coords:", { endLat, endLong });
+          console.log("[Driver Create Ride] Parsed dropoff coords:", {
+            endLat,
+            endLong,
+          });
         } catch (e) {
-          console.warn("[Driver Create Ride] Invalid dropoff coordinates format:", dropoffCoords, e);
+          console.warn(
+            "[Driver Create Ride] Invalid dropoff coordinates format:",
+            dropoffCoords,
+            e
+          );
         }
       }
 
@@ -246,16 +265,13 @@ function setupFormSubmission() {
       console.log("[Driver Create Ride] Request body:", requestBody);
 
       // Create ride via Node.js API
-      const response = await fetch(
-        "http://localhost:3000/api/driver/rides",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetch("http://localhost:3000/api/driver/rides", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
       // Check if response is OK before parsing JSON
       if (!response.ok) {

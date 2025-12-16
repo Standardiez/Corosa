@@ -19,14 +19,8 @@ const router = express.Router();
  */
 router.post("/rides", async (req, res) => {
   try {
-    const {
-      driverId,
-      startLat,
-      startLong,
-      endLat,
-      endLong,
-      availableSeats,
-    } = req.body;
+    const { driverId, startLat, startLong, endLat, endLong, availableSeats } =
+      req.body;
 
     console.log("[POST /api/driver/rides] Request body:", req.body);
 

@@ -32,7 +32,7 @@ class DriverDashboard {
     this.userId = userData.id || userData.userId || userData.user_id;
     console.log("[Dashboard] User ID:", this.userId);
     console.log("[Dashboard] Full userData:", userData);
-    
+
     if (!this.userId) {
       console.error("[Dashboard] Could not find user ID in localStorage data");
       window.location.href = "login.html";
@@ -177,18 +177,31 @@ class DriverDashboard {
 
     console.log(`[Dashboard] START: lat=${startLat}, lng=${startLng}`);
     console.log(`[Dashboard] END: lat=${endLat}, lng=${endLng}`);
-    console.log(`[Dashboard] START parsed: lat=${parseFloat(startLat)}, lng=${parseFloat(startLng)}`);
-    console.log(`[Dashboard] END parsed: lat=${parseFloat(endLat)}, lng=${parseFloat(endLng)}`);
+    console.log(
+      `[Dashboard] START parsed: lat=${parseFloat(startLat)}, lng=${parseFloat(
+        startLng
+      )}`
+    );
+    console.log(
+      `[Dashboard] END parsed: lat=${parseFloat(endLat)}, lng=${parseFloat(
+        endLng
+      )}`
+    );
 
     if (!startLat || !startLng || !endLat || !endLng) {
-      console.error("[Dashboard] Missing coordinates:", { startLat, startLng, endLat, endLng });
+      console.error("[Dashboard] Missing coordinates:", {
+        startLat,
+        startLng,
+        endLat,
+        endLng,
+      });
       return;
     }
 
     try {
       const startPos = { lat: parseFloat(startLat), lng: parseFloat(startLng) };
       const endPos = { lat: parseFloat(endLat), lng: parseFloat(endLng) };
-      
+
       console.log("[Dashboard] Final positions:", { startPos, endPos });
 
       const startMarker = new google.maps.Marker({
@@ -279,7 +292,7 @@ class DriverDashboard {
     const passengersSection = document.getElementById("passengers-section");
     const passengersList = document.getElementById("passengers-list");
     const cancelBtn = document.getElementById("cancel-ride-btn");
-    
+
     if (!passengersSection || !passengersList) return;
 
     if (passengers.length > 0) {
@@ -288,7 +301,9 @@ class DriverDashboard {
       passengersList.innerHTML = "";
 
       passengers.forEach((passenger) => {
-        const name = `${passenger.first_name || "Unknown"} ${passenger.last_name || ""}`.trim();
+        const name = `${passenger.first_name || "Unknown"} ${
+          passenger.last_name || ""
+        }`.trim();
         const phone = passenger.mobile_number || "N/A";
         const pickupLat = passenger.pickup_lat || passenger.start_lat;
         const pickupLng = passenger.pickup_long || passenger.start_long;
@@ -312,8 +327,12 @@ class DriverDashboard {
             <small style="color: var(--color-text-secondary);">${phone}</small>
           </div>
           <div style="font-size: 12px; color: var(--color-text-secondary); text-align: right;">
-            <div><strong>Pick:</strong> (${parseFloat(pickupLat).toFixed(4)}, ${parseFloat(pickupLng).toFixed(4)})</div>
-            <div><strong>Drop:</strong> (${parseFloat(dropoffLat).toFixed(4)}, ${parseFloat(dropoffLng).toFixed(4)})</div>
+            <div><strong>Pick:</strong> (${parseFloat(pickupLat).toFixed(
+              4
+            )}, ${parseFloat(pickupLng).toFixed(4)})</div>
+            <div><strong>Drop:</strong> (${parseFloat(dropoffLat).toFixed(
+              4
+            )}, ${parseFloat(dropoffLng).toFixed(4)})</div>
           </div>
         `;
         passengersList.appendChild(passengerCard);
@@ -357,13 +376,13 @@ class DriverDashboard {
         this.currentRide = null;
         this.hasRides = false;
         this.showMapFallback();
-        
+
         // Hide passengers section
         const passengersSection = document.getElementById("passengers-section");
         if (passengersSection) {
           passengersSection.style.display = "none";
         }
-        
+
         // Reload bookings
         await this.loadPendingRequests();
       } else {
