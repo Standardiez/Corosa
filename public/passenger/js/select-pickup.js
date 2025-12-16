@@ -66,12 +66,12 @@
     if (nextBtn) {
       nextBtn.addEventListener("click", function () {
         if (currentLocation.coords) {
-          // Get flow intent from sessionStorage
-          const flowIntent =
-            sessionStorage.getItem("flowIntent") || "passenger";
+          // Get user role from sessionStorage
+          const userRole =
+            sessionStorage.getItem("userRole") || "passenger";
 
-          // Store location based on flow intent
-          if (flowIntent === "driver") {
+          // Store location based on user role
+          if (userRole === "driver") {
             sessionStorage.setItem(
               "driverPickupLocation",
               currentLocation.address

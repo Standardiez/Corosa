@@ -272,11 +272,11 @@
         console.log("DEBUG: currentLocation =", currentLocation);
 
         if (currentLocation.coords) {
-          // Get flow intent from sessionStorage
-          const flowIntent =
-            sessionStorage.getItem("flowIntent") || "passenger";
+          // Get user role from sessionStorage
+          const userRole =
+            sessionStorage.getItem("userRole") || "passenger";
 
-          console.log("DEBUG: flowIntent =", flowIntent);
+          console.log("DEBUG: userRole =", userRole);
           console.log(
             "DEBUG: All sessionStorage keys:",
             Object.keys(sessionStorage)
@@ -290,8 +290,8 @@
             currentLocation.coords
           );
 
-          // Store drop-off location based on flow intent
-          if (flowIntent === "driver") {
+          // Store drop-off location based on user role
+          if (userRole === "driver") {
             console.log("DEBUG: Redirecting to DRIVER makeride page");
             console.log(
               "DEBUG: Storing driverDropoffLocation =",

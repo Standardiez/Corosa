@@ -24,7 +24,7 @@
         <div class="container header-content">
             <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo">
             <nav class="nav header-nav">
-                <a class="btn btn-outline" href="../../shared/pages/index.html">Home</a>
+                <a class="btn btn-outline" href="select-dropoff.html">Back</a>
                 <a class="btn btn-outline" id="signup-link" href="../../shared/pages/signup.html">Create account</a>
                 <button class="btn btn-outline user-menu-btn" id="user-menu-btn" style="display:none;" aria-label="User menu">
                     <i class='bx bx-user' style='color:#806600'></i>
@@ -64,7 +64,14 @@
         <small>&copy; <span id="year"></span> Corosa — SLU Maryheights</small>
     </footer>
 
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Clear user role when going back
+    document.querySelector('a[href="select-dropoff.html"]').addEventListener('click', function(e) {
+      // Allow normal navigation, role will be preserved for back button within the flow
+    });
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsoZUgOFGSg7oXvdgstZuduXjNPIp_S3k"></script>
     <script src="../js/request-ride.js"></script>
     <script src="../../shared/js/header-auth.js"></script>
 </body>

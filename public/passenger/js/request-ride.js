@@ -20,12 +20,12 @@
   function loadLocations() {
     try {
       // Check if this is a driver or passenger flow
-      const flowIntent = sessionStorage.getItem("flowIntent") || "passenger";
+      const userRole = sessionStorage.getItem("userRole") || "passenger";
 
-      console.log("DEBUG: request-ride.js flowIntent =", flowIntent);
+      console.log("DEBUG: request-ride.js userRole =", userRole);
 
       // If driver, redirect to driver-makeride page instead
-      if (flowIntent === "driver") {
+      if (userRole === "driver") {
         console.log(
           "DEBUG: Driver flow detected in request-ride.js, redirecting to driver-makeride.html"
         );
@@ -155,36 +155,70 @@
   var availableRides = [];
 
   function fetchAvailableRides() {
-    fetch("http://localhost:3000/api/trips?action=getAvailableTrips")
-      .then((response) => response.json())
+    console.log("[RequestRide] Fetching available rides from backend...");
+    fetch("http://localhost:3000/api/driver/available-rides")
+      .then((response) => {
+        console.log("[RequestRide] Response status:", response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+      })
       .then((result) => {
+        console.log("[RequestRide] Full response data:", result);
+        
         if (result.success && Array.isArray(result.data)) {
-          availableRides = result.data.map((trip) => ({
-            id: trip.trip_id,
-            tripId: trip.trip_id,
-            driverId: trip.driver_id,
-            driver: {
-              firstName: trip.first_name || "",
-              middleInitial: trip.middle_initial || "",
-              lastName: trip.last_name || "",
-              employmentStatus: trip.employment_status || "",
-            },
-            vehicle: {
-              model: trip.vehicle_model || "",
-              year: trip.vehicle_year || "",
-              availableSeats: trip.available_seats,
-              totalCapacity: trip.seat_capacity,
-            },
-            rideStatus: trip.ride_status,
-            createdAt: trip.created_at,
-          }));
+          console.log("[RequestRide] Found", result.data.length, "rides");
+          console.log("[RequestRide] Raw rides from backend:", result.data);
+          
+          // Display all rides with available seats (filtering already done on backend)
+          availableRides = result.data.map((trip) => {
+            console.log("[RequestRide] Processing trip:", {
+              trip_id: trip.trip_id,
+              driver_id: trip.driver_id,
+              first_name: trip.first_name,
+              vehicle_model: trip.vehicle_model,
+              available_seats: trip.available_seats,
+              seat_capacity: trip.seat_capacity,
+            });
+            
+            return {
+              id: trip.trip_id,
+              tripId: trip.trip_id,
+              driverId: trip.driver_id,
+              startLat: trip.start_lat,
+              startLng: trip.start_long,
+              endLat: trip.end_lat,
+              endLng: trip.end_long,
+              driver: {
+                firstName: trip.first_name || "",
+                lastName: trip.last_name || "",
+                mobile: trip.mobile_number || "",
+              },
+              vehicle: {
+                model: trip.vehicle_model || "Unknown Model",
+                year: "", // vehicle_year not in schema
+                availableSeats: trip.available_seats,
+                totalCapacity: trip.seat_capacity || 4,
+              },
+              rideStatus: trip.ride_status,
+              createdAt: trip.created_at,
+            };
+          });
+          
+          console.log(`[RequestRide] Mapped ${availableRides.length} rides for display`);
+          console.log("[RequestRide] Mapped rides:", availableRides);
           displayAvailableRides();
         } else {
-          console.error(result.message || "No rides found");
+          console.error("[RequestRide] Invalid response format:", result);
+          console.error("[RequestRide] Success:", result.success, "Is array:", Array.isArray(result.data));
+          displayAvailableRides(); // Display empty list
         }
       })
       .catch((error) => {
-        console.error("Error fetching available rides:", error);
+        console.error("[RequestRide] Fetch error:", error);
+        console.error("[RequestRide] Error message:", error.message);
+        displayAvailableRides(); // Display empty list
       });
   }
 
@@ -206,13 +240,13 @@
             <div style="display:flex; justify-content:space-between; align-items:center; gap:var(--spacing-md);">
                 <div>
                     <div style="font-weight:700">${ride.driver.firstName} ${ride.driver.lastName}</div>
-                    <div class="employment-status">${ride.driver.employmentStatus}</div>
+                    <div class="employment-status" style="font-size:0.85rem; color:var(--color-muted-foreground);">${ride.driver.mobile || "N/A"}</div>
                 </div>
             </div>
             <div class="vehicle-row" style="margin-top:var(--spacing-sm);">
-                <div>${ride.vehicle.model} ${ride.vehicle.year}</div>
+                <div>${ride.vehicle.model}${ride.vehicle.year ? ' (' + ride.vehicle.year + ')' : ''}</div>
                 <div style="width:1px; height:16px; background:var(--color-border);"></div>
-                <div class="capacity"><span>${ride.vehicle.availableSeats}/${ride.vehicle.totalCapacity}</span> seats left</div>
+                <div class="capacity"><span>${ride.vehicle.availableSeats}/${ride.vehicle.totalCapacity}</span> seats</div>
             </div>`;
 
     const actionCol = document.createElement("div");
@@ -242,6 +276,18 @@
     if (!container) return;
 
     container.innerHTML = "";
+    
+    if (availableRides.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:var(--spacing-lg); color:var(--color-muted-foreground);">
+          <i class='bx bx-inbox' style='font-size:48px; opacity:0.5;'></i>
+          <p style="margin-top:var(--spacing-md);">No available rides</p>
+          <small>Check back later or try different locations</small>
+        </div>
+      `;
+      return;
+    }
+    
     availableRides.forEach((ride) => {
       const card = createRideCard(ride);
       container.appendChild(card);

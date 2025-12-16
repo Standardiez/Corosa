@@ -25,7 +25,7 @@
           <a
             class="btn btn-primary"
             id="offer-ride-nav"
-            href="../../passenger/pages/select-pickup.html"
+            href="javascript:void(0);"
             ><i class="bx bx-car"></i> Offer a Ride</a
           >
           <div class="profile-menu-wrapper">
@@ -320,6 +320,15 @@
       // Load data on page load
       document.addEventListener("DOMContentLoaded", loadDashboardData);
       */
+      
+      // Handle "Offer a Ride" button click
+      document.getElementById("offer-ride-nav").addEventListener("click", function(e) {
+        e.preventDefault();
+        // Set user role for location selection flow
+        sessionStorage.setItem("userRole", "driver");
+        // Redirect to select pickup location
+        window.location.href = "../../passenger/pages/select-pickup.html";
+      });
     </script>
     <script src="../../shared/js/header-auth.js"></script>
   </body>

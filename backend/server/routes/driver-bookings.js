@@ -83,9 +83,12 @@ router.post("/bookings/:bookingId/accept", async (req, res) => {
     });
 
     try {
-      // Get booking details
+      // Get booking and trip assignment details
       const [bookingRows] = await connection.execute(
-        "SELECT trip_id, passenger_id FROM bookings WHERE booking_id = ? AND booking_status = ?",
+        `SELECT b.booking_id, b.passenger_id, ta.assignment_id, ta.trip_id
+         FROM bookings b
+         JOIN trip_assignment ta ON b.booking_id = ta.booking_id
+         WHERE b.booking_id = ? AND ta.assignment_status = ?`,
         [bookingId, "pending"]
       );
 
@@ -96,32 +99,36 @@ router.post("/bookings/:bookingId/accept", async (req, res) => {
         });
       }
 
-      const { trip_id } = bookingRows[0];
+      const { trip_id, assignment_id } = bookingRows[0];
 
       // Start transaction
       await connection.beginTransaction();
 
-      // Update booking status
-      await connection.execute(
-        "UPDATE bookings SET booking_status = ? WHERE booking_id = ?",
-        ["confirmed", bookingId]
-      );
+      try {
+        // Update trip assignment status
+        await connection.execute(
+          "UPDATE trip_assignment SET assignment_status = ? WHERE assignment_id = ?",
+          ["accepted", assignment_id]
+        );
 
-      // Decrease available seats
-      await connection.execute(
-        "UPDATE trips SET available_seats = available_seats - 1 WHERE trip_id = ?",
-        [trip_id]
-      );
+        // Decrease available seats by 1
+        const [updateResult] = await connection.execute(
+          "UPDATE trips SET available_seats = available_seats - 1 WHERE trip_id = ?",
+          [trip_id]
+        );
 
-      await connection.commit();
+        console.log(`[Accept Booking] Booking ${bookingId} accepted, seats deducted for trip ${trip_id}`);
 
-      res.status(200).json({
-        success: true,
-        message: "Booking accepted successfully",
-      });
-    } catch (error) {
-      await connection.rollback();
-      throw error;
+        await connection.commit();
+
+        res.status(200).json({
+          success: true,
+          message: "Booking accepted successfully and seat deducted",
+        });
+      } catch (innerError) {
+        await connection.rollback();
+        throw innerError;
+      }
     } finally {
       await connection.end();
     }

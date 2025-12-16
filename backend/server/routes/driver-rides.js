@@ -285,4 +285,73 @@ router.delete("/rides/:rideId", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/driver/available-rides
+ * Get all available rides for passengers to book
+ * Filters for rides with status 'available' or 'pending' and available_seats > 0
+ */
+router.get("/available-rides", async (req, res) => {
+  console.log("[GET /api/driver/available-rides] Request received");
+  
+  try {
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "",
+      database: process.env.DB_NAME || "corosa_db",
+    });
+
+    try {
+      // Get all available rides with available seats
+      // Match ride_status to schema: 'available' or 'pending' (not 'active')
+      const query = `
+        SELECT 
+          t.trip_id,
+          t.driver_id,
+          t.start_lat,
+          t.start_long,
+          t.end_lat,
+          t.end_long,
+          t.available_seats,
+          t.ride_status,
+          t.created_at,
+          u.first_name,
+          u.last_name,
+          u.mobile_number,
+          v.vehicle_model,
+          v.seat_capacity
+        FROM trips t
+        JOIN driver d ON t.driver_id = d.driver_id
+        JOIN users u ON d.user_id = u.user_id
+        LEFT JOIN vehicle v ON d.driver_id = v.driver_id
+        WHERE (t.ride_status = 'available' OR t.ride_status = 'pending') 
+          AND t.available_seats > 0
+        ORDER BY t.created_at DESC
+      `;
+      
+      console.log("[GET /api/driver/available-rides] Executing query...");
+      const [rides] = await connection.execute(query);
+      
+      console.log("[GET /api/driver/available-rides] Found", rides.length, "available rides");
+      console.log("[GET /api/driver/available-rides] Ride data:", JSON.stringify(rides, null, 2));
+
+      res.status(200).json({
+        success: true,
+        data: rides,
+        count: rides.length,
+      });
+    } finally {
+      await connection.end();
+    }
+  } catch (error) {
+    console.error("[GET /api/driver/available-rides] Error:", error.message);
+    console.error("[GET /api/driver/available-rides] Full error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error: " + error.message,
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;

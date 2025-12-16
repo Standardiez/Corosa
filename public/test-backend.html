@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        pre { background: #f0f0f0; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 10px 0; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Backend API Test</h1>
+    
+    <h2>Test: GET /api/driver/available-rides</h2>
+    <button onclick="testAvailableRides()">Test Available Rides</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testAvailableRides() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/driver/available-rides');
+                const data = await response.json();
+                
+                resultEl.textContent = JSON.stringify(data, null, 2);
+                
+                if (response.ok && data.success) {
+                    resultEl.className = 'success';
+                    console.log('✅ Backend is working. Found', data.data.length, 'rides');
+                } else {
+                    resultEl.className = 'error';
+                    console.log('❌ Backend returned error:', data);
+                }
+            } catch (error) {
+                resultEl.textContent = `Error: ${error.message}`;
+                resultEl.className = 'error';
+                console.error('❌ Cannot connect to backend:', error);
+            }
+        }
+    </script>
+</body>
+</html>

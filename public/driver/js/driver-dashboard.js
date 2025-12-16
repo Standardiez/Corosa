@@ -168,25 +168,11 @@ class DriverDashboard {
     if (!this.map) return;
 
     console.log("[Dashboard] addRouteToMap called with ride:", ride);
-    console.log("[Dashboard] Ride keys:", Object.keys(ride));
 
     const startLat = ride.startLat || ride.start_lat;
     const startLng = ride.startLong || ride.start_long;
     const endLat = ride.endLat || ride.end_lat;
     const endLng = ride.endLong || ride.end_long;
-
-    console.log(`[Dashboard] START: lat=${startLat}, lng=${startLng}`);
-    console.log(`[Dashboard] END: lat=${endLat}, lng=${endLng}`);
-    console.log(
-      `[Dashboard] START parsed: lat=${parseFloat(startLat)}, lng=${parseFloat(
-        startLng
-      )}`
-    );
-    console.log(
-      `[Dashboard] END parsed: lat=${parseFloat(endLat)}, lng=${parseFloat(
-        endLng
-      )}`
-    );
 
     if (!startLat || !startLng || !endLat || !endLng) {
       console.error("[Dashboard] Missing coordinates:", {
@@ -204,6 +190,7 @@ class DriverDashboard {
 
       console.log("[Dashboard] Final positions:", { startPos, endPos });
 
+      // Create markers
       const startMarker = new google.maps.Marker({
         position: startPos,
         map: this.map,
@@ -220,32 +207,57 @@ class DriverDashboard {
 
       console.log("[Dashboard] Markers created successfully");
 
-      const routePath = [startPos, endPos];
-
-      const routeLine = new google.maps.Polyline({
-        path: routePath,
-        geodesic: true,
-        strokeColor: "#E23C3C",
-        strokeOpacity: 0.7,
-        strokeWeight: 3,
+      // Use Directions Service to get actual route
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer({
         map: this.map,
+        suppressMarkers: true, // Use our custom markers instead
+        polylineOptions: {
+          strokeColor: "#E23C3C",
+          strokeOpacity: 0.8,
+          strokeWeight: 4,
+        },
       });
 
-      console.log("[Dashboard] Polyline created successfully");
+      directionsService.route(
+        {
+          origin: startPos,
+          destination: endPos,
+          travelMode: google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (status === google.maps.DirectionsStatus.OK) {
+            console.log("[Dashboard] Directions found, rendering route");
+            directionsRenderer.setDirections(result);
+          } else {
+            // Fallback to simple polyline if directions not available
+            console.warn("[Dashboard] Directions not available, using simple polyline");
+            const routePath = [startPos, endPos];
+            new google.maps.Polyline({
+              path: routePath,
+              geodesic: true,
+              strokeColor: "#E23C3C",
+              strokeOpacity: 0.8,
+              strokeWeight: 4,
+              map: this.map,
+            });
+          }
 
-      // Fit map bounds to show both markers
-      const bounds = new google.maps.LatLngBounds();
-      bounds.extend(startMarker.getPosition());
-      bounds.extend(endMarker.getPosition());
+          // Fit map bounds to show both markers
+          const bounds = new google.maps.LatLngBounds();
+          bounds.extend(startMarker.getPosition());
+          bounds.extend(endMarker.getPosition());
 
-      setTimeout(() => {
-        this.map.fitBounds(bounds);
-      }, 100);
+          setTimeout(() => {
+            this.map.fitBounds(bounds);
+          }, 100);
+        }
+      );
 
       this.routes.push({
         marker: startMarker,
         endMarker: endMarker,
-        line: routeLine,
+        line: null,
       });
     } catch (error) {
       console.error("[Dashboard] Error creating markers/polyline:", error);
@@ -319,18 +331,19 @@ class DriverDashboard {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          gap: 16px;
         `;
         passengerCard.innerHTML = `
-          <div>
+          <div style="flex: 1;">
             <strong>${name}</strong>
             <br>
-            <small style="color: var(--color-text-secondary);">${phone}</small>
+            <small style="color: var(--color-text-secondary);">📱 ${phone}</small>
           </div>
-          <div style="font-size: 12px; color: var(--color-text-secondary); text-align: right;">
-            <div><strong>Pick:</strong> (${parseFloat(pickupLat).toFixed(
+          <div style="flex: 1; font-size: 12px; color: var(--color-text-secondary); text-align: right;">
+            <div>🟢 <strong>Pick:</strong> (${parseFloat(pickupLat).toFixed(
               4
             )}, ${parseFloat(pickupLng).toFixed(4)})</div>
-            <div><strong>Drop:</strong> (${parseFloat(dropoffLat).toFixed(
+            <div>🔴 <strong>Drop:</strong> (${parseFloat(dropoffLat).toFixed(
               4
             )}, ${parseFloat(dropoffLng).toFixed(4)})</div>
           </div>

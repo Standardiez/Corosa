@@ -15,7 +15,7 @@
       <div class="container header-content">
         <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
         <nav class="nav header-nav">
-          <a class="btn btn-outline" href="#find">Find a ride</a>
+          <a class="btn btn-outline" href="../../passenger/pages/select-pickup.html">Find a ride</a>
           <a class="btn btn-outline" id="signup-link" href="login.html"
             >Login</a
           >
@@ -50,7 +50,7 @@
           <p class="hero-tagline">Carpooling by and for SLU Maryheights.</p>
 
           <div class="hero-ctas" style="margin-top: var(--spacing-lg)">
-            <a id="find" class="btn btn-primary" href="select-pickup.html"
+            <a id="find" class="btn btn-primary" href="../../passenger/pages/select-pickup.html"
               >Find Ride</a
             >
             <a
@@ -79,6 +79,17 @@
     <script>
       // small script to show current year
       document.getElementById("year").textContent = new Date().getFullYear();
+      
+      // Set user role for unauthenticated users clicking "Find a ride"
+      document.querySelectorAll('a[href="../../passenger/pages/select-pickup.html"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          // Only set role if coming from landing page (unauthenticated flow)
+          // Authenticated users will have their role set in index.html
+          if (!sessionStorage.getItem('userRole')) {
+            sessionStorage.setItem('userRole', 'passenger');
+          }
+        });
+      });
     </script>
     <script src="../js/header-auth.js"></script>
   </body>

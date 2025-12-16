@@ -93,8 +93,10 @@
             // Redirect to login if not logged in
             window.location.href = "login.html";
           } else {
-            // Redirect to passenger side (landing page)
-            window.location.href = "landing-page.html";
+            // Store user role for location selection flow
+            sessionStorage.setItem("userRole", "passenger");
+            // Redirect to select pickup
+            window.location.href = "../../passenger/pages/select-pickup.html";
           }
         });
 
@@ -108,7 +110,7 @@
             // Redirect to login if not logged in
             window.location.href = "login.html";
           } else {
-            // Redirect to driver side
+            // Redirect to driver dashboard first
             window.location.href = "../../driver/pages/driver-Homepage.html";
           }
         });
