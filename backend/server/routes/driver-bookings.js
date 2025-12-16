@@ -19,7 +19,7 @@ const router = express.Router();
  */
 router.get("/bookings/:bookingId/status", async (req, res) => {
   console.log("[GET /api/bookings/:bookingId/status] Request received");
-  
+
   try {
     const { bookingId } = req.params;
 
@@ -50,7 +50,10 @@ router.get("/bookings/:bookingId/status", async (req, res) => {
       }
 
       const booking = results[0];
-      console.log("[GET /api/bookings/:bookingId/status] Booking status:", booking.assignment_status);
+      console.log(
+        "[GET /api/bookings/:bookingId/status] Booking status:",
+        booking.assignment_status
+      );
 
       res.status(200).json({
         success: true,
@@ -78,7 +81,7 @@ router.get("/bookings/:bookingId/status", async (req, res) => {
  */
 router.post("/bookings", async (req, res) => {
   console.log("[POST /api/bookings] Request received", req.body);
-  
+
   try {
     const {
       passenger_id,
@@ -92,7 +95,14 @@ router.post("/bookings", async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!passenger_id || !trip_id || !start_lat || !start_long || !end_lat || !end_long) {
+    if (
+      !passenger_id ||
+      !trip_id ||
+      !start_lat ||
+      !start_long ||
+      !end_lat ||
+      !end_long
+    ) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
@@ -159,7 +169,11 @@ router.post("/bookings", async (req, res) => {
       );
 
       const assignmentId = assignmentResult.insertId;
-      console.log("[POST /api/bookings] Trip assignment created:", assignmentId, "Status: pending");
+      console.log(
+        "[POST /api/bookings] Trip assignment created:",
+        assignmentId,
+        "Status: pending"
+      );
 
       res.status(201).json({
         success: true,
@@ -223,9 +237,16 @@ router.get("/bookings/:driverId", async (req, res) => {
         [driverId]
       );
 
-      console.log("[GET /api/driver/bookings] Found", bookings.length, "pending bookings for driver", driverId);
+      console.log(
+        "[GET /api/driver/bookings] Found",
+        bookings.length,
+        "pending bookings for driver",
+        driverId
+      );
       if (bookings.length === 0) {
-        console.log("[GET /api/driver/bookings] Debug: Checking all bookings for this driver...");
+        console.log(
+          "[GET /api/driver/bookings] Debug: Checking all bookings for this driver..."
+        );
         const [allBookings] = await connection.execute(
           `SELECT 
             b.booking_id,
@@ -237,7 +258,10 @@ router.get("/bookings/:driverId", async (req, res) => {
           WHERE t.driver_id = ?`,
           [driverId]
         );
-        console.log("[GET /api/driver/bookings] All bookings for driver:", allBookings);
+        console.log(
+          "[GET /api/driver/bookings] All bookings for driver:",
+          allBookings
+        );
       }
 
       res.status(200).json({
@@ -262,7 +286,7 @@ router.get("/bookings/:driverId", async (req, res) => {
  */
 router.get("/accepted-passengers/:driverId", async (req, res) => {
   console.log("[GET /api/driver/accepted-passengers] Request received");
-  
+
   try {
     const { driverId } = req.params;
 
@@ -298,7 +322,11 @@ router.get("/accepted-passengers/:driverId", async (req, res) => {
         [driverId]
       );
 
-      console.log("[GET /api/driver/accepted-passengers] Found", passengers.length, "accepted passengers");
+      console.log(
+        "[GET /api/driver/accepted-passengers] Found",
+        passengers.length,
+        "accepted passengers"
+      );
 
       res.status(200).json({
         success: true,

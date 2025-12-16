@@ -323,8 +323,12 @@ class DriverDashboard {
 
       if (data.success && data.passengers) {
         // Filter passengers for this specific trip ONLY
-        const tripPassengers = data.passengers.filter((p) => p.trip_id === tripId);
-        console.log(`[Dashboard] Filtered ${tripPassengers.length} passengers for trip ${tripId}`);
+        const tripPassengers = data.passengers.filter(
+          (p) => p.trip_id === tripId
+        );
+        console.log(
+          `[Dashboard] Filtered ${tripPassengers.length} passengers for trip ${tripId}`
+        );
         this.displayPassengersList(tripPassengers);
       } else {
         this.displayPassengersList([]);
@@ -455,7 +459,9 @@ class DriverDashboard {
         throw new Error("Driver ID not available");
       }
 
-      console.log(`[Dashboard] Loading pending requests for driver ${this.driverId}...`);
+      console.log(
+        `[Dashboard] Loading pending requests for driver ${this.driverId}...`
+      );
 
       const response = await fetch(
         `http://localhost:3000/api/bookings/${this.driverId}`
@@ -477,7 +483,9 @@ class DriverDashboard {
       container.innerHTML = "";
 
       if (data.success && data.bookings && data.bookings.length > 0) {
-        console.log(`[Dashboard] Displaying ${data.bookings.length} pending requests`);
+        console.log(
+          `[Dashboard] Displaying ${data.bookings.length} pending requests`
+        );
         data.bookings.forEach((request) => {
           const card = this.createRequestCard(request);
           container.appendChild(card);
