@@ -587,17 +587,19 @@ class DriverDashboard {
 
   async loadPendingRequests() {
     try {
-      if (!this.driverId) {
-        throw new Error("Driver ID not available");
+      // Get user ID from stored user data
+      const userData = this.getUserData();
+      if (!userData || !userData.userId) {
+        throw new Error("User ID not available");
       }
 
       console.log(
-        `[Dashboard] Loading pending requests for driver ${this.driverId}...`
+        `[Dashboard] Loading pending requests for user ${userData.userId}...`
       );
 
-      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+      // Use PHP API endpoint
       const response = await fetch(
-        `${apiBase}/api/bookings/${this.driverId}`
+        `/Corosa/backend/api/driver/fetch-pending-requests.php?driverId=${userData.userId}`
       );
 
       if (!response.ok) {
@@ -615,23 +617,23 @@ class DriverDashboard {
 
       container.innerHTML = "";
 
-      if (data.success && data.bookings && data.bookings.length > 0) {
+      if (data.status === "success" && data.pendingRequests && data.pendingRequests.length > 0) {
         console.log(
-          `[Dashboard] Displaying ${data.bookings.length} pending requests`
+          `[Dashboard] Displaying ${data.pendingRequests.length} pending requests`
         );
-        data.bookings.forEach((request) => {
+        data.pendingRequests.forEach((request) => {
           const card = this.createRequestCard(request);
           container.appendChild(card);
         });
 
         // Update pending requests count in stats
-        const pendingElement = document.getElementById("pending-requests");
+        const pendingElement = document.getElementById("stat-pending-requests");
         if (pendingElement) {
-          pendingElement.textContent = data.bookings.length;
+          pendingElement.textContent = data.pendingRequests.length;
         }
 
         console.log(
-          `[Dashboard] Loaded ${data.bookings.length} pending requests`
+          `[Dashboard] Loaded ${data.pendingRequests.length} pending requests`
         );
       } else {
         console.log("[Dashboard] No pending requests found");
@@ -659,35 +661,41 @@ class DriverDashboard {
   createRequestCard(request) {
     const card = document.createElement("div");
     card.className = "request-card";
-    // Map Node.js field names
-    const passengerName = `${request.first_name} ${request.last_name}`;
-    const mobileNumber = request.mobile_number || "N/A";
-    const bookingDate = request.created_at || new Date().toISOString();
+    
+    // Use PHP API field names
+    const passengerName = request.passengerName || "Unknown Passenger";
+    const mobileNumber = request.passengerMobile || "N/A";
+    const bookingDate = request.bookingDate || new Date().toISOString();
+    const seatsRequested = request.seatsRequested || 1;
+    const paymentType = request.paymentType || "Cash";
+    const totalCost = request.totalCost || 0;
+
+    // Format coordinates for display
+    const pickup = `Lat: ${request.pickupLat?.toFixed(4)}, Lng: ${request.pickupLng?.toFixed(4)}`;
+    const dropoff = `Lat: ${request.dropoffLat?.toFixed(4)}, Lng: ${request.dropoffLng?.toFixed(4)}`;
 
     card.innerHTML = `
       <div class="request-header">
         <div class="passenger-info">
-          <strong>${passengerName}</strong>
-          <small>${mobileNumber}</small>
+          <strong><i class="bx bx-user"></i> ${passengerName}</strong>
+          <small><i class="bx bx-phone"></i> ${mobileNumber}</small>
         </div>
         <span class="request-time">${this.formatTimeAMPM(bookingDate)}</span>
       </div>
       <div class="request-route">
-        <p><i class="bx bx-map"></i> ${request.start_address || "Pickup"} → ${
-      request.end_address || "Dropoff"
-    }</p>
-        <small>Seats requested: 1</small>
+        <p style="margin: 8px 0;"><i class="bx bx-map-pin"></i> <strong>Pickup:</strong> ${pickup}</p>
+        <p style="margin: 8px 0;"><i class="bx bx-map"></i> <strong>Dropoff:</strong> ${dropoff}</p>
+        <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 0.9rem;">
+          <small><i class="bx bx-chair"></i> Seats: ${seatsRequested}</small>
+          <small><i class="bx bx-wallet"></i> ${paymentType} - ₱${totalCost.toFixed(2)}</small>
+        </div>
       </div>
       <div class="request-actions">
-        <button class="btn btn-small btn-primary accept-btn" data-booking-id="${
-          request.booking_id
-        }" data-trip-id="${request.trip_id}">
-          Accept
+        <button class="btn btn-small btn-primary accept-btn" data-booking-id="${request.bookingId}" data-trip-id="${request.tripId}">
+          <i class="bx bx-check"></i> Accept
         </button>
-        <button class="btn btn-small btn-outline decline-btn" data-booking-id="${
-          request.booking_id
-        }" data-trip-id="${request.trip_id}">
-          Decline
+        <button class="btn btn-small btn-outline decline-btn" data-booking-id="${request.bookingId}" data-trip-id="${request.tripId}">
+          <i class="bx bx-x"></i> Decline
         </button>
       </div>
     `;
@@ -697,12 +705,12 @@ class DriverDashboard {
 
     acceptBtn.addEventListener("click", async (e) => {
       e.preventDefault();
-      await this.handleAcceptRequest(request.booking_id, request.trip_id);
+      await this.handleAcceptRequest(request.bookingId, request.tripId, card);
     });
 
     declineBtn.addEventListener("click", async (e) => {
       e.preventDefault();
-      await this.handleDeclineRequest(request.booking_id, request.trip_id);
+      await this.handleDeclineRequest(request.bookingId, request.tripId, card);
     });
 
     return card;
@@ -718,18 +726,32 @@ class DriverDashboard {
     return `${displayHours}:${displayMinutes} ${ampm}`;
   }
 
-  async handleAcceptRequest(bookingId, tripId) {
+  async handleAcceptRequest(bookingId, tripId, cardElement) {
     try {
-      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+      // Disable buttons to prevent double-click
+      if (cardElement) {
+        const buttons = cardElement.querySelectorAll('button');
+        buttons.forEach(btn => btn.disabled = true);
+      }
+
+      // Get driver ID
+      if (!this.driverId) {
+        await this.getDriverId();
+      }
+
+      console.log(`[Dashboard] Accepting booking ${bookingId} for trip ${tripId}`);
+
       const response = await fetch(
-        `${apiBase}/api/bookings/${bookingId}/accept`,
+        `/Corosa/backend/api/driver/accept-request.php`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            bookingId: bookingId,
             tripId: tripId,
+            driverId: this.driverId
           }),
         }
       );
@@ -740,13 +762,28 @@ class DriverDashboard {
 
       const result = await response.json();
 
-      if (result.success) {
-        console.log("[Dashboard] Request accepted successfully");
-        alert("✓ Booking request accepted!");
+      if (result.status === "success") {
+        console.log("[Dashboard] Request accepted successfully:", result);
+        
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.className = 'alert alert-success';
+        successMsg.innerHTML = '<i class="bx bx-check-circle"></i> Booking request accepted! Remaining seats: ' + result.remainingSeats;
+        successMsg.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 1000; padding: 16px; background: #10b981; color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => successMsg.remove(), 3000);
+        
+        // Reload pending requests and current ride
         this.loadPendingRequests();
-        this.loadCurrentRide(); // Refresh ride to update passenger list
+        this.loadCurrentRide();
       } else {
         alert(`Error: ${result.message}`);
+        // Re-enable buttons on error
+        if (cardElement) {
+          const buttons = cardElement.querySelectorAll('button');
+          buttons.forEach(btn => btn.disabled = false);
+        }
       }
     } catch (error) {
       console.error("[Dashboard] Error accepting request:", error);
@@ -754,18 +791,37 @@ class DriverDashboard {
     }
   }
 
-  async handleDeclineRequest(bookingId, tripId) {
+  async handleDeclineRequest(bookingId, tripId, cardElement) {
     try {
-      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+      // Confirm decline action
+      if (!confirm("Are you sure you want to decline this ride request?")) {
+        return;
+      }
+
+      // Disable buttons to prevent double-click
+      if (cardElement) {
+        const buttons = cardElement.querySelectorAll('button');
+        buttons.forEach(btn => btn.disabled = true);
+      }
+
+      // Get driver ID
+      if (!this.driverId) {
+        await this.getDriverId();
+      }
+
+      console.log(`[Dashboard] Declining booking ${bookingId} for trip ${tripId}`);
+
       const response = await fetch(
-        `${apiBase}/api/bookings/${bookingId}/reject`,
+        `/Corosa/backend/api/driver/decline-request.php`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            bookingId: bookingId,
             tripId: tripId,
+            driverId: this.driverId
           }),
         }
       );
@@ -776,12 +832,27 @@ class DriverDashboard {
 
       const result = await response.json();
 
-      if (result.success) {
-        console.log("[Dashboard] Request declined successfully");
-        alert("Booking request declined");
+      if (result.status === "success") {
+        console.log("[Dashboard] Request declined successfully:", result);
+        
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.className = 'alert alert-info';
+        successMsg.innerHTML = '<i class="bx bx-info-circle"></i> Booking request declined';
+        successMsg.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 1000; padding: 16px; background: #6366f1; color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => successMsg.remove(), 3000);
+        
+        // Reload pending requests
         this.loadPendingRequests();
       } else {
         alert(`Error: ${result.message}`);
+        // Re-enable buttons on error
+        if (cardElement) {
+          const buttons = cardElement.querySelectorAll('button');
+          buttons.forEach(btn => btn.disabled = false);
+        }
       }
     } catch (error) {
       console.error("[Dashboard] Error declining request:", error);

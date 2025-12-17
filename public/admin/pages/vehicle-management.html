@@ -514,8 +514,8 @@
                             <label>Status</label>
                             <select id="filter-status">
                                 <option value="all">All Statuses</option>
-                                <option value="verified">Verified</option>
-                                <option value="pending">Pending</option>
+                                <option value="available">Available</option>
+                                <option value="taken">Taken</option>
                                 <option value="declined">Declined</option>
                             </select>
                         </div>
@@ -535,12 +535,12 @@
                         <div class="stat-box-value" id="stat-total-vehicles">0</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-box-label">Verified Vehicles</div>
-                        <div class="stat-box-value" id="stat-verified-vehicles">0</div>
+                        <div class="stat-box-label">Available Vehicles</div>
+                        <div class="stat-box-value" id="stat-available-vehicles">0</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-box-label">Pending Vehicles</div>
-                        <div class="stat-box-value" id="stat-pending-seats">0</div>
+                        <div class="stat-box-label">Taken Vehicles</div>
+                        <div class="stat-box-value" id="stat-taken-vehicles">0</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-box-label">Declined Vehicles</div>
@@ -595,7 +595,6 @@
             </div>
         </main>
     </div>
-
-    <script src="../js/vehicle-management.js"></script>
+    <script src="../js/vehicle-management.js" type="module"></script>
 </body>
 </html>

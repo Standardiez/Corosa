@@ -1,7 +1,7 @@
 const express = require("express");
 // You may need to create VehicleNode or similar class for DB logic
 // For now, let's assume VehicleNode is similar to TripNode
-const VehicleNode = require("../../../classes/driver/js/VehicleNode");
+const VehicleNode = require("../../../classes/driver/js/VehicleNode.js");
 
 const router = express.Router();
 const vehicle = new VehicleNode();
@@ -10,8 +10,16 @@ const vehicle = new VehicleNode();
 // GET /api/vehicles?driver_id=123
 // GET /api/vehicles (all vehicles)
 router.get("/", async (req, res) => {
-  const { plate_number, driver_id } = req.query;
+  const { plate_number, driver_id, get } = req.query;
   try {
+    if (get == "stats"){
+        const stats = await vehicle.getAllStats();
+        return res.json({
+            success: true,
+            message: "Vehicle statistics retrieved successfully",
+            data: stats,
+        });
+    }
     if (plate_number) {
       const found = await vehicle.getByPlateNumber(plate_number);
       if (!found) {
@@ -34,13 +42,15 @@ router.get("/", async (req, res) => {
         data: vehicles,
       });
     }
-    // Get all vehicles
-    const vehicles = await vehicle.getAll();
-    return res.json({
-      success: true,
-      message: "Vehicles retrieved successfully",
-      data: vehicles,
-    });
+    if (get == "all") {
+      // Get all vehicles
+      const vehicles = await vehicle.getAll();
+      return res.json({
+        success: true,
+        message: "Vehicles retrieved successfully",
+        data: vehicles,
+      });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({

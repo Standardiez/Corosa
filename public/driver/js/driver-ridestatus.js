@@ -604,7 +604,7 @@ async function loadPendingRequests() {
     console.log("[Driver Ride Status] Fetching pending requests for userId:", userId);
 
     const response = await fetch(
-      `/backend/api/driver/fetch-pending-requests.php?driverId=${userId}`
+      `/Corosa/backend/api/driver/fetch-pending-requests.php?driverId=${userId}`
     );
 
     if (!response.ok) {
@@ -684,7 +684,7 @@ async function acceptRequest(bookingId, tripId) {
 
     console.log("[Driver Ride Status] Accepting request:", { bookingId, tripId, driverId });
 
-    const response = await fetch("/backend/api/driver/accept-request.php", {
+    const response = await fetch("/Corosa/backend/api/driver/accept-request.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -726,7 +726,7 @@ async function declineRequest(bookingId, tripId) {
 
     console.log("[Driver Ride Status] Declining request:", { bookingId, tripId, driverId });
 
-    const response = await fetch("/backend/api/driver/decline-request.php", {
+    const response = await fetch("/Corosa/backend/api/driver/decline-request.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

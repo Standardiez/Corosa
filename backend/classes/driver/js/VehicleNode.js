@@ -4,28 +4,44 @@ const db = require("../../../config/database"); // Adjust path as needed
 class VehicleNode {
     // Get all vehicles
     async getAll() {
-        const sql = "SELECT * FROM vehicles";
+        const sql = "SELECT * FROM vehicle";
         const [rows] = await db.query(sql);
         return rows;
     }
 
+    async getAllStats() {
+        const sql = "SELECT * FROM vehicle";
+        const [rows] = await db.query(sql);
+        const countTotal = rows.length;
+        const countAvailable = rows.filter(v => v.vehicle_status === 'available').length;
+        const countTaken = rows.filter(v => v.vehicle_status === 'taken').length;
+        const countDeclined = rows.filter(v => v.vehicle_status === 'declined').length;
+        return {
+            totalVehicles: countTotal,
+            available: countAvailable,
+            taken: countTaken,
+            declined: countDeclined
+        };
+    }
+
+
     // Get vehicle by plate number
     async getByPlateNumber(plate_number) {
-        const sql = "SELECT * FROM vehicles WHERE plate_number = ?";
+        const sql = "SELECT * FROM vehicle WHERE plate_number = ?";
         const [rows] = await db.query(sql, [plate_number]);
         return rows[0] || null;
     }
 
     // Get all vehicles for a driver
     async getByDriverId(driver_id) {
-        const sql = "SELECT * FROM vehicles WHERE driver_id = ?";
+        const sql = "SELECT * FROM vehicle WHERE driver_id = ?";
         const [rows] = await db.query(sql, [driver_id]);
         return rows;
     }
 
     // Create a new vehicle
     async create(data) {
-        const sql = `INSERT INTO vehicles (plate_number, driver_id, vehicle_model, seat_capacity, vehicle_status) VALUES (?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO vehicle (plate_number, driver_id, vehicle_model, seat_capacity, vehicle_status) VALUES (?, ?, ?, ?, ?)`;
         const params = [
             data.plate_number,
             data.driver_id,
@@ -39,7 +55,7 @@ class VehicleNode {
 
     // Update a vehicle
     async update(data) {
-        const sql = `UPDATE vehicles SET vehicle_model = ?, seat_capacity = ?, vehicle_status = ? WHERE plate_number = ?`;
+        const sql = `UPDATE vehicle SET vehicle_model = ?, seat_capacity = ?, vehicle_status = ? WHERE plate_number = ?`;
         const params = [
             data.vehicle_model || '',
             data.seat_capacity || 0,
@@ -52,7 +68,7 @@ class VehicleNode {
 
     // Delete a vehicle
     async delete(plate_number) {
-        const sql = "DELETE FROM vehicles WHERE plate_number = ?";
+        const sql = "DELETE FROM vehicle WHERE plate_number = ?";
         const [result] = await db.query(sql, [plate_number]);
         return result.affectedRows > 0;
     }

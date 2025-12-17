@@ -1,22 +1,6 @@
 // Search and sort state
 let searchQuery = '';
 
-// Add event listeners for search and sort (apply only on button press)
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('user-search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            searchQuery = e.target.value.toLowerCase();
-        });
-    }
-    // Apply Filters button
-    const applyBtn = document.getElementById('apply-filters');
-    if (applyBtn) {
-        applyBtn.addEventListener('click', function() {
-            applyFilters();
-        });
-    }
-});
 /**
  * Rides & Transactions Management
  * Admin page for monitoring active rides and transaction history
@@ -31,6 +15,20 @@ let filteredData = [];
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners for search and sort (apply only on button press)
+    const searchInput = document.getElementById('user-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            searchQuery = e.target.value.toLowerCase();
+        });
+    }
+    // Apply Filters button
+    const applyBtn = document.getElementById('apply-filters');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', function() {
+            applyFilters();
+        });
+    }
     initializeEventListeners();
     loadStatistics();
     loadUserData();
@@ -78,19 +76,21 @@ function switchTab(tab) {
 async function loadStatistics() {
     // TODO: Replace with actual API call
     // const response = await fetch('/Corosa/backend/api/users-stats.php');
+    try {
+        const statsResponse = await fetch('http://localhost:3000/api/user?get=stats');
+        const statsResult = await statsResponse.json();
+        if (!statsResult.success) {
+            showError('Failed to load user statistics');
+            return;
+        }
 
-    // Mock statistics
-    const stats = {
-        totalUsers: 120,
-        verified: 80,
-        pending: 30,
-        declined: 10
-    };
-
-    document.getElementById('stat-total-users').textContent = stats.totalUsers;
-    document.getElementById('stat-verified-users').textContent = stats.verified;
-    document.getElementById('stat-pending-users').textContent = stats.pending;
-    document.getElementById('stat-declined-users').textContent = stats.declined;
+        document.getElementById('stat-total-users').textContent = statsResult.data.totalUsers;
+        document.getElementById('stat-active-users').textContent = statsResult.data.active;
+        document.getElementById('stat-inactive-users').textContent = statsResult.data.inactive;
+    } catch (error) {
+        console.error('Error loading user statistics:', error);
+        showError('Failed to load user statistics');
+    }   
 }
 
 /**
@@ -98,17 +98,25 @@ async function loadStatistics() {
  */
 async function loadUserData() {
     try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/Corosa/backend/api/users.php?action=getAll');
-        // allUsers = await response.json();
-
-        // Mock users data
-        allUsers = generateMockUsers();
+        // Fetch users from backend Node.js API
+        const response = await fetch('http://localhost:3000/api/user?get=all');
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data)) {
+            allUsers = result.data.map(user => ({
+                id: user.id,
+                name: user.first_name + ' ' + user.last_name || '',
+                email: user.email || '',
+                mobile: user.mobile_number || '',
+                birthdate: user.birthdate || '',
+                occupation: user.employment_status || '',
+                status: user.account_status || ''
+            }));
+        } else {
+            allUsers = [];
+        }
         filteredData = [...allUsers];
-
         renderUsersTable();
         updatePagination();
-
     } catch (error) {
         console.error('Error loading users:', error);
         showError('Failed to load users data');
@@ -116,32 +124,7 @@ async function loadUserData() {
 }
 
 /**
- * Generate mock vehicle data
- */
-function generateMockUsers() {
-    const statuses = ['verified', 'pending', 'declined'];
-    const names = ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Garcia', 'Carlos Lim', 'Sofia Tan'];
-    const emails = ['juan@email.com', 'maria@email.com', 'pedro@email.com', 'ana@email.com', 'carlos@email.com', 'sofia@email.com'];
-    const mobiles = ['09171234567', '09181234567', '09191234567', '09201234567', '09211234567', '09221234567'];
-    const birthdates = ['1990-01-01', '1985-05-12', '1992-07-23', '1988-11-30', '1995-03-15', '1993-09-09'];
-    const occupations = ['Teacher', 'Student'];
-
-    const users = [];
-    for (let i = 1; i <= 25; i++) {
-        users.push({
-            name: names[Math.floor(Math.random() * names.length)],
-            email: emails[Math.floor(Math.random() * emails.length)],
-            mobile: mobiles[Math.floor(Math.random() * mobiles.length)],
-            birthdate: birthdates[Math.floor(Math.random() * birthdates.length)],
-            occupation: occupations[Math.floor(Math.random() * occupations.length)],
-            status: statuses[Math.floor(Math.random() * statuses.length)]
-        });
-    }
-    return users;
-}
-
-/**
- * Render vehicles table
+ * Render users table
  */
 function renderUsersTable() {
     const tbody = document.getElementById('users-table-body');
@@ -168,7 +151,7 @@ function renderUsersTable() {
             <td>${user.name || ''}</td>
             <td>${user.email || ''}</td>
             <td>${user.mobile || ''}</td>
-            <td>${user.birthdate || ''}</td>
+            <td>${formatDateTime(user.birthdate) || ''}</td>
             <td>${user.occupation || ''}</td>
             <td><span class="status-badge ${user.status}">${user.status}</span></td>
             <td>

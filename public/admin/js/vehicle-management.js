@@ -65,18 +65,7 @@ function switchTab(tab) {
         btn.classList.toggle('active', btn.dataset.tab === tab);
     });
 
-    // Show/hide tables
-    document.getElementById('rides-table-container').style.display =
-        tab === 'rides' ? 'block' : 'none';
-    document.getElementById('transactions-table-container').style.display =
-        tab === 'transactions' ? 'block' : 'none';
-
-    // Load appropriate data
-    if (tab === 'rides') {
-        loadVehicleData();
-    } else {
-        loadTransactionsData();
-    }
+    loadVehicleData();
 }
 
 /**
@@ -85,19 +74,21 @@ function switchTab(tab) {
 async function loadStatistics() {
     // TODO: Replace with actual API call
     // const response = await fetch('/Corosa/backend/api/rides-stats.php');
-
-    // Mock statistics
-    const stats = {
-        totalVehicles: 248,
-        verified: 8,
-        pending: 5,
-        declined: 12
-    };
-
-    document.getElementById('stat-total-vehicles').textContent = stats.totalVehicles;
-    document.getElementById('stat-verified-vehicles').textContent = stats.verified;
-    document.getElementById('stat-pending-vehicles').textContent = stats.pending;
-    document.getElementById('stat-declined-vehicles').textContent = stats.declined;
+    try {
+        const statsResponse = await fetch('http://localhost:3000/api/vehicle?get=stats');
+        const statsResult = await statsResponse.json();
+        if (!statsResult.success) {
+            showError('Failed to load vehicle statistics');
+            return;
+        }
+        document.getElementById('stat-total-vehicles').textContent = statsResult.data.totalVehicles;
+        document.getElementById('stat-available-vehicles').textContent = statsResult.data.available;
+        document.getElementById('stat-taken-vehicles').textContent = statsResult.data.taken;
+        document.getElementById('stat-declined-vehicles').textContent = statsResult.data.declined;
+    } catch (error) {
+        console.error('Error loading vehicle statistics:', error);
+        showError('Failed to load vehicle statistics');
+    }
 }
 
 /**
@@ -106,12 +97,11 @@ async function loadStatistics() {
 async function loadVehicleData() {
     try {
         // Fetch vehicle data from backend Node.js API
-        const response = await fetch('/backend/api/shared/js/vehicle');
+        const response = await fetch('http://localhost:3000/api/vehicle?get=all');
         const result = await response.json();
         if (result.success && Array.isArray(result.data)) {
             allVehicles = result.data.map(vehicle => ({
                 owner: vehicle.driver_id || '',
-                license: vehicle.license || '',
                 model: vehicle.vehicle_model || '',
                 plate: vehicle.plate_number || '',
                 seatCapacity: vehicle.seat_capacity || '',

@@ -39,6 +39,9 @@
 
 // Validation patterns
 const patterns = {
+  firstName: /^[a-zA-Z'-]{1,50}$/,
+  middleInitial: /^[a-zA-Z]{0,1}$/,
+  lastName: /^[a-zA-Z'-]{1,50}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   mobile: /^09\d{9}$/
 };
@@ -90,9 +93,21 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!firstName) {
       setError("firstName", "First name is required");
       valid = false;
+    } else if (!patterns.firstName.test(firstName)) {
+      setError("firstName", "First name can only contain letters, apostrophes, and hyphens");
+      valid = false;
     }
+
+    if (middleInitial && !patterns.middleInitial.test(middleInitial)) {
+      setError("middleInitial", "Middle initial must be a single letter");
+      valid = false;
+    }
+
     if (!lastName) {
       setError("lastName", "Last name is required");
+      valid = false;
+    } else if (!patterns.lastName.test(lastName)) {
+      setError("lastName", "Last name can only contain letters, apostrophes, and hyphens");
       valid = false;
     }
     if (!birthdate) {

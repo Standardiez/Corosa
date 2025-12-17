@@ -241,6 +241,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // ==================================================================
 
             const flowIntent = sessionStorage.getItem("flowIntent");
+            // Derive passenger registration from role; backend returns "driver" or "passenger"
+            const isPassengerRegistered =
+              userData.role === "passenger" || userData.role === "both";
 
             // =========== SCENARIO 1: User selected "Offer a Ride" (driver flow) ===========
             if (flowIntent === "driver") {
@@ -275,10 +278,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(
                   "You are registered as a driver only. Passengers register during account creation. You can still use the passenger side of the app with your current account."
                 );
-                if (window.navigateToPassenger) {
-                  window.navigateToPassenger('landing-page.html');
+                if (window.navigateToShared) {
+                  window.navigateToShared('landing-page.html');
                 } else {
-                  window.location.href = "/passenger/pages/landing-page.html";
+                  window.location.href = "/shared/pages/landing-page.html";
                 }
                 return;
               } else {
@@ -301,10 +304,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.location.href = "/driver/pages/driver-Homepage.html";
               }
             } else {
-              if (window.navigateToPassenger) {
-                window.navigateToPassenger('landing-page.html');
+              if (window.navigateToShared) {
+                window.navigateToShared('landing-page.html');
               } else {
-                window.location.href = "/passenger/pages/landing-page.html";
+                window.location.href = "/shared/pages/landing-page.html";
               }
             }
           } else {
