@@ -125,6 +125,42 @@ class TripAssignmentNode {
         return rows;
     }
 
+    async getAllForAdmin() {
+        const [rows] = await db.query(`
+            SELECT 
+                ta.assignment_id,
+                ta.booking_id,
+                ta.trip_id,
+                ta.payment_type,
+                ta.total_cost,
+                ta.assignment_status,
+                ta.created_at,
+                -- Passenger info
+                passenger.user_id as passenger_id,
+                passenger.first_name as passenger_first_name,
+                passenger.middle_initial as passenger_middle_initial,
+                passenger.last_name as passenger_last_name,
+                -- Driver info
+                driver_user.first_name as driver_first_name,
+                driver_user.middle_initial as driver_middle_initial,
+                driver_user.last_name as driver_last_name,
+                -- Trip coordinates for distance calculation
+                t.start_lat,
+                t.start_long,
+                t.end_lat,
+                t.end_long,
+                t.ride_distance
+            FROM trip_assignment ta
+            LEFT JOIN bookings b ON ta.booking_id = b.booking_id
+            LEFT JOIN users passenger ON b.passenger_id = passenger.user_id
+            LEFT JOIN trips t ON ta.trip_id = t.trip_id
+            LEFT JOIN driver d ON t.driver_id = d.driver_id
+            LEFT JOIN users driver_user ON d.user_id = driver_user.user_id
+            ORDER BY ta.created_at DESC
+        `);
+        return rows;
+    }
+
     /**
      * Update trip assignment
      * @param {Object} data

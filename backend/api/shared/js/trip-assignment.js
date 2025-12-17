@@ -9,10 +9,20 @@ const tripAssignment = new TripAssignmentNode();
 // GET /api/trip-assignments?booking_id=123
 // GET /api/trip-assignments?trip_id=456
 // GET /api/trip-assignments (all)
+// GET /api/trip-assignments?action=getAllForAdmin
 router.get("/", async (req, res) => {
-    const { assignment_id, booking_id, trip_id } = req.query;
+    const { assignment_id, booking_id, trip_id, action } = req.query;
 
     try {
+        if (action === 'getAllForAdmin') {
+            const transactions = await tripAssignment.getAllForAdmin();
+            return res.json({
+                success: true,
+                message: "Transactions retrieved successfully",
+                data: transactions
+            });
+        }
+
         if (assignment_id) {
             const found = await tripAssignment.getById(assignment_id);
             if (!found) {

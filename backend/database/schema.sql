@@ -149,5 +149,12 @@ INSERT INTO trips (driver_id, start_lat, start_long, end_lat, end_long, availabl
 (1, 16.4023, 120.5960, 16.4080, 120.5969, 3, 2.5, 'available');
 
 INSERT INTO bookings (passenger_id, start_lat, start_long, end_lat, end_long, payment_type, total_cost, booking_confirmation) VALUES
-(2, 16.4023, 120.5960, 16.4080, 120.5969, 'Cash', 50.00, TRUE);
+(2, 16.4023, 120.5960, 16.4080, 120.5969, 'cash', 50.00, TRUE),
+(2, 16.4030, 120.5965, 16.4085, 120.5975, 'gcash', 75.00, TRUE),
+(2, 16.4015, 120.5955, 16.4075, 120.5980, 'cash', 65.00, FALSE);
+
+INSERT INTO trip_assignment (booking_id, trip_id, seat_number, assignment_status, payment_type, total_cost, booking_confirmation) VALUES
+(1, 1, 1, 'confirmed', 'cash', 50.00, TRUE),
+(2, 1, 2, 'confirmed', 'gcash', 75.00, TRUE),
+(3, 1, 3, 'pending', 'cash', 65.00, FALSE);
 

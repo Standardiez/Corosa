@@ -356,6 +356,13 @@
             border: 1px solid hsl(271, 76%, 85%);
         }
 
+        /* Confirmed - Green (assignment confirmed) */
+        .status-badge.confirmed {
+            background: hsl(142, 76%, 95%);
+            color: hsl(142, 76%, 36%);
+            border: 1px solid hsl(142, 76%, 85%);
+        }
+
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -598,13 +605,12 @@
                                 <th>Route</th>
                                 <th>Date & Time</th>
                                 <th>Status</th>
-                                <th>Fare</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="rides-table-body">
                             <tr>
-                                <td colspan="8">
+                                <td colspan="7">
                                     <div class="empty-state">
                                         <i class='bx bx-loader-alt bx-spin'></i>
                                         <p>Loading rides...</p>
@@ -620,19 +626,20 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Transaction ID</th>
+                                <th>Assignment ID</th>
                                 <th>Ride ID</th>
-                                <th>User</th>
-                                <th>Payment Method</th>
-                                <th>Amount</th>
+                                <th>Passenger</th>
+                                <th>Driver</th>
+                                <th>Payment Type</th>
+                                <th>Total Cost</th>
+                                <th>Distance</th>
                                 <th>Date & Time</th>
                                 <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="transactions-table-body">
                             <tr>
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="empty-state">
                                         <i class='bx bx-loader-alt bx-spin'></i>
                                         <p>Loading transactions...</p>

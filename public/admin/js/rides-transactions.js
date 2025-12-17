@@ -275,21 +275,86 @@ function calculateFare(distance) {
  */
 async function loadTransactionsData() {
     try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/Corosa/backend/api/transactions.php');
-        // allTransactions = await response.json();
+        // Fetch real data from Node.js API
+        const response = await fetch('http://localhost:3000/api/trip-assignments?action=getAllForAdmin');
+        const result = await response.json();
 
-        // Mock transactions data
-        allTransactions = generateMockTransactions();
-        filteredData = [...allTransactions];
+        if (result.success && Array.isArray(result.data)) {
+            // Map database fields to display format (matches trip_assignment schema)
+            allTransactions = result.data.map(transaction => {
+                // Calculate distance using Haversine formula from trip coordinates
+                const distance = calculateDistance(
+                    transaction.start_lat,
+                    transaction.start_long,
+                    transaction.end_lat,
+                    transaction.end_long
+                );
 
-        renderTransactionsTable();
-        updatePagination();
+                // Format passenger name (from users table via bookings join)
+                const passengerName = `${transaction.passenger_first_name || ''} ${transaction.passenger_middle_initial ? transaction.passenger_middle_initial + '. ' : ''}${transaction.passenger_last_name || ''}`.trim() || 'Unknown';
+
+                // Format driver name (from users table via driver join)
+                const driverName = `${transaction.driver_first_name || ''} ${transaction.driver_middle_initial ? transaction.driver_middle_initial + '. ' : ''}${transaction.driver_last_name || ''}`.trim() || 'Unknown';
+
+                return {
+                    assignmentId: transaction.assignment_id,
+                    tripId: transaction.trip_id,
+                    passenger: passengerName,
+                    driver: driverName,
+                    paymentType: transaction.payment_type || 'cash',
+                    totalCost: parseFloat(transaction.total_cost) || 0,
+                    distance: distance.toFixed(2),
+                    createdAt: transaction.created_at,
+                    assignmentStatus: transaction.assignment_status || 'confirmed'
+                };
+            });
+
+            filteredData = [...allTransactions];
+            renderTransactionsTable();
+            updatePagination();
+        } else {
+            console.error('Failed to load transactions:', result.message);
+            // Fallback to mock data if API fails
+            allTransactions = generateMockTransactions();
+            filteredData = [...allTransactions];
+            renderTransactionsTable();
+            updatePagination();
+        }
 
     } catch (error) {
         console.error('Error loading transactions:', error);
-        showError('Failed to load transactions data');
+        showError('Failed to load transactions data. Using demo data.');
+        // Fallback to mock data on error
+        allTransactions = generateMockTransactions();
+        filteredData = [...allTransactions];
+        renderTransactionsTable();
+        updatePagination();
     }
+}
+
+/**
+ * Calculate distance between two coordinates using Haversine formula
+ * @param {number} lat1 - Start latitude
+ * @param {number} lon1 - Start longitude
+ * @param {number} lat2 - End latitude
+ * @param {number} lon2 - End longitude
+ * @returns {number} Distance in kilometers
+ */
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
+
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c;
+    
+    return distance;
 }
 
 /**
@@ -366,7 +431,7 @@ function renderRidesTable() {
     if (pageData.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8">
+                <td colspan="7">
                     <div class="empty-state">
                         <i class='bx bx-inbox'></i>
                         <p>No rides found</p>
@@ -385,7 +450,6 @@ function renderRidesTable() {
             <td><small>${ride.route}</small></td>
             <td>${formatDateTime(ride.datetime)}</td>
             <td><span class="status-badge ${ride.status}">${capitalizeStatus(ride.status)}</span></td>
-            <td><strong>${formatCurrency(ride.fare)}</strong></td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewRideDetails(${ride.id})" title="View Details">
@@ -421,7 +485,7 @@ function renderTransactionsTable() {
     if (pageData.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8">
+                <td colspan="9">
                     <div class="empty-state">
                         <i class='bx bx-inbox'></i>
                         <p>No transactions found</p>
@@ -434,23 +498,15 @@ function renderTransactionsTable() {
 
     tbody.innerHTML = pageData.map(txn => `
         <tr>
-            <td><strong>${txn.id}</strong></td>
-            <td>#${txn.rideId}</td>
-            <td>${txn.user}</td>
-            <td>${txn.paymentMethod}</td>
-            <td><strong>${formatCurrency(txn.amount)}</strong></td>
-            <td>${formatDateTime(txn.datetime)}</td>
-            <td><span class="status-badge ${txn.status}">${txn.status}</span></td>
-            <td>
-                <div class="action-buttons">
-                    <button class="action-btn" onclick="viewTransactionDetails('${txn.id}')" title="View Details">
-                        <i class='bx bx-eye'></i>
-                    </button>
-                    <button class="action-btn" onclick="downloadReceipt('${txn.id}')" title="Download Receipt">
-                        <i class='bx bx-download'></i>
-                    </button>
-                </div>
-            </td>
+            <td><strong>${txn.assignmentId}</strong></td>
+            <td>#${txn.tripId || 'N/A'}</td>
+            <td>${txn.passenger}</td>
+            <td>${txn.driver}</td>
+            <td>${formatPaymentType(txn.paymentType)}</td>
+            <td><strong>${formatCurrency(txn.totalCost)}</strong></td>
+            <td>${txn.distance} km</td>
+            <td>${formatDateTime(txn.createdAt)}</td>
+            <td><span class="status-badge ${txn.assignmentStatus}">${capitalizeStatus(txn.assignmentStatus)}</span></td>
         </tr>
     `).join('');
 }
@@ -565,6 +621,21 @@ function downloadReceipt(txnId) {
  */
 function formatCurrency(amount) {
     return '₱' + parseFloat(amount).toFixed(2);
+}
+
+/**
+ * Format payment type for display
+ */
+function formatPaymentType(type) {
+    if (!type) return 'Cash';
+    const lowercaseType = type.toLowerCase();
+    
+    // Special cases
+    if (lowercaseType === 'gcash') return 'GCash';
+    if (lowercaseType === 'paymaya') return 'PayMaya';
+    
+    // Capitalize first letter
+    return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 }
 
 /**
