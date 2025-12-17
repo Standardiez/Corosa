@@ -442,7 +442,7 @@ class DriverDashboard {
       // Fetch accepted passengers (not pending requests)
       const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `${apiBase}/api/accepted-passengers/${this.driverId}`
+        `${apiBase}/api/driver/accepted-passengers/${this.driverId}`
       );
 
       if (!response.ok) {
@@ -588,18 +588,17 @@ class DriverDashboard {
   async loadPendingRequests() {
     try {
       // Get user ID from stored user data
-      const userData = this.getUserData();
-      if (!userData || !userData.userId) {
+      if (!this.userId) {
         throw new Error("User ID not available");
       }
 
       console.log(
-        `[Dashboard] Loading pending requests for user ${userData.userId}...`
+        `[Dashboard] Loading pending requests for user ${this.userId}...`
       );
 
       // Use PHP API endpoint
       const response = await fetch(
-        `/Corosa/backend/api/driver/fetch-pending-requests.php?driverId=${userData.userId}`
+        `/Corosa/backend/api/driver/fetch-pending-requests.php?driverId=${this.userId}`
       );
 
       if (!response.ok) {

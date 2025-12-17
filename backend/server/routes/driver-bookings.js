@@ -317,7 +317,7 @@ router.get("/accepted-passengers/:driverId", async (req, res) => {
         JOIN trips t ON ta.trip_id = t.trip_id
         JOIN users u ON b.passenger_id = u.user_id
         WHERE t.driver_id = ?
-        AND ta.assignment_status = 'accepted'
+        AND ta.assignment_status = 'confirmed'
         ORDER BY b.created_at DESC`,
         [driverId]
       );
