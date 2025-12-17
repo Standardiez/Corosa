@@ -132,8 +132,10 @@ class DriverDashboard {
 
       console.log(`[Dashboard] Fetching stats for driver ${this.driverId}...`);
 
+      // Use centralized API config if available, otherwise fallback
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/driver/stats/${this.driverId}`
+        `${apiBase}/api/driver/stats/${this.driverId}`
       );
 
       if (!response.ok) {

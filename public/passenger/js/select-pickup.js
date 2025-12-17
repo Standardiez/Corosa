@@ -88,7 +88,11 @@
           }
 
           // Navigate to drop-off page (same for both roles)
-          window.location.href = "../pages/select-dropoff.html";
+          if (window.navigateToPassenger) {
+            window.navigateToPassenger('select-dropoff.html');
+          } else {
+            window.location.href = "/passenger/pages/select-dropoff.html";
+          }
         }
       });
     }

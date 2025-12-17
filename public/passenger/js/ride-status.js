@@ -89,7 +89,11 @@
       // But coordinates and ride selection are mandatory
       if (!pickupCoords || !dropoffCoords || !selectedRide) {
         alert("Missing trip or ride data. Please start again.");
-        window.location.href = "../pages/select-pickup.html";
+        if (window.navigateToPassenger) {
+          window.navigateToPassenger('select-pickup.html');
+        } else {
+          window.location.href = "/passenger/pages/select-pickup.html";
+        }
         return null;
       }
 
@@ -105,7 +109,11 @@
       // STEP 4: Handle any JSON parsing or access errors
       console.error("Error reading session data", e);
       alert("Missing trip or ride data. Please start again.");
-      window.location.href = "../pages/select-pickup.html";
+      if (window.navigateToPassenger) {
+        window.navigateToPassenger('select-pickup.html');
+      } else {
+        window.location.href = "/passenger/pages/select-pickup.html";
+      }
       return null;
     }
   }
@@ -173,7 +181,11 @@
 
       // Show completion message and redirect after 2 seconds
       setTimeout(function () {
-        window.location.href = "rate-driver.html";
+        if (window.navigateToPassenger) {
+          window.navigateToPassenger('rate-driver.html');
+        } else {
+          window.location.href = "/passenger/pages/rate-driver.html";
+        }
       }, 2000);
     }
   }

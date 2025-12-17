@@ -240,7 +240,11 @@
         const userId = sessionUserId || stored?.userId;
 
         if (!userId) {
-            window.location.href = 'login.html';
+            if (window.navigateToShared) {
+              window.navigateToShared('login.html');
+            } else {
+              window.location.href = '/shared/pages/login.html';
+            }
             return;
         }
 

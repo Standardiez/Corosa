@@ -96,7 +96,11 @@
             // Store user role for location selection flow
             sessionStorage.setItem("userRole", "passenger");
             // Redirect to select pickup
-            window.location.href = "../../passenger/pages/select-pickup.html";
+            if (window.navigateToPassenger) {
+              window.navigateToPassenger('select-pickup.html');
+            } else {
+              window.location.href = "/passenger/pages/select-pickup.html";
+            }
           }
         });
 
@@ -111,10 +115,15 @@
             window.location.href = "login.html";
           } else {
             // Redirect to driver dashboard first
-            window.location.href = "../../driver/pages/driver-Homepage.html";
+            if (window.navigateToDriver) {
+              window.navigateToDriver('driver-Homepage.html');
+            } else {
+              window.location.href = "/driver/pages/driver-Homepage.html";
+            }
           }
         });
     </script>
+    <script src="../js/navigation-helper.js"></script>
     <script src="../js/header-auth.js"></script>
   </body>
 </html>

@@ -68,7 +68,11 @@ function initializeRideCreation() {
       console.log("[Driver Create Ride] Redirecting to select-pickup.html...");
       // Ensure flowIntent is set before redirecting
       sessionStorage.setItem("flowIntent", "driver");
-      window.location.href = "../../passenger/pages/select-pickup.html";
+      if (window.navigateToPassenger) {
+        window.navigateToPassenger('select-pickup.html');
+      } else {
+        window.location.href = "/passenger/pages/select-pickup.html";
+      }
     }, 3000);
     return;
   }
@@ -155,7 +159,11 @@ function setupFormSubmission() {
     if (!userId) {
       showError("User not authenticated. Please log in again.");
       setTimeout(() => {
-        window.location.href = "../pages/login.html";
+        if (window.navigateToShared) {
+          window.navigateToShared('login.html');
+        } else {
+          window.location.href = "/shared/pages/login.html";
+        }
       }, 2000);
       return;
     }
@@ -310,7 +318,11 @@ function setupFormSubmission() {
           sessionStorage.removeItem("flowIntent");
 
           // Redirect to rides list
-          window.location.href = "driver-ridestatus.html";
+          if (window.navigateToDriver) {
+            window.navigateToDriver('driver-ridestatus.html');
+          } else {
+            window.location.href = "/driver/pages/driver-ridestatus.html";
+          }
         }, 1500);
       } else {
         showError(result.message || "Failed to create ride. Please try again.");

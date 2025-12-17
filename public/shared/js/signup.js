@@ -178,12 +178,89 @@ document.addEventListener("DOMContentLoaded", function () {
         }),
       });
 
-      const result = await response.json();
+      // Check if response is ok before parsing JSON
+      if (!response.ok) {
+        // Try to parse error response
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        // Handle validation errors from server
+        if (errorData.errors) {
+          for (const [field, message] of Object.entries(errorData.errors)) {
+            setError(field, message);
+          }
+        } else {
+          alert(
+            "Error: " +
+              (errorData.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`)
+          );
+        }
+        return;
+      }
+
+      // Parse successful response
+      let result;
+      try {
+        // Get response text first to check if it's valid JSON
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
+        // Try to parse as JSON
+        if (responseText.trim()) {
+          result = JSON.parse(responseText);
+        } else {
+          // Empty response but status is OK - might be success
+          if (response.status === 201 || response.status === 200) {
+            result = { success: true, message: "Account created successfully" };
+          } else {
+            throw new Error("Empty response from server");
+          }
+        }
+      } catch (e) {
+        // If JSON parsing fails but status is OK, account might still be created
+        console.warn("Could not parse JSON response, but status was OK:", response.status, e);
+        
+        // Check if we got a 201 (created) status - account was likely created
+        if (response.status === 201) {
+          alert("Account created successfully!");
+          // Use navigation helper if available, otherwise use relative path
+          if (window.navigateToShared) {
+            window.navigateToShared('login.html');
+          } else {
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+            window.location.href = basePath + '/login.html';
+          }
+          return;
+        }
+        
+        // For 200 status, try to show a more helpful message
+        if (response.status === 200) {
+          console.warn("Received 200 OK but couldn't parse JSON - account may have been created");
+          // Don't show error, just log it - the account might be created
+          return;
+        }
+        
+        throw new Error("Invalid response from server: " + e.message);
+      }
+
       console.log("Server response:", result);
 
       if (result.success) {
         alert("Account created successfully!");
-        window.location.href = "../pages/login.html";
+        // Use navigation helper if available, otherwise use relative path
+        if (window.navigateToShared) {
+          window.navigateToShared('login.html');
+        } else {
+          // Fallback: use relative path
+          const currentPath = window.location.pathname;
+          const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+          window.location.href = basePath + '/login.html';
+        }
       } else {
         console.error("Server returned error:", result);
 
@@ -201,7 +278,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } catch (error) {
       console.error("Error during signup:", error);
-      alert("Network error during signup. Please try again.");
+      // More specific error message
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        alert("Network error: Could not connect to server. Please check your connection and try again.");
+      } else {
+        alert("Error during signup: " + error.message);
+      }
     }
   });
 });

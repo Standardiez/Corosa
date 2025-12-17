@@ -131,7 +131,11 @@
       // Addresses are optional (can show coordinates instead), but coords and ride are required
       if (!pickupCoords || !dropoffCoords || !selectedRide) {
         alert("Missing trip or ride data. Please start over.");
-        window.location.href = "../pages/select-pickup.html"; // Redirect to start
+        if (window.navigateToPassenger) {
+          window.navigateToPassenger('select-pickup.html');
+        } else {
+          window.location.href = "/passenger/pages/select-pickup.html";
+        }
         return null;
       }
 
@@ -147,7 +151,11 @@
       // ERROR HANDLING: Catches JSON parsing errors or other exceptions
       console.error("Error reading session data", e);
       alert("Missing trip or ride data. Please start over.");
-      window.location.href = "../pages/select-pickup.html";
+      if (window.navigateToPassenger) {
+        window.navigateToPassenger('select-pickup.html');
+      } else {
+        window.location.href = "/passenger/pages/select-pickup.html";
+      }
       return null;
     }
   }
@@ -353,7 +361,11 @@
     const userId = sessionStorage.getItem("userId");
     if (!userId) {
       alert("Please log in before confirming a ride.");
-      window.location.href = "../../shared/pages/login.html";
+      if (window.navigateToShared) {
+        window.navigateToShared('login.html');
+      } else {
+        window.location.href = "/shared/pages/login.html";
+      }
       return;
     }
 
@@ -365,7 +377,11 @@
       selectedRide.id;
     if (!tripId) {
       alert("Missing trip information. Please select a ride again.");
-      window.location.href = "../pages/request-ride.html";
+      if (window.navigateToPassenger) {
+        window.navigateToPassenger('request-ride.html');
+      } else {
+        window.location.href = "/passenger/pages/request-ride.html";
+      }
       return;
     }
 
@@ -491,7 +507,11 @@
       );
 
       // Navigate to ride status page to show "Waiting for driver's approval" message
-      window.location.href = "ride-status.html";
+      if (window.navigateToPassenger) {
+        window.navigateToPassenger('ride-status.html');
+      } else {
+        window.location.href = "/passenger/pages/ride-status.html";
+      }
     } catch (error) {
       // ================================================================
       // ERROR HANDLING: Handle any failures during the confirmation process

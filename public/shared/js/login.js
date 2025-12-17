@@ -248,13 +248,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 // User clicked "Offer a Ride" but isn't registered as a driver yet
                 // Redirect to driver registration form
                 sessionStorage.setItem("registrationPending", "driver");
-                window.location.href = "../pages/driver-registration.html";
+                // Use navigation helper if available, otherwise use absolute path
+                if (window.navigateToShared) {
+                  window.navigateToShared('driver-registration.html');
+                } else {
+                  window.location.href = "/shared/pages/driver-registration.html";
+                }
                 return;
               } else {
                 // User is registered as a driver and selected "Offer a Ride"
                 // Proceed to driver homepage
-                window.location.href =
-                  "../../driver/pages/driver-Homepage.html";
+                if (window.navigateToDriver) {
+                  window.navigateToDriver('driver-Homepage.html');
+                } else {
+                  window.location.href = "/driver/pages/driver-Homepage.html";
+                }
                 return;
               }
             }
@@ -267,13 +275,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(
                   "You are registered as a driver only. Passengers register during account creation. You can still use the passenger side of the app with your current account."
                 );
-                window.location.href =
-                  "../../passenger/pages/landing-page.html";
+                if (window.navigateToPassenger) {
+                  window.navigateToPassenger('landing-page.html');
+                } else {
+                  window.location.href = "/passenger/pages/landing-page.html";
+                }
                 return;
               } else {
                 // User is registered as passenger (or both) - proceed to booking
-                window.location.href =
-                  "../../passenger/pages/select-pickup.html";
+                if (window.navigateToPassenger) {
+                  window.navigateToPassenger('select-pickup.html');
+                } else {
+                  window.location.href = "/passenger/pages/select-pickup.html";
+                }
                 return;
               }
             }
@@ -281,9 +295,17 @@ document.addEventListener("DOMContentLoaded", function () {
             // =========== DEFAULT: No explicit intent set ===========
             // Fallback based on actual role from database
             if (userData.role === "driver") {
-              window.location.href = "../../driver/pages/driver-Homepage.html";
+              if (window.navigateToDriver) {
+                window.navigateToDriver('driver-Homepage.html');
+              } else {
+                window.location.href = "/driver/pages/driver-Homepage.html";
+              }
             } else {
-              window.location.href = "../../passenger/pages/landing-page.html";
+              if (window.navigateToPassenger) {
+                window.navigateToPassenger('landing-page.html');
+              } else {
+                window.location.href = "/passenger/pages/landing-page.html";
+              }
             }
           } else {
             // --------------------------------------------------------------------

@@ -258,7 +258,11 @@
     if (backBtn) {
       backBtn.addEventListener("click", function () {
         // Navigate back to pickup selection
-        window.location.href = "../pages/select-pickup.html";
+        if (window.navigateToPassenger) {
+          window.navigateToPassenger('select-pickup.html');
+        } else {
+          window.location.href = "/passenger/pages/select-pickup.html";
+        }
       });
     }
   }
@@ -309,7 +313,11 @@
               sessionStorage.getItem("driverDropoffLocation")
             );
             // Redirect to driver makeride page
-            window.location.href = "../../driver/pages/driver-makeride.html";
+            if (window.navigateToDriver) {
+              window.navigateToDriver('driver-makeride.html');
+            } else {
+              window.location.href = "/driver/pages/driver-makeride.html";
+            }
           } else {
             console.log("DEBUG: Redirecting to PASSENGER request-ride page");
             sessionStorage.setItem("dropoffLocation", currentLocation.address);
@@ -318,7 +326,11 @@
               JSON.stringify(currentLocation.coords)
             );
             // Redirect to passenger request-ride page
-            window.location.href = "../pages/request-ride.html";
+            if (window.navigateToPassenger) {
+              window.navigateToPassenger('request-ride.html');
+            } else {
+              window.location.href = "/passenger/pages/request-ride.html";
+            }
           }
         } else {
           console.error(

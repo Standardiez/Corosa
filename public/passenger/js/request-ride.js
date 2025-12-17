@@ -29,7 +29,11 @@
         console.log(
           "DEBUG: Driver flow detected in request-ride.js, redirecting to driver-makeride.html"
         );
-        window.location.href = "../../driver/pages/driver-makeride.html";
+        if (window.navigateToDriver) {
+          window.navigateToDriver('driver-makeride.html');
+        } else {
+          window.location.href = "/driver/pages/driver-makeride.html";
+        }
         return;
       }
 
@@ -64,12 +68,20 @@
         !dropoffLocation.coords
       ) {
         alert("Please select pickup and drop-off locations first");
-        window.location.href = "../pages/select-pickup.html";
+        if (window.navigateToPassenger) {
+          window.navigateToPassenger('select-pickup.html');
+        } else {
+          window.location.href = "/passenger/pages/select-pickup.html";
+        }
       }
     } catch (error) {
       console.error("Error loading locations:", error);
       alert("Please select pickup and drop-off locations first");
-      window.location.href = "select-pickup.html";
+      if (window.navigateToPassenger) {
+        window.navigateToPassenger('select-pickup.html');
+      } else {
+        window.location.href = "/passenger/pages/select-pickup.html";
+      }
     }
   }
 
@@ -326,7 +338,11 @@
     sessionStorage.setItem("selectedTripCreatedAt", ride.createdAt || "");
 
     // Navigate to confirmation page
-    window.location.href = "ride-confirmation.html";
+    if (window.navigateToPassenger) {
+      window.navigateToPassenger('ride-confirmation.html');
+    } else {
+      window.location.href = "/passenger/pages/ride-confirmation.html";
+    }
   };
 
   // Initialize everything when the page loads

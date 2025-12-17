@@ -87,7 +87,11 @@
     localStorage.removeItem("userToken");
 
     // Redirect to home page
-    window.location.href = "index.html";
+    if (window.navigateToShared) {
+      window.navigateToShared('index.html');
+    } else {
+      window.location.href = "/shared/pages/index.html";
+    }
   }
 
   // Initialize on DOM ready

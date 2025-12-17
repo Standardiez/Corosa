@@ -4,40 +4,56 @@
  * This file handles user-related operations with MySQL
  */
 
-// Enable detailed error output for debugging
-ini_set('display_errors', 1);
+// Start output buffering to prevent any accidental output before JSON
+ob_start();
+
+// Disable error display - log errors instead of outputting them
+// This prevents PHP warnings/notices from breaking JSON responses
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
 // Function to handle errors
 function handleError($message, $code = 500) {
+    // Clear any output buffer
+    ob_clean();
+    
     header("Content-Type: application/json; charset=UTF-8");
     http_response_code($code);
     
     $error = [
         'success' => false,
-        'message' => $message,
-        'debug' => [
-            'file' => debug_backtrace()[0]['file'],
-            'line' => debug_backtrace()[0]['line'],
-            'post_data' => $_POST,
-            'raw_input' => file_get_contents('php://input')
-        ]
+        'message' => $message
     ];
     
-    echo json_encode($error, JSON_PRETTY_PRINT);
+    echo json_encode($error);
+    ob_end_flush();
     exit;
 }
 
-// Set error handler
+// Set error handler - log errors but don't output them
 set_error_handler(function($severity, $message, $file, $line) {
-    handleError("Server error: " . $message);
+    // Log the error but don't output it
+    error_log("PHP Error [$severity]: $message in $file on line $line");
+    // Only handle fatal errors, not warnings/notices
+    if ($severity === E_ERROR || $severity === E_PARSE || $severity === E_CORE_ERROR) {
+        handleError("Server error: " . $message);
+    }
+    return true; // Don't execute PHP's internal error handler
 });
 
-// Set headers for JSON response
+// Set headers for JSON response and CORS
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Credentials: true");
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 // Include database configuration and User class
 require_once '../../../config/database.php';
@@ -107,11 +123,13 @@ switch($method) {
             }
 
             if (!empty($errors)) {
+                ob_clean(); // Clear any output buffer
                 http_response_code(400);
                 echo json_encode([
                     "success" => false,
                     "errors" => $errors
                 ]);
+                ob_end_flush();
                 exit;
             }
 
@@ -133,6 +151,9 @@ switch($method) {
             $user->barangay = $data['barangay'];
 
             // Create the user (this will also create the address)
+            // Clear any output buffer before sending JSON
+            ob_clean();
+            
             if ($user->create()) {
                 http_response_code(201);
                 echo json_encode([
@@ -147,7 +168,11 @@ switch($method) {
                     "message" => "Error creating user account"
                 ]);
             }
+            ob_end_flush();
+            exit;
         } catch (Exception $e) {
+            // Log the full exception for debugging
+            error_log("Exception during registration: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
             handleError("Error during registration: " . $e->getMessage());
         }
         break;
@@ -289,10 +314,18 @@ switch($method) {
         break;
         
     default:
+        ob_clean();
+        http_response_code(405);
         echo json_encode(array(
             "success" => false,
             "message" => "Method not allowed"
         ));
+        ob_end_flush();
         break;
+}
+
+// End output buffering if still active (cleanup)
+if (ob_get_level() > 0) {
+    ob_end_flush();
 }
 ?>
