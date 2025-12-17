@@ -490,6 +490,38 @@
       }
 
       // ================================================================
+      // PHASE 2: CREATE TRIP ASSIGNMENT RECORD
+      // ================================================================
+
+      /*
+       * Create trip assignment with status 'pending'
+       *
+       * This links the booking to the driver's trip and sets the initial status
+       */
+      const assignmentPayload = {
+        booking_id: bookingId,
+        trip_id: Number(tripId),
+        payment_type: paymentMethod,
+        total_cost: fare.total,
+      };
+
+      console.log("[ConfirmRide] Creating trip assignment:", assignmentPayload);
+
+      const assignmentResponse = await fetch(`${apiBase}/api/trip-assignments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(assignmentPayload),
+      });
+      const assignmentResult = await assignmentResponse.json();
+
+      if (!assignmentResult.success) {
+        throw new Error(assignmentResult.message || "Failed to create trip assignment");
+      }
+
+      const newAssignmentId = assignmentResult.data.assignment_id;
+      sessionStorage.setItem("assignmentId", newAssignmentId);
+
+      // ================================================================
       // PHASE 3: STORE CONFIRMATION DATA & NAVIGATE
       // ================================================================
 
