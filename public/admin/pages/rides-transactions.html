@@ -314,24 +314,46 @@
             letter-spacing: 0.05em;
         }
 
-        .status-badge.active {
-            background: hsl(140, 70%, 95%);
-            color: hsl(140, 70%, 40%);
-        }
-
-        .status-badge.completed {
+        /* Available - Blue (ready for bookings) */
+        .status-badge.available {
             background: hsl(210, 100%, 95%);
-            color: hsl(210, 100%, 50%);
+            color: hsl(210, 100%, 45%);
+            border: 1px solid hsl(210, 100%, 85%);
         }
 
-        .status-badge.cancelled {
-            background: hsl(0, 80%, 95%);
-            color: hsl(0, 80%, 50%);
-        }
-
+        /* Pending - Amber (awaiting action) */
         .status-badge.pending {
-            background: hsl(30, 100%, 95%);
-            color: hsl(30, 100%, 50%);
+            background: hsl(38, 100%, 95%);
+            color: hsl(38, 100%, 45%);
+            border: 1px solid hsl(38, 100%, 85%);
+        }
+
+        /* Active - Green (in progress) */
+        .status-badge.active {
+            background: hsl(142, 76%, 95%);
+            color: hsl(142, 76%, 36%);
+            border: 1px solid hsl(142, 76%, 85%);
+        }
+
+        /* Completed - Teal (finished successfully) */
+        .status-badge.completed {
+            background: hsl(173, 58%, 95%);
+            color: hsl(173, 58%, 39%);
+            border: 1px solid hsl(173, 58%, 85%);
+        }
+
+        /* Cancelled - Red (terminated) */
+        .status-badge.cancelled {
+            background: hsl(0, 84%, 95%);
+            color: hsl(0, 84%, 50%);
+            border: 1px solid hsl(0, 84%, 85%);
+        }
+
+        /* Full - Purple (all seats booked) */
+        .status-badge.full {
+            background: hsl(271, 76%, 95%);
+            color: hsl(271, 76%, 45%);
+            border: 1px solid hsl(271, 76%, 85%);
         }
 
         /* Action Buttons */

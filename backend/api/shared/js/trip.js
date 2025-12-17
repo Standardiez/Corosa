@@ -21,6 +21,15 @@ router.get("/", async (req, res) => {
             });
         }
 
+        if (action === "getAllForAdmin") {
+            const trips = await trip.getAllTripsForAdmin();
+            return res.json({
+                success: true,
+                message: "All trips retrieved successfully",
+                data: trips
+            });
+        }
+
         if (trip_id) {
             const found = await trip.getById(trip_id);
             if (!found) {
