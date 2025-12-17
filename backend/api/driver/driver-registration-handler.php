@@ -145,11 +145,11 @@ if (!empty($errors)) {
 // STEP 4: Connect to database
 // ============================================================================
 try {
-    // Direct PDO connection
-    $dsn = "mysql:host=localhost;port=3306;dbname=corosa_db;charset=utf8mb4";
-    $conn = new PDO($dsn, "root", "");
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
+    // Use Database class to support both Docker and local environments
+    require_once __DIR__ . '/../../config/database.php';
+    $database = new Database();
+    $conn = $database->getConnection();
+} catch (Exception $e) {
     error_log("Database Connection Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
@@ -214,7 +214,11 @@ try {
 // ============================================================================
 // STEP 7: Handle base64 image
 // ============================================================================
-$uploadDir = '../../../assets/driver-licenses/';
+// Support both Docker and local WAMP paths
+$uploadDir = file_exists(__DIR__ . '/../../assets/driver-licenses/') 
+    ? __DIR__ . '/../../assets/driver-licenses/' 
+    : __DIR__ . '/../../../assets/driver-licenses/';
+
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }

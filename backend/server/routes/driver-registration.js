@@ -13,12 +13,20 @@ const mysql = require("mysql2/promise");
 
 const router = express.Router();
 
-// Configure upload directory
-const uploadDir = path.join(__dirname, "../../assets/driver-licenses");
+// Configure upload directory - handle both WAMP and Docker paths
+let uploadDir;
+if (process.env.NODE_ENV === 'production' || process.env.DOCKER_ENV === 'true') {
+  // Docker environment
+  uploadDir = path.join(__dirname, "../../assets/driver-licenses");
+} else {
+  // WAMP/Local environment
+  uploadDir = path.join(__dirname, "../../assets/driver-licenses");
+}
 
 // Ensure upload directory exists
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
+  console.log("[Driver Registration] Created upload directory:", uploadDir);
 }
 
 /**
@@ -36,6 +44,8 @@ router.post("/register", express.json({ limit: "50mb" }), async (req, res) => {
       driverLicenseBase64,
       driverLicenseType,
     } = req.body;
+
+    console.log("[Driver Registration] Received registration request for user:", userId);
 
     // ====================================================================
     // VALIDATION
@@ -209,7 +219,8 @@ router.post("/register", express.json({ limit: "50mb" }), async (req, res) => {
       await connection.end();
     }
   } catch (error) {
-    console.error("Driver registration error:", error);
+    console.error("[Driver Registration] Error:", error.message);
+    console.error("[Driver Registration] Full error:", error);
 
     res.status(500).json({
       success: false,
