@@ -255,19 +255,43 @@ if ($userFound) {
         // ----------------------------------------------------------------------
 
         // Determine user role (check if they're a driver)
-        $role = 'passenger'; // Default role
+        $role = 'passenger'; // default fallback
+
         try {
-            $checkDriverQuery = "SELECT driver_id FROM driver WHERE user_id = ?";
-            $checkDriverStmt = $db->prepare($checkDriverQuery);
-            $checkDriverStmt->execute([$user->user_id]);
-            if ($checkDriverStmt->rowCount() > 0) {
-                $role = 'driver';
+            // ADMIN CHECK (highest priority)
+            $adminQuery = "
+                SELECT employment_status
+                FROM users
+                WHERE user_id = ?
+                LIMIT 1
+            ";
+            $adminStmt = $db->prepare($adminQuery);
+            $adminStmt->execute([$user->user_id]);
+            $adminData = $adminStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($adminData) {
+                if (
+                    strtolower($adminData['employment_status']) === 'admin'
+                ) {
+                    $role = 'admin';
+                }
             }
+
+            // DRIVER CHECK (only if NOT admin)
+            if ($role !== 'admin') {
+                $driverQuery = "SELECT driver_id FROM driver WHERE user_id = ?";
+                $driverStmt = $db->prepare($driverQuery);
+                $driverStmt->execute([$user->user_id]);
+                if ($driverStmt->rowCount() > 0) {
+                    $role = 'driver';
+                }
+            }
+
         } catch (Exception $e) {
-            error_log("Role check error: " . $e->getMessage());
-            // Default to passenger if role check fails
+            error_log("Role resolution error: " . $e->getMessage());
             $role = 'passenger';
         }
+
 
         // Return success response with user ID and role
         // Frontend will store this in localStorage and sessionStorage

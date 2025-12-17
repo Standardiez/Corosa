@@ -197,6 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
               lastName: resp.lastName || "",
               token: resp.token || null,
             };
+            console.log("Login successful, user data:", userData);
 
             try {
               // ================================================================
@@ -244,6 +245,15 @@ document.addEventListener("DOMContentLoaded", function () {
             // Derive passenger registration from role; backend returns "driver" or "passenger"
             const isPassengerRegistered =
               userData.role === "passenger" || userData.role === "both";
+
+              if (userData.role === "admin") {
+                if (window.navigateToAdmin) {
+                  window.navigateToAdmin('dashboard.html');
+                } else {
+                  window.location.href = "/admin/pages/dashboard.html";
+                }
+                return;
+              }
 
             // =========== SCENARIO 1: User selected "Offer a Ride" (driver flow) ===========
             if (flowIntent === "driver") {
