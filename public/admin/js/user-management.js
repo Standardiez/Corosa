@@ -149,7 +149,7 @@ function renderUsersTable() {
             <td>${user.name || ''}</td>
             <td>${user.email || ''}</td>
             <td>${user.mobile || ''}</td>
-            <td>${user.birthdate || ''}</td>
+            <td>${formatDateTime(user.birthdate) || ''}</td>
             <td>${user.occupation || ''}</td>
             <td><span class="status-badge ${user.status}">${user.status}</span></td>
             <td>
