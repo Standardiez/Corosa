@@ -5,6 +5,7 @@
  * Endpoints:
  * POST   /api/reviews - Submit a new review
  * GET    /api/reviews/booking/:bookingId - Get review for a booking
+ * GET    /api/reviews/driver/:driverId - Get aggregated reviews for a driver
  * PUT    /api/reviews/:reviewId - Update existing review
  */
 
@@ -87,11 +88,11 @@ router.post("/", async (req, res) => {
         });
       }
 
-      // Insert new review
+      // Insert new review (schema: booking_id, rating, comment, created_at)
       const [insertResult] = await connection.execute(
-        `INSERT INTO reviews (booking_id, passenger_id, rating, comment, created_at)
-         VALUES (?, ?, ?, ?, NOW())`,
-        [bookingId, passengerId, rating, comment || null]
+        `INSERT INTO reviews (booking_id, rating, comment, created_at)
+         VALUES (?, ?, ?, NOW())`,
+        [bookingId, rating, comment || null]
       );
 
       console.log(
@@ -112,6 +113,92 @@ router.post("/", async (req, res) => {
     }
   } catch (error) {
     console.error("Submit review outer error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error: " + error.message,
+    });
+  }
+});
+
+/**
+ * GET /api/reviews/driver/:driverId
+ * Get driver's aggregated rating and recent reviews
+ */
+router.get("/driver/:driverId", async (req, res) => {
+  try {
+    const { driverId } = req.params;
+
+    console.log(`[GET /api/reviews/driver/${driverId}] Fetching driver stats`);
+
+    // Aggregate rating and review count for this driver
+    const [summaryRows] = await connection.execute(
+      `SELECT 
+         u.user_id        AS driver_user_id,
+         u.first_name     AS first_name,
+         u.last_name      AS last_name,
+         AVG(r.rating)    AS avg_rating,
+         COUNT(r.review_id) AS total_reviews
+       FROM reviews r
+       INNER JOIN bookings b        ON r.booking_id = b.booking_id
+       INNER JOIN trip_assignment ta ON b.booking_id = ta.booking_id
+       INNER JOIN trips t           ON ta.trip_id = t.trip_id
+       INNER JOIN driver d          ON t.driver_id = d.driver_id
+       INNER JOIN users u           ON d.user_id = u.user_id
+       WHERE d.driver_id = ?
+       GROUP BY u.user_id, u.first_name, u.last_name`,
+      [driverId]
+    );
+
+    // Fetch recent individual reviews (for detail view)
+    const [reviewRows] = await connection.execute(
+      `SELECT 
+         r.review_id,
+         r.rating,
+         r.comment,
+         r.created_at
+       FROM reviews r
+       INNER JOIN bookings b        ON r.booking_id = b.booking_id
+       INNER JOIN trip_assignment ta ON b.booking_id = ta.booking_id
+       INNER JOIN trips t           ON ta.trip_id = t.trip_id
+       INNER JOIN driver d          ON t.driver_id = d.driver_id
+       WHERE d.driver_id = ?
+       ORDER BY r.created_at DESC
+       LIMIT 20`,
+      [driverId]
+    );
+
+    if (summaryRows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          driver: null,
+          averageRating: null,
+          totalReviews: 0,
+          reviews: [],
+        },
+        message: "No reviews found for this driver",
+      });
+    }
+
+    const summary = summaryRows[0];
+
+    res.status(200).json({
+      success: true,
+      data: {
+        driver: {
+          userId: summary.driver_user_id,
+          firstName: summary.first_name,
+          lastName: summary.last_name,
+        },
+        averageRating: summary.avg_rating
+          ? Number.parseFloat(summary.avg_rating)
+          : null,
+        totalReviews: summary.total_reviews || 0,
+        reviews: reviewRows,
+      },
+    });
+  } catch (error) {
+    console.error("Get driver reviews error:", error);
     res.status(500).json({
       success: false,
       message: "Server error: " + error.message,

@@ -8,38 +8,9 @@ const path = require("path");
  */
 const app = express();
 
-// Enable CORS - Allow requests from localhost, Docker frontend, and LAN IPs
-// For LAN access, we'll allow all origins in development (restrict in production)
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or same-origin requests)
-    if (!origin) return callback(null, true);
-
-    // Get allowed origins from environment or use defaults
-    const allowedOrigins = process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(",")
-      : [
-          "http://localhost",
-          "http://localhost:8080",
-          "http://127.0.0.1",
-          "http://127.0.0.1:8080",
-        ];
-
-    // Allow if origin is in allowed list, or if it's a local network IP (for LAN access)
-    const isAllowed =
-      allowedOrigins.some((allowed) => origin.startsWith(allowed)) ||
-      /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin) ||
-      /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(origin) ||
-      /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+(:\d+)?$/.test(origin);
-
-    callback(null, isAllowed);
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+// Enable CORS for all origins during development
+// This allows access from localhost, Docker, and LAN IPs (e.g., 192.168.x.x)
+app.use(cors());
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -52,33 +23,29 @@ const tripsRouter = require("./api/shared/js/trip");
 const bookingsRouter = require("./api/pasenger/php/bookings");
 const tripAssignmentsRouter = require("./api/shared/js/trip-assignment");
 const vehicleRouter = require("./api/shared/js/vehicle");
+
 const driverRegistrationRouter = require("./server/routes/driver-registration");
 const driverRidesRouter = require("./server/routes/driver-rides");
-const driverProfileRouter = require("./server/routes/driver-profile");
 const driverBookingsRouter = require("./server/routes/driver-bookings");
-const passengerReviewsRouter = require("./server/routes/passenger-reviews");
 const passengerRideDetailsRouter = require("./server/routes/passenger-ride-details");
-const userRouter = require("./api/shared/js/user");
+const passengerReviewsRouter = require("./server/routes/passenger-reviews");
 
 // Mount routes
 app.use("/api/trips", tripsRouter);
 app.use("/api/bookings", bookingsRouter);
 app.use("/api/trip-assignments", tripAssignmentsRouter);
 app.use("/api/vehicle", vehicleRouter);
-app.use("/api/user", userRouter);
+
 app.use("/api/driver", driverRegistrationRouter);
 app.use("/api/driver", driverRidesRouter);
-app.use("/api/driver", driverProfileRouter);
 app.use("/api", driverBookingsRouter); // Bookings at /api level (POST /api/bookings)
-app.use("/api/passenger", passengerRideDetailsRouter); // Ride details at /api/passenger level
-app.use("/api/reviews", passengerReviewsRouter); // Review submission at /api/reviews level
 
-// Start server - bind to 0.0.0.0 for LAN access
-const PORT = process.env.PORT || 3000;
-const HOST = "0.0.0.0";
-app.listen(PORT, HOST, () => {
-  console.log(`Server running on http://${HOST}:${PORT}`);
-  console.log(
-    `CORS enabled for: ${process.env.CORS_ORIGIN || "localhost and LAN IPs"}`
-  );
+// Passenger ride details + reviews (used by ride-status page)
+app.use("/api/passenger", passengerRideDetailsRouter);
+app.use("/api/reviews", passengerReviewsRouter);
+
+// Start server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

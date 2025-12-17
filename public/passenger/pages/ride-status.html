@@ -496,6 +496,17 @@
               </div>
               <div class="driver-info">
                 <h3 id="rate-driver-name">Driver name</h3>
+                <p id="driver-rating-summary" style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem;">
+                  No reviews yet
+                </p>
+                <button
+                  class="btn-view-reviews"
+                  id="view-reviews-btn"
+                  type="button"
+                  style="margin-top: var(--spacing-sm);"
+                >
+                  View driver reviews
+                </button>
               </div>
             </div>
           </div>
@@ -620,6 +631,20 @@
             </div>
           </div>
 
+          <div class="reviews-panel" id="driver-reviews-panel">
+            <header>
+              <h3>Passenger Reviews</h3>
+              <span id="driver-reviews-meta" style="font-size:0.9rem; color:var(--text-secondary);">
+                No reviews yet
+              </span>
+            </header>
+            <div class="reviews-body" id="driver-reviews-body">
+              <div class="empty-state">
+                No reviews available for this driver yet.
+              </div>
+            </div>
+          </div>
+
           <div class="action-section">
             <button class="btn btn-report" type="button">
               Report an Issue
@@ -648,6 +673,6 @@
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>
-    <script src="../js/ride-status-database.js"></script>
+    <script src="../js/ride-status.js"></script>
   </body>
 </html>
