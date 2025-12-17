@@ -102,12 +102,12 @@ async function loadUserData() {
         if (result.success && Array.isArray(result.data)) {
             allUsers = result.data.map(user => ({
                 id: user.id,
-                name: user.username || '',
+                name: user.first_name + ' ' + user.last_name || '',
                 email: user.email || '',
-                mobile: user.mobile || '',
+                mobile: user.mobile_number || '',
                 birthdate: user.birthdate || '',
-                occupation: user.occupation || '',
-                status: user.status || ''
+                occupation: user.employment_status || '',
+                status: user.account_status || ''
             }));
         } else {
             allUsers = [];

@@ -4,21 +4,21 @@ const db = require("../../../config/database");
 class UserNode {
     // Get all users
     async getAll() {
-        const sql = "SELECT * FROM user";
+        const sql = "SELECT * FROM users";
         const [rows] = await db.query(sql);
         return rows;
     }
 
     // Get user by ID
     async getById(user_id) {
-        const sql = "SELECT * FROM user WHERE id = ?";
+        const sql = "SELECT * FROM users WHERE id = ?";
         const [rows] = await db.query(sql, [user_id]);
         return rows[0] || null;
     }
 
     // Create a new user
     async create(data) {
-        const sql = `INSERT INTO user (username, password, email, role, status) VALUES (?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO users (username, password, email, role, status) VALUES (?, ?, ?, ?, ?)`;
         const params = [
             data.username,
             data.password,
@@ -32,7 +32,7 @@ class UserNode {
 
     // Update a user
     async update(data) {
-        const sql = `UPDATE user SET username = ?, email = ?, role = ?, status = ? WHERE id = ?`;
+        const sql = `UPDATE users SET username = ?, email = ?, role = ?, status = ? WHERE id = ?`;
         const params = [
             data.username,
             data.email,
@@ -46,7 +46,7 @@ class UserNode {
 
     // Delete a user
     async delete(user_id) {
-        const sql = "DELETE FROM user WHERE id = ?";
+        const sql = "DELETE FROM users WHERE id = ?";
         const [result] = await db.query(sql, [user_id]);
         return result.affectedRows > 0;
     }
