@@ -6,13 +6,24 @@ const user = new UserNode();
 
 // GET /api/user (all users)
 router.get("/", async (req, res) => {
+  const { get } = req.query;
   try {
-    const users = await user.getAll();
-    return res.json({
-      success: true,
-      message: "Users retrieved successfully",
-      data: users,
-    });
+    if (get === "stats"){
+        const stats = await user.getAllStats();
+        return res.json({
+            success: true,
+            message: "User statistics retrieved successfully",
+            data: stats,
+        });
+    }
+    if (get === "all") {
+        const users = await user.getAll();
+        return res.json({
+            success: true,
+            message: "Users retrieved successfully",
+            data: users,
+        });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({

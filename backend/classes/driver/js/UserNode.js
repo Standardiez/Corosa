@@ -8,6 +8,19 @@ class UserNode {
         const [rows] = await db.query(sql);
         return rows;
     }
+    async getAllStats() {
+        const sql = "SELECT * FROM users ";
+        const [rows] = await db.query(sql);
+        const countTotal = rows.length;
+        const countActive = rows.filter(u => u.status === 'active').length;
+        const countInactive = rows.filter(u => u.status === 'inactive').length;
+        return {
+            totalUsers: countTotal,
+            active: countActive,
+            inactive: countInactive
+        };
+    }
+
 
     // Get user by ID
     async getById(user_id) {

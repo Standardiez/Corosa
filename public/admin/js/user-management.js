@@ -76,19 +76,21 @@ function switchTab(tab) {
 async function loadStatistics() {
     // TODO: Replace with actual API call
     // const response = await fetch('/Corosa/backend/api/users-stats.php');
+    try {
+        const statsResponse = await fetch('http://localhost:3000/api/user?get=stats');
+        const statsResult = await statsResponse.json();
+        if (!statsResult.success) {
+            showError('Failed to load user statistics');
+            return;
+        }
 
-    // Mock statistics
-    const stats = {
-        totalUsers: 120,
-        verified: 80,
-        pending: 30,
-        declined: 10
-    };
-
-    document.getElementById('stat-total-users').textContent = stats.totalUsers;
-    document.getElementById('stat-verified-users').textContent = stats.verified;
-    document.getElementById('stat-pending-users').textContent = stats.pending;
-    document.getElementById('stat-declined-users').textContent = stats.declined;
+        document.getElementById('stat-total-users').textContent = statsResult.data.totalUsers;
+        document.getElementById('stat-active-users').textContent = statsResult.data.active;
+        document.getElementById('stat-inactive-users').textContent = statsResult.data.inactive;
+    } catch (error) {
+        console.error('Error loading user statistics:', error);
+        showError('Failed to load user statistics');
+    }   
 }
 
 /**
@@ -97,7 +99,7 @@ async function loadStatistics() {
 async function loadUserData() {
     try {
         // Fetch users from backend Node.js API
-        const response = await fetch('http://localhost:3000/api/user');
+        const response = await fetch('http://localhost:3000/api/user?get=all');
         const result = await response.json();
         if (result.success && Array.isArray(result.data)) {
             allUsers = result.data.map(user => ({

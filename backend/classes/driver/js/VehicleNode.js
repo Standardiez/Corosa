@@ -9,6 +9,22 @@ class VehicleNode {
         return rows;
     }
 
+    async getAllStats() {
+        const sql = "SELECT * FROM vehicle";
+        const [rows] = await db.query(sql);
+        const countTotal = rows.length;
+        const countAvailable = rows.filter(v => v.vehicle_status === 'available').length;
+        const countTaken = rows.filter(v => v.vehicle_status === 'taken').length;
+        const countDeclined = rows.filter(v => v.vehicle_status === 'declined').length;
+        return {
+            totalVehicles: countTotal,
+            available: countAvailable,
+            taken: countTaken,
+            declined: countDeclined
+        };
+    }
+
+
     // Get vehicle by plate number
     async getByPlateNumber(plate_number) {
         const sql = "SELECT * FROM vehicle WHERE plate_number = ?";
