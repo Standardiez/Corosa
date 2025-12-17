@@ -68,10 +68,44 @@ function switchTab(tab) {
  * Load statistics
  */
 async function loadStatistics() {
-    // TODO: Replace with actual API call
-    // const response = await fetch('/Corosa/backend/api/rides-stats.php');
+    try {
+        // Fetch real data from Node.js API
+        const response = await fetch('http://localhost:3000/api/trips?action=getAllForAdmin');
+        const result = await response.json();
 
-    // Mock statistics
+        if (result.success && Array.isArray(result.data)) {
+            const trips = result.data;
+            
+            // Calculate statistics from real data
+            const stats = {
+                totalRides: trips.length,
+                activeRides: trips.filter(t => t.ride_status === 'active').length,
+                availableRides: trips.filter(t => t.ride_status === 'available').length,
+                completedToday: trips.filter(t => {
+                    const today = new Date().toDateString();
+                    const tripDate = new Date(t.created_at).toDateString();
+                    return t.ride_status === 'completed' && tripDate === today;
+                }).length
+            };
+
+            document.getElementById('stat-total-rides').textContent = stats.totalRides;
+            document.getElementById('stat-active-rides').textContent = stats.activeRides;
+            document.getElementById('stat-total-revenue').textContent = formatCurrency(0); // TODO: Calculate from transactions
+            document.getElementById('stat-completed-today').textContent = stats.completedToday;
+        } else {
+            // Fallback to mock data
+            loadMockStatistics();
+        }
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+        loadMockStatistics();
+    }
+}
+
+/**
+ * Load mock statistics (fallback)
+ */
+function loadMockStatistics() {
     const stats = {
         totalRides: 248,
         activeRides: 8,
@@ -90,21 +124,150 @@ async function loadStatistics() {
  */
 async function loadRidesData() {
     try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/Corosa/backend/api/trip.php?action=getAllWithDetails');
-        // allRides = await response.json();
+        // Fetch real data from Node.js API
+        const response = await fetch('http://localhost:3000/api/trips?action=getAllForAdmin');
+        const result = await response.json();
 
-        // Mock rides data
-        allRides = generateMockRides();
-        filteredData = [...allRides];
+        if (result.success && Array.isArray(result.data)) {
+            // Process rides and get geocoded addresses
+            const ridesWithAddresses = await Promise.all(result.data.map(async (trip) => {
+                const routeText = await formatRouteWithGeocoding(
+                    trip.start_lat, 
+                    trip.start_long, 
+                    trip.end_lat, 
+                    trip.end_long
+                );
 
-        renderRidesTable();
-        updatePagination();
+                return {
+                    id: trip.trip_id,
+                    driver: `${trip.first_name || ''} ${trip.middle_initial ? trip.middle_initial + '. ' : ''}${trip.last_name || ''}`.trim(),
+                    passenger: trip.passenger_count > 0 ? `${trip.passenger_count} passenger(s)` : 'No passengers',
+                    route: routeText,
+                    datetime: trip.created_at,
+                    status: trip.ride_status,
+                    fare: calculateFare(trip.ride_distance || 0),
+                    passengers: trip.passenger_count || 0,
+                    availableSeats: trip.available_seats,
+                    vehicle: trip.vehicle_model || 'N/A'
+                };
+            }));
+
+            allRides = ridesWithAddresses;
+            filteredData = [...allRides];
+            renderRidesTable();
+            updatePagination();
+        } else {
+            console.error('Failed to load rides:', result.message);
+            // Fallback to mock data if API fails
+            allRides = generateMockRides();
+            filteredData = [...allRides];
+            renderRidesTable();
+            updatePagination();
+        }
 
     } catch (error) {
         console.error('Error loading rides:', error);
-        showError('Failed to load rides data');
+        showError('Failed to load rides data. Using demo data.');
+        // Fallback to mock data on error
+        allRides = generateMockRides();
+        filteredData = [...allRides];
+        renderRidesTable();
+        updatePagination();
     }
+}
+
+/**
+ * Format route with reverse geocoding
+ */
+async function formatRouteWithGeocoding(startLat, startLng, endLat, endLng) {
+    try {
+        // Google Maps API key (same as used in passenger pages)
+        const API_KEY = 'AIzaSyBsoZUgOFGSg7oXvdgstZuduXjNPIp_S3k';
+        
+        // Get both addresses in parallel
+        const [startAddress, endAddress] = await Promise.all([
+            reverseGeocode(startLat, startLng, API_KEY),
+            reverseGeocode(endLat, endLng, API_KEY)
+        ]);
+
+        return `${startAddress} → ${endAddress}`;
+    } catch (error) {
+        console.error('Geocoding error:', error);
+        // Fallback to coordinates if geocoding fails
+        const start = `${parseFloat(startLat).toFixed(4)}, ${parseFloat(startLng).toFixed(4)}`;
+        const end = `${parseFloat(endLat).toFixed(4)}, ${parseFloat(endLng).toFixed(4)}`;
+        return `${start} → ${end}`;
+    }
+}
+
+/**
+ * Reverse geocode coordinates to address
+ */
+async function reverseGeocode(lat, lng, apiKey) {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+    
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === 'OK' && data.results && data.results.length > 0) {
+        const result = data.results[0];
+        
+        // Extract meaningful components
+        const components = result.address_components;
+        let street = '';
+        let barangay = '';
+        let city = '';
+        
+        // Parse address components
+        components.forEach(component => {
+            const types = component.types;
+            
+            if (types.includes('route') || types.includes('street_address')) {
+                street = component.long_name;
+            } else if (types.includes('sublocality') || types.includes('sublocality_level_1')) {
+                barangay = component.long_name;
+            } else if (types.includes('locality')) {
+                city = component.long_name;
+            }
+        });
+
+        // Build formatted address
+        if (street && barangay) {
+            return `${street}, ${barangay}`;
+        } else if (barangay && city) {
+            return `${barangay}, ${city}`;
+        } else if (street) {
+            return street;
+        } else if (barangay) {
+            return barangay;
+        } else {
+            // Use formatted address as fallback
+            return result.formatted_address.split(',').slice(0, 2).join(',');
+        }
+    }
+
+    // If geocoding fails, return coordinates
+    return `${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}`;
+}
+
+/**
+ * Format route from coordinates (fallback)
+ */
+function formatRoute(startLat, startLng, endLat, endLng) {
+    // Simple coordinate display - fallback when geocoding isn't used
+    const start = `${parseFloat(startLat).toFixed(4)}, ${parseFloat(startLng).toFixed(4)}`;
+    const end = `${parseFloat(endLat).toFixed(4)}, ${parseFloat(endLng).toFixed(4)}`;
+    return `${start} → ${end}`;
+}
+
+/**
+ * Calculate fare based on distance
+ */
+function calculateFare(distance) {
+    const baseFare = 20;
+    const perKmRate = 8;
+    const total = baseFare + (distance * perKmRate);
+    return total.toFixed(2);
 }
 
 /**
@@ -219,16 +382,16 @@ function renderRidesTable() {
             <td><strong>#${ride.id}</strong></td>
             <td>${ride.driver}</td>
             <td>${ride.passenger}</td>
-            <td>${ride.route}</td>
+            <td><small>${ride.route}</small></td>
             <td>${formatDateTime(ride.datetime)}</td>
-            <td><span class="status-badge ${ride.status}">${ride.status}</span></td>
+            <td><span class="status-badge ${ride.status}">${capitalizeStatus(ride.status)}</span></td>
             <td><strong>${formatCurrency(ride.fare)}</strong></td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewRideDetails(${ride.id})" title="View Details">
                         <i class='bx bx-eye'></i>
                     </button>
-                    ${ride.status === 'active' ? `
+                    ${ride.status === 'active' || ride.status === 'pending' ? `
                         <button class="action-btn" onclick="monitorRide(${ride.id})" title="Monitor">
                             <i class='bx bx-map'></i>
                         </button>
@@ -237,6 +400,13 @@ function renderRidesTable() {
             </td>
         </tr>
     `).join('');
+}
+
+/**
+ * Capitalize status for display
+ */
+function capitalizeStatus(status) {
+    return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
 /**

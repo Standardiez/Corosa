@@ -88,6 +88,39 @@ class TripNode {
         return rows;
     }
 
+    async getAllTripsForAdmin() {
+        const [rows] = await db.query(`
+            SELECT 
+                t.trip_id,
+                t.driver_id,
+                t.start_lat,
+                t.start_long,
+                t.end_lat,
+                t.end_long,
+                t.available_seats,
+                t.ride_distance,
+                t.ride_status,
+                t.created_at,
+                u.user_id,
+                u.first_name,
+                u.middle_initial,
+                u.last_name,
+                u.email,
+                u.employment_status,
+                v.vehicle_model,
+                v.plate_number,
+                v.seat_capacity,
+                (SELECT COUNT(*) FROM trip_assignment ta WHERE ta.trip_id = t.trip_id AND ta.assignment_status = 'confirmed') as passenger_count
+            FROM trips t
+            LEFT JOIN driver d ON t.driver_id = d.driver_id
+            LEFT JOIN users u ON d.user_id = u.user_id
+            LEFT JOIN vehicle v ON v.driver_id = d.driver_id
+            ORDER BY t.created_at DESC
+        `);
+
+        return rows;
+    }
+
     async create(data) {
         const {
             driver_id,
