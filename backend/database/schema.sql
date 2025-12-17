@@ -138,6 +138,7 @@ CREATE INDEX idx_bookings_end ON bookings(end_lat, end_long);
 INSERT INTO users (first_name, middle_initial, last_name, birthdate, email, mobile_number, address_id, disabilities, employment_status, account_status, hashed_password) VALUES
 ('John', 'A', 'Doe', '2000-05-15', '2253123@slu.edu.ph', '+63213521245', NULL, 'None', 'student', 'active', '$2y$10$'),
 ('Jane', 'B', 'Smith', '1999-08-22', '2243215@slu.edu.ph', '+63321573919', NULL, 'None', 'student', 'active', '$2y$10$');
+('Ari', 'Z', 'Ona', '2001-11-30', 'arizona@brandy.com', '+63421573920', NULL, 'None', 'admin', 'active', 'Bis4bonding');
 
 INSERT INTO driver (user_id, driver_license_image) VALUES
 (1, 'john_license.png');
