@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateBtn.textContent = "Loading ride...";
   }
 
-  // Get driver ID first, then load ride
+  // Get driver ID first, then load ride and pending requests
   getDriverId()
     .then(() => {
       return loadRideStatus();
@@ -60,8 +60,13 @@ document.addEventListener("DOMContentLoaded", function () {
       if (updateBtn) {
         updateBtn.disabled = false;
       }
+      // Load pending requests
+      loadPendingRequests();
       // Poll for updates every 3 seconds only after initial load
-      pollInterval = setInterval(loadRideStatus, 3000);
+      pollInterval = setInterval(() => {
+        loadRideStatus();
+        loadPendingRequests();
+      }, 3000);
       console.log("[Driver Ride Status] Polling started");
     })
     .catch((error) => {
@@ -244,13 +249,12 @@ function updateRideDisplay() {
 
   const status = currentRide.ride_status;
 
-  // Status mapping for 4-stage flow
+  // Status mapping for 4-stage flow using database ENUM values
   const statusMap = {
     available: 0,
-    on_the_way: 1, // Stage 1: Driver on the Way
-    in_progress: 2, // Stage 2: Ride In Progress
-    arrived: 3, // Stage 3: Arrived at Destination
-    completed: 4, // Stage 4: Completed
+    pending: 1, // Stage 1: Driver on the Way
+    active: 2, // Stage 2: Ride In Progress
+    completed: 4, // Stage 4: Completed (skip stage 3 for now)
   };
 
   const currentStage = statusMap[status] || 0;
@@ -295,12 +299,11 @@ function updateRideDisplay() {
   const updateBtn = document.getElementById("update-status-btn");
   if (!updateBtn) return;
 
-  // Status to button label mapping
+  // Status to button label mapping (using database ENUM values)
   const buttonLabels = {
     available: "Driver On The Way",
-    on_the_way: "Ride In Progress",
-    in_progress: "Mark As Complete",
-    arrived: "Completed",
+    pending: "Ride In Progress",
+    active: "Mark As Complete",
     completed: "View Rating",
   };
 
@@ -377,17 +380,15 @@ async function handleStatusUpdate() {
     return;
   }
 
-  // Determine next status - follow the strict 4-stage progression
+  // Determine next status - follow the 3-stage progression using database ENUM
   let nextStatus;
 
   if (currentStatus === "available") {
-    nextStatus = "on_the_way";
-  } else if (currentStatus === "on_the_way") {
-    nextStatus = "in_progress";
-  } else if (currentStatus === "in_progress") {
-    nextStatus = "arrived";
-  } else if (currentStatus === "arrived") {
-    nextStatus = "completed";
+    nextStatus = "pending"; // Driver on the Way
+  } else if (currentStatus === "pending") {
+    nextStatus = "active"; // Ride In Progress
+  } else if (currentStatus === "active") {
+    nextStatus = "completed"; // Mark as Complete
   } else {
     showError("Ride is already completed");
     return;
@@ -584,6 +585,175 @@ function showError(message) {
     alertDiv.remove();
   }, 3000);
 }
+
+/**
+ * Load pending ride requests for the current trip
+ */
+async function loadPendingRequests() {
+  try {
+    if (!driverId || !currentTripId) {
+      return;
+    }
+
+    const userDataStr = localStorage.getItem("userData");
+    if (!userDataStr) return;
+
+    const userData = JSON.parse(userDataStr);
+    const userId = userData.id || userData.userId || userData.user_id;
+
+    console.log("[Driver Ride Status] Fetching pending requests for userId:", userId);
+
+    const response = await fetch(
+      `/backend/api/driver/fetch-pending-requests.php?driverId=${userId}`
+    );
+
+    if (!response.ok) {
+      console.error("[Driver Ride Status] Failed to fetch pending requests:", response.status);
+      return;
+    }
+
+    const result = await response.json();
+
+    if (result.status === "success" && result.pendingRequests) {
+      // Filter requests for the current trip only
+      const tripRequests = result.pendingRequests.filter(
+        (req) => req.tripId === parseInt(currentTripId) && req.status === "pending"
+      );
+
+      displayPendingRequests(tripRequests);
+    }
+  } catch (error) {
+    console.error("[Driver Ride Status] Error loading pending requests:", error);
+  }
+}
+
+/**
+ * Display pending requests in the UI
+ */
+function displayPendingRequests(requests) {
+  const section = document.getElementById("pending-requests-section");
+  const container = document.getElementById("pending-requests-container");
+
+  if (!section || !container) return;
+
+  if (requests.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "block";
+  container.innerHTML = "";
+
+  requests.forEach((request) => {
+    const requestCard = document.createElement("div");
+    requestCard.className = "request-card";
+    requestCard.innerHTML = `
+      <div class="request-header">
+        <span class="request-passenger">
+          <i class="bx bx-user"></i> ${request.passengerName}
+        </span>
+        <span class="request-badge">Pending</span>
+      </div>
+      <div class="request-details">
+        <div><i class="bx bx-phone"></i> ${request.passengerMobile || "N/A"}</div>
+        <div><i class="bx bx-map-pin"></i> ${request.seatsRequested} seat(s) requested</div>
+        <div><i class="bx bx-money"></i> ${request.paymentType || "Cash"} - ₱${request.totalCost?.toFixed(2) || "0.00"}</div>
+      </div>
+      <div class="request-actions">
+        <button class="btn-accept" onclick="acceptRequest(${request.bookingId}, ${request.tripId})">
+          <i class="bx bx-check"></i> Accept
+        </button>
+        <button class="btn-decline" onclick="declineRequest(${request.bookingId}, ${request.tripId})">
+          <i class="bx bx-x"></i> Decline
+        </button>
+      </div>
+    `;
+    container.appendChild(requestCard);
+  });
+}
+
+/**
+ * Accept a pending ride request
+ */
+async function acceptRequest(bookingId, tripId) {
+  try {
+    if (!driverId) {
+      showError("Driver ID not available");
+      return;
+    }
+
+    console.log("[Driver Ride Status] Accepting request:", { bookingId, tripId, driverId });
+
+    const response = await fetch("/backend/api/driver/accept-request.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        bookingId: bookingId,
+        tripId: tripId,
+        driverId: driverId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.status === "success") {
+      showSuccess("Ride request accepted! Remaining seats: " + result.remainingSeats);
+      // Reload ride status and pending requests
+      await loadRideStatus();
+      await loadPendingRequests();
+    } else {
+      showError(result.message || "Failed to accept request");
+    }
+  } catch (error) {
+    console.error("[Driver Ride Status] Error accepting request:", error);
+    showError("Error accepting request: " + error.message);
+  }
+}
+
+/**
+ * Decline a pending ride request
+ */
+async function declineRequest(bookingId, tripId) {
+  try {
+    if (!driverId) {
+      showError("Driver ID not available");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to decline this ride request?")) {
+      return;
+    }
+
+    console.log("[Driver Ride Status] Declining request:", { bookingId, tripId, driverId });
+
+    const response = await fetch("/backend/api/driver/decline-request.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        bookingId: bookingId,
+        tripId: tripId,
+        driverId: driverId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.status === "success") {
+      showSuccess("Ride request declined");
+      // Reload pending requests
+      await loadPendingRequests();
+    } else {
+      showError(result.message || "Failed to decline request");
+    }
+  } catch (error) {
+    console.error("[Driver Ride Status] Error declining request:", error);
+    showError("Error declining request: " + error.message);
+  }
+}
+
+// Make functions globally available for onclick handlers
+window.acceptRequest = acceptRequest;
+window.declineRequest = declineRequest;
 
 // Cleanup on page unload
 window.addEventListener("beforeunload", function () {

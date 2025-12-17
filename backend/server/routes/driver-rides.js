@@ -237,7 +237,8 @@ router.get("/rides/:driverId/:tripId", async (req, res) => {
 
 /**
  * PUT /api/driver/rides/:tripId/status
- * Update ride status progression: available -> on_the_way -> in_progress -> arrived -> completed
+ * Update ride status progression: available -> pending -> active -> completed
+ * Maps to UI: Driver on the Way -> Ride In Progress -> Completed
  */
 router.put("/rides/:tripId/status", async (req, res) => {
   try {
@@ -248,8 +249,8 @@ router.put("/rides/:tripId/status", async (req, res) => {
       newStatus,
     });
 
-    // Valid status enum values
-    const validStatuses = ["on_the_way", "in_progress", "arrived", "completed"];
+    // Valid status enum values (from database ENUM)
+    const validStatuses = ["pending", "active", "completed"];
     if (!newStatus || !validStatuses.includes(newStatus)) {
       return res.status(400).json({
         success: false,
@@ -259,9 +260,8 @@ router.put("/rides/:tripId/status", async (req, res) => {
 
     // Human-readable labels for messages
     const statusLabels = {
-      on_the_way: "Driver is on the way",
-      in_progress: "Ride in progress",
-      arrived: "Arrived at destination",
+      pending: "Driver is on the way",
+      active: "Ride in progress",
       completed: "Ride completed",
     };
 
@@ -291,10 +291,9 @@ router.put("/rides/:tripId/status", async (req, res) => {
 
       // Validate progression - only allow transitions to the next status
       const statusProgression = {
-        available: ["on_the_way"],
-        on_the_way: ["in_progress"],
-        in_progress: ["arrived"],
-        arrived: ["completed"],
+        available: ["pending"],
+        pending: ["active"],
+        active: ["completed"],
         completed: [],
       };
 
