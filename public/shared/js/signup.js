@@ -155,7 +155,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     try {
-      const response = await fetch("/Corosa/backend/api/shared/php/users.php", {
+      // Use centralized API config if available, otherwise fallback
+      const apiBase = window.API_CONFIG?.PHP_API_BASE || '/backend/api';
+      const response = await fetch(`${apiBase}/shared/php/users.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

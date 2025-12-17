@@ -1,20 +1,27 @@
 # Use official Node.js image
-FROM node:18
+FROM node:18-alpine
 
 # Set working directory inside container
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package files first (helps with caching)
-COPY package*.json ./
+# Copy package files first (helps with Docker layer caching)
+COPY backend/package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --production
 
-# Copy the rest of your source code
-COPY . .
+# Copy the entire backend directory to /app
+# This preserves the structure: /app/api/, /app/classes/, /app/config/, etc.
+COPY backend/ ./
+
+# Create assets directory if needed for driver license uploads
+RUN mkdir -p assets/driver-licenses
+
+# Set proper permissions
+RUN chown -R node:node /app
 
 # Expose the port your Node app uses
 EXPOSE 3000
 
-# Start the app
-CMD ["npm", "start"]
+# Start the app (server.js is in the root of backend/, so it's now at /app/server.js)
+CMD ["node", "server.js"]

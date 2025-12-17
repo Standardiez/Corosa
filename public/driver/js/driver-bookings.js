@@ -53,8 +53,9 @@ class DriverBookingRequests {
       const driverId = userData.userId;
 
       // Fetch requests
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/driver/bookings/${driverId}`,
+        `${apiBase}/api/driver/bookings/${driverId}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -226,8 +227,9 @@ class DriverBookingRequests {
     }
 
     try {
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/driver/bookings/${bookingId}/accept`,
+        `${apiBase}/api/driver/bookings/${bookingId}/accept`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -264,8 +266,9 @@ class DriverBookingRequests {
     }
 
     try {
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/driver/bookings/${bookingId}/reject`,
+        `${apiBase}/api/driver/bookings/${bookingId}/reject`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

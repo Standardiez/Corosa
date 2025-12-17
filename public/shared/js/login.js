@@ -158,9 +158,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // ------------------------------------------------------------------------
     const useBackend = true; // Set to false to test without backend
     if (useBackend) {
-      // API endpoint URL (adjust based on your server setup)
-      // For WAMP: http://localhost/Corosa/backend/api/shared/php/login.php
-      const endpoint = "/Corosa/backend/api/shared/php/login.php";
+      // API endpoint URL - uses centralized config for Docker/local compatibility
+      const endpoint = window.API_CONFIG?.PHP_API?.LOGIN || "/backend/api/shared/php/login.php";
 
       // ======================================================================
       // FETCH API: Modern way to make HTTP requests in JavaScript

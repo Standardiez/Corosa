@@ -43,8 +43,10 @@ class DriverDashboard {
 
   async getDriverId() {
     try {
+      // Use centralized API config if available, otherwise fallback
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/driver/get-driver-id`,
+        `${apiBase}/api/driver/get-driver-id`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -122,8 +124,10 @@ class DriverDashboard {
         throw new Error("Driver ID not available");
       }
 
+      // Use centralized API config if available, otherwise fallback
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/driver/rides/${this.driverId}`
+        `${apiBase}/api/driver/rides/${this.driverId}`
       );
 
       if (!response.ok) {
@@ -310,8 +314,9 @@ class DriverDashboard {
   async displayPassengersForRide(tripId) {
     try {
       // Fetch accepted passengers (not pending requests)
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/accepted-passengers/${this.driverId}`
+        `${apiBase}/api/accepted-passengers/${this.driverId}`
       );
 
       if (!response.ok) {
@@ -417,8 +422,9 @@ class DriverDashboard {
 
     try {
       const tripId = this.currentRide.trip_id;
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/driver/rides/${tripId}`,
+        `${apiBase}/api/driver/rides/${tripId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -463,8 +469,9 @@ class DriverDashboard {
         `[Dashboard] Loading pending requests for driver ${this.driverId}...`
       );
 
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/bookings/${this.driverId}`
+        `${apiBase}/api/bookings/${this.driverId}`
       );
 
       if (!response.ok) {
@@ -587,8 +594,9 @@ class DriverDashboard {
 
   async handleAcceptRequest(bookingId, tripId) {
     try {
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/bookings/${bookingId}/accept`,
+        `${apiBase}/api/bookings/${bookingId}/accept`,
         {
           method: "POST",
           headers: {
@@ -622,8 +630,9 @@ class DriverDashboard {
 
   async handleDeclineRequest(bookingId, tripId) {
     try {
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const response = await fetch(
-        `http://localhost:3000/api/bookings/${bookingId}/reject`,
+        `${apiBase}/api/bookings/${bookingId}/reject`,
         {
           method: "POST",
           headers: {

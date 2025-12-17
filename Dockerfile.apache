@@ -1,17 +1,68 @@
-# Use official PHP + Apache image
-FROM php:8.2-apache
+# PHP Backend Dockerfile (for remaining PHP endpoints)
+FROM php:8.3-apache
 
-# Enable required PHP extensions
+# Install MySQL PDO extension
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Enable Apache rewrite module (optional but good for routing)
-RUN a2enmod rewrite
+# Enable Apache mod_rewrite and mod_headers
+RUN a2enmod rewrite headers
 
-# Copy your PHP project into the Apache root directory
-COPY . /var/www/html/
+# Add CORS headers for API endpoints
+RUN echo 'Header always set Access-Control-Allow-Origin "*"\n\
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"\n\
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization"\n\
+Header always set Access-Control-Allow-Credentials "true"' > /etc/apache2/conf-available/cors.conf && \
+    a2enconf cors
 
-# Give correct permissions
-RUN chown -R www-data:www-data /var/www/html
+# Set working directory
+WORKDIR /var/www/html
 
-# Expose port 80
+# Copy PHP backend files
+COPY backend/ /var/www/html/backend/
+
+# Copy public frontend files
+COPY public/ /var/www/html/public/
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
+
+# Apache virtual host configuration
+RUN echo '<VirtualHost *:80>\n\
+    ServerName localhost\n\
+    DocumentRoot /var/www/html/public\n\
+    DirectoryIndex index.html index.php\n\
+    \n\
+    # PHP API endpoints - support both /backend and /Corosa/backend for compatibility\n\
+    Alias /backend /var/www/html/backend\n\
+    Alias /Corosa/backend /var/www/html/backend\n\
+    <Directory /var/www/html/backend>\n\
+        Options Indexes FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+        # PHP handling\n\
+        <FilesMatch \\.php$>\n\
+            SetHandler application/x-httpd-php\n\
+        </FilesMatch>\n\
+    </Directory>\n\
+    \n\
+    # Frontend public directory\n\
+    <Directory /var/www/html/public>\n\
+        Options Indexes FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+        # PHP handling for any PHP files in public\n\
+        <FilesMatch \\.php$>\n\
+            SetHandler application/x-httpd-php\n\
+        </FilesMatch>\n\
+    </Directory>\n\
+    \n\
+    # Error and access logs\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+# Enable the site
+RUN a2ensite 000-default.conf
+
 EXPOSE 80

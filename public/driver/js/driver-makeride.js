@@ -277,8 +277,9 @@ class DriverRideFlow {
       const userId = userData.userId || userData.id;
 
       // Get driver ID from user ID
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const driverIdResponse = await fetch(
-        "http://localhost:3000/api/driver/get-driver-id",
+        `${apiBase}/api/driver/get-driver-id`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -310,7 +311,7 @@ class DriverRideFlow {
       console.log("Creating ride with payload:", payload);
 
       // Send to backend
-      const response = await fetch("http://localhost:3000/api/driver/rides", {
+      const response = await fetch(`${apiBase}/api/driver/rides`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

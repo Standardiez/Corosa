@@ -434,8 +434,10 @@
        * EXPECTED RESPONSE (error):
        * { success: false, message: "Missing required fields..." }
        */
+      // Use centralized API config if available, otherwise fallback
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const bookingResponse = await fetch(
-        "http://localhost:3000/api/bookings",
+        `${apiBase}/api/bookings`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

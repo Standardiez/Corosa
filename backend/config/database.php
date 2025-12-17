@@ -6,12 +6,21 @@
 
 class Database {
     // Database connection settings
-    private $host = 'localhost';     // MySQL server address
-    private $port = '3306';         // MySQL default port
-    private $db_name = 'corosa_db'; // database name
-    private $username = 'root';      // MySQL default username
-    private $password = '';          // MySQL default password (usually blank in WAMP)
+    // Use environment variables for Docker, fallback to localhost for local development
+    private $host;
+    private $port;
+    private $db_name;
+    private $username;
+    private $password;
     private $conn;
+
+    public function __construct() {
+        $this->host = getenv('DB_HOST') ?: 'localhost';
+        $this->port = getenv('DB_PORT') ?: '3306';
+        $this->db_name = getenv('DB_NAME') ?: 'corosa_db';
+        $this->username = getenv('DB_USER') ?: 'root';
+        $this->password = getenv('DB_PASSWORD') ?: '';
+    }
 
     /**
      * Check if MySQL server is running

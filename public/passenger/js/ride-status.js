@@ -892,8 +892,10 @@
         if (!bookingId) return;
 
         // Check booking status via backend
+        // Use centralized API config if available, otherwise fallback
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
         const response = await fetch(
-          `http://localhost:3000/api/bookings/${bookingId}/status`
+          `${apiBase}/api/bookings/${bookingId}/status`
         );
         const result = await response.json();
 

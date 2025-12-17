@@ -162,8 +162,9 @@ function setupFormSubmission() {
 
     // Get driver ID from user ID
     try {
+      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
       const driverIdResponse = await fetch(
-        "http://localhost:3000/api/driver/get-driver-id",
+        `${apiBase}/api/driver/get-driver-id`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -265,7 +266,7 @@ function setupFormSubmission() {
       console.log("[Driver Create Ride] Request body:", requestBody);
 
       // Create ride via Node.js API
-      const response = await fetch("http://localhost:3000/api/driver/rides", {
+      const response = await fetch(`${apiBase}/api/driver/rides`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

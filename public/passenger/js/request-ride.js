@@ -156,7 +156,9 @@
 
   function fetchAvailableRides() {
     console.log("[RequestRide] Fetching available rides from backend...");
-    fetch("http://localhost:3000/api/driver/available-rides")
+    // Use centralized API config if available, otherwise fallback
+    const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+    fetch(`${apiBase}/api/driver/available-rides`)
       .then((response) => {
         console.log("[RequestRide] Response status:", response.status);
         if (!response.ok) {

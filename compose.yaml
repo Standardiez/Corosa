@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: corosa_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: corosa_db
+      MYSQL_USER: corosa_user
+      MYSQL_PASSWORD: corosa_password
+    ports:
+      - "0.0.0.0:3306:3306"  # Bind to all interfaces for LAN access
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - corosa_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Node.js API Server
+  node-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.nodejs
+    container_name: corosa_node_api
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: corosa_user
+      DB_PASSWORD: corosa_password
+      DB_NAME: corosa_db
+      PORT: 3000
+      CORS_ORIGIN: "http://localhost:8080,http://localhost,http://127.0.0.1:8080,http://127.0.0.1"  # Allow Docker frontend + direct calls + LAN
+    ports:
+      - "0.0.0.0:3000:3000"  # Bind to all interfaces for LAN access
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - corosa_network
+    volumes:
+      - ./backend:/app
+      - ./backend/assets:/app/assets
+      - /app/node_modules
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/trips', (r) => {process.exit(r.statusCode === 200 || r.statusCode === 404 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PHP/Apache Server (for remaining PHP endpoints)
+  php-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.apache
+    container_name: corosa_php_api
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: corosa_user
+      DB_PASSWORD: corosa_password
+      DB_NAME: corosa_db
+    ports:
+      - "0.0.0.0:8080:80"  # Bind to all interfaces for LAN access
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - corosa_network
+    volumes:
+      - ./backend:/var/www/html/backend
+      - ./public:/var/www/html/public
+      - ./backend/assets:/var/www/html/backend/assets
+    restart: unless-stopped
+
+  # Redis (optional - for caching and job queues)
+  redis:
+    image: redis:7-alpine
+    container_name: corosa_redis
+    ports:
+      - "0.0.0.0:6379:6379"  # Bind to all interfaces for LAN access
+    networks:
+      - corosa_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  corosa_network:
+    driver: bridge
+

@@ -1,7 +1,8 @@
 (function () {
     'use strict';
 
-    const API_BASE = '/Corosa/backend/api';
+    // Use centralized API config if available, otherwise fallback
+    const API_BASE = window.API_CONFIG?.PHP_API_BASE || '/backend/api';
     let currentUserData = null;
     let currentAddressData = null;
     let isEditMode = false;
