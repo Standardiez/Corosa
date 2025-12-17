@@ -1063,3 +1063,457 @@
     document.addEventListener("DOMContentLoaded", initialize);
   else initialize();
 })();
+
+// ============================================================================
+// DATABASE-DRIVEN RIDE DETAILS + REVIEW SYSTEM (migrated from ride-status-database.js)
+// ============================================================================
+(function () {
+  "use strict";
+
+  function getBookingId() {
+    const params = new URLSearchParams(window.location.search);
+    const bookingId =
+      params.get("bookingId") || sessionStorage.getItem("bookingId");
+    return bookingId;
+  }
+
+  function formatDateTime(dateString) {
+    if (!dateString) return "—";
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+  }
+
+  function formatCurrency(amount) {
+    if (!amount) return "—";
+    return "₱" + parseFloat(amount).toFixed(2);
+  }
+
+  function generateInitials(firstName, lastName) {
+    const first = (firstName || "").charAt(0).toUpperCase();
+    const last = (lastName || "").charAt(0).toUpperCase();
+    return first + last || "?";
+  }
+
+  async function fetchDriverReviewSummary(driverId) {
+    try {
+      const apiBase =
+        window.API_CONFIG?.NODE_API_BASE || "http://localhost:3000";
+      const url = `${apiBase}/api/reviews/driver/${driverId}`;
+
+      console.log("[RideStatus] Fetching driver review summary from:", url);
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        console.error("[RideStatus] Driver review summary error:", result);
+        return null;
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error("[RideStatus] Error fetching driver review summary:", error);
+      return null;
+    }
+  }
+
+  async function fetchRideDetails(bookingId) {
+    try {
+      const apiBase =
+        window.API_CONFIG?.NODE_API_BASE || "http://localhost:3000";
+      const url = `${apiBase}/api/passenger/ride-details/${bookingId}`;
+
+      console.log("[RideStatus] Fetching ride details from:", url);
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        console.error("Error fetching ride details:", result.message);
+        return null;
+      }
+
+      try {
+        const reviewUrl = `${apiBase}/api/reviews/booking/${bookingId}`;
+        const reviewResponse = await fetch(reviewUrl);
+        if (reviewResponse.ok) {
+          const reviewResult = await reviewResponse.json();
+          if (reviewResult.success && reviewResult.data) {
+            result.data.review = reviewResult.data;
+          }
+        }
+      } catch (reviewError) {
+        console.warn("[RideStatus] Could not fetch review:", reviewError);
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching ride details:", error);
+      return null;
+    }
+  }
+
+  async function submitReview(bookingId, passengerId, rating, comment) {
+    try {
+      const apiBase =
+        window.API_CONFIG?.NODE_API_BASE || "http://localhost:3000";
+      const url = `${apiBase}/api/reviews`;
+
+      console.log("[RideStatus] Submitting review to:", url);
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bookingId,
+          passengerId,
+          rating: parseInt(rating, 10),
+          comment: comment.trim() || null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      return { success: false, message: "Failed to submit review" };
+    }
+  }
+
+  function displayRideDetails(data) {
+    if (!data || !data.booking) return;
+
+    const booking = data.booking;
+    const driver = data.driver;
+    const review = data.review;
+
+    const pickupEl = document.getElementById("rate-pickup-location");
+    const dropoffEl = document.getElementById("rate-dropoff-location");
+    const dateEl = document.getElementById("rate-date-time");
+    if (!pickupEl || !dropoffEl || !dateEl) {
+      // Not on the rating page; skip
+      return;
+    }
+
+    pickupEl.textContent = `${booking.start_lat.toFixed(
+      4
+    )}, ${booking.start_long.toFixed(4)}`;
+
+    dropoffEl.textContent = `${booking.end_lat.toFixed(
+      4
+    )}, ${booking.end_long.toFixed(4)}`;
+
+    dateEl.textContent = formatDateTime(booking.created_at);
+
+    const distance =
+      Math.sqrt(
+        Math.pow(booking.end_lat - booking.start_lat, 2) +
+          Math.pow(booking.end_long - booking.start_long, 2)
+      ) * 111;
+    document.getElementById("rate-distance").textContent =
+      distance.toFixed(2) + " km";
+
+    document.getElementById("rate-fare").textContent = formatCurrency(
+      booking.total_cost * 0.9
+    );
+    document.getElementById("rate-service-fee").textContent = formatCurrency(
+      booking.total_cost * 0.1
+    );
+    document.getElementById("rate-payment-method").textContent =
+      booking.payment_type || "—";
+    document.getElementById("rate-total-paid").textContent = formatCurrency(
+      booking.total_cost
+    );
+
+    if (driver && driver.first_name && driver.last_name) {
+      document.getElementById(
+        "rate-driver-name"
+      ).textContent = `${driver.first_name} ${driver.last_name}`;
+
+      const initials = generateInitials(driver.first_name, driver.last_name);
+      document.getElementById("rate-driver-avatar").textContent = initials;
+    } else {
+      document.getElementById("rate-driver-name").textContent =
+        "Driver not yet assigned";
+      document.getElementById("rate-driver-avatar").textContent = "—";
+    }
+
+    const container = document.querySelector(".rate-review-container");
+    if (container) {
+      container.setAttribute("data-booking-id", booking.booking_id);
+      container.setAttribute("data-driver-id", driver?.user_id || "");
+      container.setAttribute("data-passenger-id", booking.passenger_id);
+    }
+
+    if (review) {
+      displayExistingReview(review);
+    }
+
+    if (driver && driver.driver_id) {
+      updateDriverReviews(driver.driver_id);
+    }
+  }
+
+  function renderDriverReviews(summary) {
+    const summaryEl = document.getElementById("driver-rating-summary");
+    const panelMetaEl = document.getElementById("driver-reviews-meta");
+    const bodyEl = document.getElementById("driver-reviews-body");
+
+    if (!summaryEl || !panelMetaEl || !bodyEl) return;
+
+    const avg = summary?.averageRating;
+    const total = summary?.totalReviews || 0;
+    const reviews = Array.isArray(summary?.reviews) ? summary.reviews : [];
+
+    if (!avg || total === 0) {
+      summaryEl.textContent = "No reviews yet";
+      panelMetaEl.textContent = "No reviews yet";
+      bodyEl.innerHTML =
+        '<div class="empty-state">No reviews available for this driver yet.</div>';
+      return;
+    }
+
+    const avgText = `${avg.toFixed(1)} ★ (${total} review${
+      total === 1 ? "" : "s"
+    })`;
+    summaryEl.textContent = avgText;
+    panelMetaEl.textContent = avgText;
+
+    if (reviews.length === 0) {
+      bodyEl.innerHTML =
+        '<div class="empty-state">No reviews available for this driver yet.</div>';
+      return;
+    }
+
+    bodyEl.innerHTML = "";
+    reviews.forEach((r) => {
+      const item = document.createElement("div");
+      item.className = "review-item";
+      item.innerHTML = `
+        <div class="review-rating">
+          <span>${"★".repeat(r.rating || 0)}</span>
+          <span>${r.rating}</span>
+        </div>
+        <div class="review-meta">
+          <span>${new Date(r.created_at).toLocaleString()}</span>
+        </div>
+        <p class="review-comment">${
+          r.comment ? r.comment : "<em>No comment provided.</em>"
+        }</p>
+      `;
+      bodyEl.appendChild(item);
+    });
+  }
+
+  let driverReviewIntervalId = null;
+
+  async function updateDriverReviews(driverId) {
+    const summary = await fetchDriverReviewSummary(driverId);
+    if (summary) {
+      renderDriverReviews(summary);
+    }
+
+    if (driverReviewIntervalId) {
+      clearInterval(driverReviewIntervalId);
+    }
+    driverReviewIntervalId = setInterval(async () => {
+      const latest = await fetchDriverReviewSummary(driverId);
+      if (latest) {
+        renderDriverReviews(latest);
+      }
+    }, 15000);
+  }
+
+  function displayExistingReview(review) {
+    document.querySelectorAll(".star-btn").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    document
+      .querySelector(`.star-btn[data-rating="${review.rating}"]`)
+      ?.classList.add("active");
+
+    const commentField = document.getElementById("reviewComment");
+    if (commentField) {
+      commentField.value = review.comment || "";
+      updateCommentCounter();
+    }
+
+    const statusEl = document.getElementById("reviewStatus");
+    if (statusEl) {
+      statusEl.textContent = "Review already submitted";
+      statusEl.className = "status-message success";
+    }
+
+    const submitBtn = document.querySelector(".btn-submit-review");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Review Submitted";
+    }
+  }
+
+  function updateCommentCounter() {
+    const textarea = document.getElementById("reviewComment");
+    const counter = document.getElementById("commentCounter");
+    if (textarea && counter) {
+      counter.textContent = textarea.value.length + " / 500";
+    }
+  }
+
+  function setupStarRating() {
+    const starButtons = document.querySelectorAll(".star-btn");
+
+    starButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const rating = btn.getAttribute("data-rating");
+
+        starButtons.forEach((b) => b.classList.remove("active"));
+
+        starButtons.forEach((b) => {
+          if (parseInt(b.getAttribute("data-rating"), 10) <= parseInt(rating, 10)) {
+            b.classList.add("active");
+          }
+        });
+      });
+
+      btn.addEventListener("mouseover", () => {
+        const rating = btn.getAttribute("data-rating");
+        starButtons.forEach((b) => {
+          if (parseInt(b.getAttribute("data-rating"), 10) <= parseInt(rating, 10)) {
+            b.style.opacity = "0.7";
+          } else {
+            b.style.opacity = "1";
+          }
+        });
+      });
+    });
+
+    document
+      .querySelector(".star-container")
+      ?.addEventListener("mouseleave", () => {
+        starButtons.forEach((b) => (b.style.opacity = "1"));
+      });
+  }
+
+  function setupReviewSubmission() {
+    const submitBtn = document.querySelector(".btn-submit-review");
+    if (!submitBtn) return;
+
+    submitBtn.addEventListener("click", async () => {
+      const container = document.querySelector(".rate-review-container");
+      const bookingId = container.getAttribute("data-booking-id");
+      const passengerId = container.getAttribute("data-passenger-id");
+
+      const selectedRating = document.querySelector(".star-btn.active");
+      if (!selectedRating) {
+        alert("Please select a rating");
+        return;
+      }
+
+      const rating = selectedRating.getAttribute("data-rating");
+      const comment = document.getElementById("reviewComment").value;
+
+      const result = await submitReview(
+        bookingId,
+        passengerId,
+        rating,
+        comment
+      );
+
+      const statusEl = document.getElementById("reviewStatus");
+      if (result.success) {
+        statusEl.textContent = "Review submitted successfully.";
+        statusEl.className = "status-message success";
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Review Submitted";
+      } else {
+        statusEl.textContent = "Error: " + result.message;
+        statusEl.className = "status-message error";
+      }
+    });
+  }
+
+  function setupDriverReviewsPanel() {
+    const toggleBtn = document.getElementById("view-reviews-btn");
+    const panel = document.getElementById("driver-reviews-panel");
+
+    if (!toggleBtn || !panel) return;
+
+    toggleBtn.addEventListener("click", () => {
+      panel.classList.toggle("active");
+    });
+  }
+
+  function setupBackButton() {
+    const backBtn = document.querySelector('.btn-back[data-action="back"]');
+    if (backBtn) {
+      backBtn.addEventListener("click", () => {
+        if (window.navigateToShared) {
+          window.navigateToShared("landing-page.html");
+        } else {
+          window.location.href =
+            "/Corosa/public/shared/pages/landing-page.html";
+        }
+      });
+    }
+  }
+
+  function setupReportButton() {
+    const reportBtn = document.querySelector(".btn-report");
+    if (reportBtn) {
+      reportBtn.addEventListener("click", () => {
+        alert("Report issue functionality - coming soon");
+      });
+    }
+  }
+
+  async function initializeDatabaseView() {
+    const bookingId = getBookingId();
+
+    if (!bookingId) {
+      console.error("No booking ID provided");
+      const section = document.querySelector(".rate-review-section");
+      if (section) {
+        section.innerHTML =
+          '<p style="color: red;">Error: No booking information found.</p>';
+      }
+      return;
+    }
+
+    const rideData = await fetchRideDetails(bookingId);
+    if (rideData) {
+      displayRideDetails(rideData);
+    }
+
+    setupStarRating();
+
+    const commentField = document.getElementById("reviewComment");
+    if (commentField) {
+      commentField.addEventListener("input", updateCommentCounter);
+    }
+
+    setupReviewSubmission();
+    setupDriverReviewsPanel();
+    setupBackButton();
+    setupReportButton();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeDatabaseView);
+  } else {
+    initializeDatabaseView();
+  }
+})();

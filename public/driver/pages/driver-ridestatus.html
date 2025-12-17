@@ -286,6 +286,95 @@
         background: #dc2626;
       }
 
+      /* Confirmed Passengers Styles */
+      .confirmed-passenger-card {
+        background: var(--color-background);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-md);
+      }
+
+      .passenger-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+      }
+
+      .passenger-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--color-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-muted-foreground);
+        font-size: var(--font-size-base);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .passenger-details h4 {
+        font-size: var(--font-size-base);
+        margin-bottom: 2px;
+        font-weight: 600;
+      }
+
+      .passenger-details p {
+        font-size: var(--font-size-xs);
+        color: var(--color-muted-foreground);
+        margin: 0;
+      }
+
+      .passenger-actions {
+        display: flex;
+        gap: var(--spacing-sm);
+      }
+
+      .btn-action {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-lg);
+        transition: all 0.2s;
+      }
+
+      .btn-action-accept {
+        background: #10b981;
+        color: white;
+      }
+
+      .btn-action-accept:hover {
+        background: #059669;
+      }
+
+      .btn-action-decline {
+        background: #ef4444;
+        color: white;
+      }
+
+      .btn-action-decline:hover {
+        background: #dc2626;
+      }
+
+      .no-passengers-message {
+        text-align: center;
+        padding: var(--spacing-lg);
+        color: var(--color-muted-foreground);
+        font-style: italic;
+      }
+
       @media (max-width: 768px) {
         .stages {
           flex-direction: column;
@@ -395,7 +484,11 @@
         </div>
 
         <!-- Pending Ride Requests Section -->
-        <div class="booking-details" id="pending-requests-section" style="display: none;">
+        <div
+          class="booking-details"
+          id="pending-requests-section"
+          style="display: none"
+        >
           <h2>Pending Ride Requests</h2>
           <p class="booking-subtitle">
             Review and respond to passenger ride requests
@@ -407,11 +500,19 @@
 
         <div class="booking-details">
           <h2>Booking Details</h2>
-          <p class="booking-subtitle">
-            All set up. Sit comfortably. Thank you for choosing Corosa!
-          </p>
+          <p class="booking-subtitle">Confirmed passengers on this ride</p>
 
-          <div class="driver-info">
+          <!-- Confirmed Passengers List -->
+          <div id="confirmed-passengers-container">
+            <!-- Confirmed passengers will be loaded here dynamically -->
+          </div>
+
+          <!-- Fallback: Driver Info (shown when no confirmed passengers yet) -->
+          <div
+            id="driver-info-section"
+            class="driver-info"
+            style="display: none"
+          >
             <div class="driver-avatar">MV</div>
             <div class="driver-details">
               <h3>Marvin Valdez</h3>
@@ -420,10 +521,12 @@
           </div>
 
           <div
+            id="trip-details-section"
             style="
               background: white;
               border-radius: var(--radius-md);
               padding: 1rem;
+              display: none;
             "
           >
             <div class="info-row">
@@ -436,7 +539,9 @@
             </div>
           </div>
 
-          <p class="date-text">October 18, 2025</p>
+          <p class="date-text" id="trip-date-section" style="display: none">
+            October 18, 2025
+          </p>
 
           <button class="btn-status" id="update-status-btn">
             Update Status
