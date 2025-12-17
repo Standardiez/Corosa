@@ -181,9 +181,7 @@ router.get("/rides/:driverId/:tripId", async (req, res) => {
   try {
     const { driverId, tripId } = req.params;
 
-    console.log(
-      `[GET /api/driver/rides/${driverId}/${tripId}] Fetching trip`
-    );
+    console.log(`[GET /api/driver/rides/${driverId}/${tripId}] Fetching trip`);
 
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST || "localhost",
@@ -469,7 +467,9 @@ router.delete("/rides/:tripId", async (req, res) => {
         });
       }
 
-      console.log(`[DELETE /api/driver/rides/${tripId}] Successfully cancelled`);
+      console.log(
+        `[DELETE /api/driver/rides/${tripId}] Successfully cancelled`
+      );
 
       res.status(200).json({
         success: true,

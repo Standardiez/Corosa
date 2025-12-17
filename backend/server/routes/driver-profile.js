@@ -183,7 +183,9 @@ router.put("/profile/:driverId", async (req, res) => {
       // Commit transaction
       await connection.commit();
 
-      console.log(`[PUT /api/driver/profile/${driverId}] Profile updated successfully`);
+      console.log(
+        `[PUT /api/driver/profile/${driverId}] Profile updated successfully`
+      );
 
       res.status(200).json({
         success: true,

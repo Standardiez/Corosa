@@ -73,19 +73,25 @@ async function getDriverId() {
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
       let errorMessage = `Failed to get driver ID: HTTP ${response.status}`;
-      
+
       try {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
         } else {
           const text = await response.text();
-          console.error("[Driver Settings] Non-JSON error from get-driver-id:", text);
+          console.error(
+            "[Driver Settings] Non-JSON error from get-driver-id:",
+            text
+          );
         }
       } catch (parseError) {
-        console.error("[Driver Settings] Error parsing get-driver-id error response:", parseError);
+        console.error(
+          "[Driver Settings] Error parsing get-driver-id error response:",
+          parseError
+        );
       }
-      
+
       throw new Error(errorMessage);
     }
 
@@ -108,10 +114,7 @@ async function getDriverId() {
  */
 async function loadProfile() {
   try {
-    console.log(
-      "[Driver Settings] Fetching profile for driver",
-      driverId
-    );
+    console.log("[Driver Settings] Fetching profile for driver", driverId);
 
     const response = await fetch(
       `http://localhost:3000/api/driver/profile/${driverId}`
@@ -174,7 +177,8 @@ function populateForm() {
 
   const vehicleYearInput = document.getElementById("vehicle-year");
   if (vehicleYearInput) {
-    vehicleYearInput.value = currentProfile.vehicle_year || new Date().getFullYear();
+    vehicleYearInput.value =
+      currentProfile.vehicle_year || new Date().getFullYear();
   }
 
   const seatCapacityInput = document.getElementById("seat-capacity");

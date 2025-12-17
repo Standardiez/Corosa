@@ -61,19 +61,25 @@ async function getDriverId() {
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
       let errorMessage = `Failed to get driver ID: HTTP ${response.status}`;
-      
+
       try {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
         } else {
           const text = await response.text();
-          console.error("[Driver History] Non-JSON error from get-driver-id:", text);
+          console.error(
+            "[Driver History] Non-JSON error from get-driver-id:",
+            text
+          );
         }
       } catch (parseError) {
-        console.error("[Driver History] Error parsing get-driver-id error response:", parseError);
+        console.error(
+          "[Driver History] Error parsing get-driver-id error response:",
+          parseError
+        );
       }
-      
+
       throw new Error(errorMessage);
     }
 
@@ -252,7 +258,9 @@ function displayTripsModal() {
             </div>
             <div class="info-row">
               <span>Status:</span>
-              <span class="status-badge">${capitalizeStatus(trip.ride_status)}</span>
+              <span class="status-badge">${capitalizeStatus(
+                trip.ride_status
+              )}</span>
             </div>
           </div>
         </div>

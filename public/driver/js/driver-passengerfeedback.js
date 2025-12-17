@@ -68,10 +68,16 @@ async function getDriverId() {
           errorMessage = errorData.message || errorMessage;
         } else {
           const text = await response.text();
-          console.error("[Driver Feedback] Non-JSON error from get-driver-id:", text);
+          console.error(
+            "[Driver Feedback] Non-JSON error from get-driver-id:",
+            text
+          );
         }
       } catch (parseError) {
-        console.error("[Driver Feedback] Error parsing get-driver-id error response:", parseError);
+        console.error(
+          "[Driver Feedback] Error parsing get-driver-id error response:",
+          parseError
+        );
       }
 
       throw new Error(errorMessage);
@@ -119,7 +125,10 @@ async function loadReviews() {
           console.error("[Driver Feedback] Non-JSON error response:", text);
         }
       } catch (parseError) {
-        console.error("[Driver Feedback] Error parsing error response:", parseError);
+        console.error(
+          "[Driver Feedback] Error parsing error response:",
+          parseError
+        );
       }
 
       throw new Error(errorMessage);
@@ -136,7 +145,11 @@ async function loadReviews() {
     console.log("[Driver Feedback] Fetched", allReviews.length, "reviews");
 
     // Update stats
-    updateStats(result.totalReviews, result.averageRating, result.positivePercent);
+    updateStats(
+      result.totalReviews,
+      result.averageRating,
+      result.positivePercent
+    );
 
     // Display reviews
     displayReviews(allReviews);
@@ -191,7 +204,9 @@ function displayReviews(reviews) {
     const firstName = review.first_name || "Passenger";
     const lastName = review.last_name || "";
     const fullName = `${firstName} ${lastName}`.trim();
-    const initials = `${firstName.charAt(0)}${lastName.charAt(0) || ""}`.toUpperCase();
+    const initials = `${firstName.charAt(0)}${
+      lastName.charAt(0) || ""
+    }`.toUpperCase();
 
     const date = new Date(review.created_at);
     const formattedDate = date.toLocaleDateString("en-US", {
@@ -201,7 +216,9 @@ function displayReviews(reviews) {
     });
 
     const paymentInfo = review.payment
-      ? `<div class="payment-info"><strong>Payment:</strong> ₱${parseFloat(review.payment).toFixed(2)} (${review.payment_type})</div>`
+      ? `<div class="payment-info"><strong>Payment:</strong> ₱${parseFloat(
+          review.payment
+        ).toFixed(2)} (${review.payment_type})</div>`
       : "";
 
     const comment = review.comment

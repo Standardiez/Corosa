@@ -128,9 +128,7 @@ class DriverDashboard {
         throw new Error("Driver ID not available");
       }
 
-      console.log(
-        `[Dashboard] Fetching stats for driver ${this.driverId}...`
-      );
+      console.log(`[Dashboard] Fetching stats for driver ${this.driverId}...`);
 
       const response = await fetch(
         `http://localhost:3000/api/driver/stats/${this.driverId}`
@@ -206,9 +204,7 @@ class DriverDashboard {
       if (data.success && data.rides && data.rides.length > 0) {
         // Get most recent ride that's not completed or cancelled
         const activeRide = data.rides.find(
-          (r) =>
-            r.ride_status !== "completed" &&
-            r.ride_status !== "cancelled"
+          (r) => r.ride_status !== "completed" && r.ride_status !== "cancelled"
         );
 
         if (activeRide) {

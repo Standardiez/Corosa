@@ -72,8 +72,7 @@ router.post("/", async (req, res) => {
       if (!driverId) {
         return res.status(400).json({
           success: false,
-          message:
-            "No driver assigned to this booking. Cannot submit review.",
+          message: "No driver assigned to this booking. Cannot submit review.",
         });
       }
 

@@ -21,8 +21,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!currentTripId) {
     console.error("[Driver Ride Status] No trip ID found");
-    console.log("[Driver Ride Status] sessionStorage:", sessionStorage.getItem("lastCreatedTripId"));
-    console.log("[Driver Ride Status] URL params:", new URLSearchParams(window.location.search).toString());
+    console.log(
+      "[Driver Ride Status] sessionStorage:",
+      sessionStorage.getItem("lastCreatedTripId")
+    );
+    console.log(
+      "[Driver Ride Status] URL params:",
+      new URLSearchParams(window.location.search).toString()
+    );
     showError("Ride ID not found. Returning to dashboard...");
     setTimeout(() => {
       window.location.href = "driver-Homepage.html";
@@ -31,7 +37,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   console.log("[Driver Ride Status] Loaded with tripId:", currentTripId);
-  console.log("[Driver Ride Status] userData in localStorage:", localStorage.getItem("userData") ? "EXISTS" : "MISSING");
+  console.log(
+    "[Driver Ride Status] userData in localStorage:",
+    localStorage.getItem("userData") ? "EXISTS" : "MISSING"
+  );
 
   // Disable button until data loads
   const updateBtn = document.getElementById("update-status-btn");
@@ -67,11 +76,9 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("cancel-ride-btn")
     .addEventListener("click", handleCancelRide);
-  document
-    .getElementById("back-btn")
-    .addEventListener("click", function () {
-      window.location.href = "driver-Homepage.html";
-    });
+  document.getElementById("back-btn").addEventListener("click", function () {
+    window.location.href = "driver-Homepage.html";
+  });
 });
 
 /**
@@ -105,19 +112,25 @@ async function getDriverId() {
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
       let errorMessage = `Failed to get driver ID: HTTP ${response.status}`;
-      
+
       try {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
         } else {
           const text = await response.text();
-          console.error("[Driver Ride Status] Non-JSON error from get-driver-id:", text);
+          console.error(
+            "[Driver Ride Status] Non-JSON error from get-driver-id:",
+            text
+          );
         }
       } catch (parseError) {
-        console.error("[Driver Ride Status] Error parsing get-driver-id error response:", parseError);
+        console.error(
+          "[Driver Ride Status] Error parsing get-driver-id error response:",
+          parseError
+        );
       }
-      
+
       throw new Error(errorMessage);
     }
 
@@ -140,7 +153,9 @@ async function getDriverId() {
  */
 async function loadRideStatus() {
   if (isLoading) {
-    console.log("[Driver Ride Status] Already loading, skipping duplicate request");
+    console.log(
+      "[Driver Ride Status] Already loading, skipping duplicate request"
+    );
     return;
   }
 
@@ -164,7 +179,7 @@ async function loadRideStatus() {
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
       let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-      
+
       try {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
@@ -175,9 +190,12 @@ async function loadRideStatus() {
           errorMessage = "Server returned an error (check console for details)";
         }
       } catch (parseError) {
-        console.error("[Driver Ride Status] Error parsing error response:", parseError);
+        console.error(
+          "[Driver Ride Status] Error parsing error response:",
+          parseError
+        );
       }
-      
+
       throw new Error(errorMessage);
     }
 
@@ -229,10 +247,10 @@ function updateRideDisplay() {
   // Status mapping for 4-stage flow
   const statusMap = {
     available: 0,
-    on_the_way: 1,        // Stage 1: Driver on the Way
-    in_progress: 2,       // Stage 2: Ride In Progress
-    arrived: 3,           // Stage 3: Arrived at Destination
-    completed: 4,         // Stage 4: Completed
+    on_the_way: 1, // Stage 1: Driver on the Way
+    in_progress: 2, // Stage 2: Ride In Progress
+    arrived: 3, // Stage 3: Arrived at Destination
+    completed: 4, // Stage 4: Completed
   };
 
   const currentStage = statusMap[status] || 0;
@@ -250,7 +268,8 @@ function updateRideDisplay() {
       el.classList.remove("active");
       const circle = el.querySelector(".stage-circle");
       if (circle && !circle.querySelector("i")) {
-        circle.innerHTML = '<i class="bx bx-check" style="font-size: 1.25rem"></i>';
+        circle.innerHTML =
+          '<i class="bx bx-check" style="font-size: 1.25rem"></i>';
       }
     } else if (stageNum === currentStage) {
       // Current stage - highlight as active
@@ -310,9 +329,9 @@ function updateRideInfo() {
     infoContainer.innerHTML = `
       <div class="info-item">
         <label>Status</label>
-        <span class="status-badge ${currentRide.ride_status}">${capitalizeStatus(
+        <span class="status-badge ${
           currentRide.ride_status
-        )}</span>
+        }">${capitalizeStatus(currentRide.ride_status)}</span>
       </div>
       <div class="info-item">
         <label>Available Seats</label>
@@ -337,7 +356,9 @@ async function handleStatusUpdate() {
       isLoading,
     });
 
-    showError("Ride data not loaded yet. Please wait a moment and try again...");
+    showError(
+      "Ride data not loaded yet. Please wait a moment and try again..."
+    );
 
     // Force reload ride data
     if (!isLoading) {
@@ -358,7 +379,7 @@ async function handleStatusUpdate() {
 
   // Determine next status - follow the strict 4-stage progression
   let nextStatus;
-  
+
   if (currentStatus === "available") {
     nextStatus = "on_the_way";
   } else if (currentStatus === "on_the_way") {
@@ -380,7 +401,8 @@ async function handleStatusUpdate() {
     const updateBtn = document.getElementById("update-status-btn");
     if (updateBtn) {
       updateBtn.disabled = true;
-      updateBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Updating...';
+      updateBtn.innerHTML =
+        '<i class="bx bx-loader-alt bx-spin"></i> Updating...';
     }
 
     const response = await fetch(
@@ -405,10 +427,10 @@ async function handleStatusUpdate() {
     );
 
     // Show human-readable success message from backend
-    const successMessage = result.humanReadable 
+    const successMessage = result.humanReadable
       ? `Ride status updated: ${result.humanReadable}`
       : result.message || "Status updated successfully";
-    
+
     showSuccess(successMessage);
 
     // Update local ride object
@@ -440,7 +462,9 @@ async function handleStatusUpdate() {
     const updateBtn = document.getElementById("update-status-btn");
     if (updateBtn) {
       updateBtn.disabled = false;
-      updateBtn.textContent = document.getElementById("update-status-btn").textContent || "Update Status";
+      updateBtn.textContent =
+        document.getElementById("update-status-btn").textContent ||
+        "Update Status";
     }
 
     // Reload ride data to get fresh state from backend
