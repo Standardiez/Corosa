@@ -1,377 +1,1062 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ride History — Corosa</title>
-    <link rel="stylesheet" href="../../styles/unified-driver.css" />
-    <link
-      href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      /* Page-specific overrides */
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ride History — Corosa</title>
+  <link href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css" rel="stylesheet" />
+  <style>
+    /* =========================================
+         1. ROOT VARIABLES & THEME SETUP
+         ========================================= */
+    :root {
+      /* --- Color Palette (Red Theme) --- */
+      /* Primary Red Brand Colors */
+      --primary: #d32f2f;
+      /* Standard Red */
+      --primary-hover: #b71c1c;
+      /* Darker Red for hovers */
+      --primary-light: #ffcdd2;
+      /* Light Red for backgrounds/accents */
+      --primary-foreground: #ffffff;
+      /* White text on red backgrounds */
+
+      /* Gradients (Red-based) */
+      --gradient-primary: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+      --gradient-hover: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
+
+      /* Status Colors */
+      --success: #2e7d32;
+      /* Green */
+      --warning: #ed6c02;
+      /* Orange */
+      --info: #0288d1;
+      /* Blue */
+      --error: #d32f2f;
+      /* Red (same as primary in this theme) */
+
+      /* Neutrals & Backgrounds */
+      --background: #f8f9fa;
+      /* Light Gray Page Background */
+      --background-card: #ffffff;
+      /* White Card Background */
+      --border-color: #e0e0e0;
+      /* Light Border */
+
+      --text-main: #212121;
+      /* Dark Gray/Black Text */
+      --text-secondary: #757575;
+      /* Medium Gray Text */
+      --text-muted: #9e9e9e;
+      /* Light Gray Text */
+
+      /* --- Spacing System (Fixed) --- */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-xxl: 48px;
+
+      /* --- Border Radius --- */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      /* --- Shadows --- */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+      /* --- Layout --- */
+      --sidebar-width: 260px;
+      --sidebar-width-collapsed: 80px;
+      --header-height: 64px;
+    }
+
+    /* =========================================
+         2. RESET & BASE STYLES
+         ========================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    /* =========================================
+         3. LAYOUT & CONTAINERS
+         ========================================= */
+    /* Main wrapper for dashboard pages */
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: var(--spacing-lg);
+      padding-top: calc(var(--header-height) + var(--spacing-lg));
+      /* Clear fixed header */
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Centered Container (for non-dashboard pages like Registration) */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-md);
+    }
+
+    .container-narrow {
+      max-width: 800px;
+    }
+
+    /* =========================================
+         4. HEADER & NAVIGATION
+         ========================================= */
+    .header {
+      height: var(--header-height);
+      background-color: var(--background-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing-lg);
+      position: fixed;
+      top: 0;
+      left: 0;
+      /* Or left: var(--sidebar-width) if header doesn't span full width */
+      right: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header .logo {
+      height: 32px;
+      width: auto;
+    }
+
+    /* =========================================
+         5. SIDEBAR (Red Themed)
+         ========================================= */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--background-card);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 90;
+      padding-top: var(--header-height);
+      transition: width 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-nav {
+      padding: var(--spacing-md);
+      flex: 1;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      color: var(--text-secondary);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-xs);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-link i {
+      font-size: 1.25rem;
+      min-width: 24px;
+    }
+
+    /* Active State - Red Theme */
+    .sidebar-link.active,
+    .sidebar-link:hover {
+      background-color: var(--primary-light);
+      /* Light red background */
+      color: var(--primary);
+      /* Red text */
+    }
+
+    /* Badge in sidebar */
+    .sidebar-link .badge {
+      margin-left: auto;
+      background-color: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+    }
+
+    /* =========================================
+         6. CARDS & SECTIONS
+         ========================================= */
+    .card {
+      background: var(--background-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--spacing-lg);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* =========================================
+         7. BUTTONS (Red Theme)
+         ========================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    /* Primary Button - Red Gradient */
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: 0 2px 4px rgba(211, 47, 47, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--gradient-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(211, 47, 47, 0.4);
+    }
+
+    /* Secondary/Outline Button */
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-light);
+    }
+
+    /* Ghost Button */
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text-main);
+    }
+
+    /* =========================================
+         8. FORMS & INPUTS
+         ========================================= */
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      background-color: var(--background-card);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+      /* Red glow */
+    }
+
+    /* =========================================
+         9. PAGE SPECIFIC: LISTS & REQUESTS
+         ========================================= */
+    /* Request Cards (e.g. for driver-requests.html) */
+    .request-list-item {
+      display: flex;
+      background: var(--background-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-md);
+      overflow: hidden;
+    }
+
+    .request-info {
+      flex: 1;
+      padding: var(--spacing-md);
+    }
+
+    .request-actions {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--spacing-md);
+      border-left: 1px solid var(--border-color);
+      background: #fafafa;
+      gap: var(--spacing-sm);
+    }
+
+    /* =========================================
+         10. PAGE SPECIFIC: STATUS & PROGRESS
+         ========================================= */
+    /* Progress Bar (e.g. for driver-ridestatus.html) */
+    .progress-track {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      margin: var(--spacing-xl) 0;
+    }
+
+    .progress-track::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--border-color);
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .progress-step {
+      position: relative;
+      z-index: 2;
+      background: var(--background-card);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--text-secondary);
+    }
+
+    /* Active/Completed Step - Red Theme */
+    .progress-step.active,
+    .progress-step.completed {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    /* =========================================
+         11. UTILITIES & RESPONSIVE
+         ========================================= */
+    .text-center {
+      text-align: center;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .mt-lg {
+      margin-top: var(--spacing-lg);
+    }
+
+    .mb-lg {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        padding: var(--spacing-md);
+        padding-top: calc(var(--header-height) + var(--spacing-md));
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .request-list-item {
+        flex-direction: column;
+      }
+
+      .request-actions {
+        flex-direction: row;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+      }
+    }
+
+    /* =========================================
+         12. PAGE SPECIFIC OVERRIDES (Ride History)
+         ========================================= */
+    .history-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: calc(var(--header-height) + var(--spacing-xl)) var(--spacing-lg) var(--spacing-xxl);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
+      flex-wrap: wrap;
+      background: var(--background-card);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border: 2px solid var(--border-color);
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-secondary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .filter-btn i {
+      font-size: 1.1rem;
+    }
+
+    .filter-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--primary-light);
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: -1;
+    }
+
+    .filter-btn:hover::before {
+      transform: translateX(0);
+    }
+
+    .filter-btn.active {
+      background: var(--gradient-primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(211, 47, 47, 0.25);
+    }
+
+    .filter-btn:hover:not(.active) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .history-card {
+      background: var(--background-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .history-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .history-card:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .history-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 2px solid var(--background);
+    }
+
+    .card-passenger {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .passenger-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+      flex-shrink: 0;
+    }
+
+    .passenger-info h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 4px 0;
+      line-height: 1.2;
+    }
+
+    .passenger-info p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .passenger-info p i {
+      font-size: 0.85rem;
+    }
+
+    .card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      white-space: nowrap;
+    }
+
+    .status-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    /* Status Colors */
+    .status-completed {
+      color: var(--success);
+      background: #d1fae5;
+    }
+
+    .status-cancelled {
+      color: var(--error);
+      background: #fee2e2;
+    }
+
+    .status-icon.completed {
+      background: var(--success);
+      color: white;
+    }
+
+    .status-icon.cancelled {
+      background: var(--error);
+      color: white;
+    }
+
+    .card-body {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .route-container {
+      background: var(--background);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .route {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-sm);
+      font-size: 0.95rem;
+    }
+
+    .route:last-child {
+      margin-bottom: 0;
+    }
+
+    .route i {
+      font-size: 1.25rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .location {
+      color: var(--text-main);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .trip-details {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      background: var(--background);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .detail-item {
+      text-align: center;
+      padding: var(--spacing-sm);
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .card-footer {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+
+    .card-footer button,
+    .card-footer a {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .rating-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .star {
+      color: #fbbf24;
+      font-size: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xxl) var(--spacing-md);
+      color: var(--text-secondary);
+      background: var(--background-card);
+      border-radius: var(--radius-lg);
+      border: 2px dashed var(--border-color);
+    }
+
+    .empty-state i {
+      font-size: 64px;
+      color: var(--text-muted);
+      margin-bottom: var(--spacing-lg);
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
       .history-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding-top: var(--spacing-lg);
+        padding: calc(var(--header-height) + var(--spacing-md)) var(--spacing-md) var(--spacing-lg);
+      }
+
+      .page-title {
+        font-size: 1.5rem;
       }
 
       .filter-bar {
-        display: flex;
         gap: var(--spacing-sm);
-        margin-bottom: var(--spacing-lg);
-        flex-wrap: wrap;
+        padding: var(--spacing-sm);
       }
 
       .filter-btn {
-        padding: 8px 16px;
-        border: 1px solid var(--border-color);
-        background: var(--background-card);
-        border-radius: var(--radius-md);
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        color: var(--text-secondary);
-      }
-
-      .filter-btn.active {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-      }
-
-      .filter-btn:hover:not(.active) {
-        border-color: var(--primary);
-        color: var(--primary);
-      }
-
-      .history-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-md);
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: auto;
       }
 
       .history-card {
-        background: var(--background-card);
-        border-radius: var(--radius-lg);
         padding: var(--spacing-md);
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-        transition: all 0.2s;
-      }
-
-      .history-card:hover {
-        box-shadow: var(--shadow-md);
-        border-color: var(--primary-light);
       }
 
       .card-header {
-        display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         align-items: flex-start;
-        margin-bottom: var(--spacing-sm);
-      }
-
-      .card-passenger {
-        display: flex;
-        align-items: center;
         gap: var(--spacing-md);
       }
 
-      .passenger-avatar {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: var(--gradient-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 1rem;
-      }
-
-      .passenger-info h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--text-main);
-        margin: 0;
-      }
-
-      .passenger-info p {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        margin: 2px 0 0 0;
-      }
-
       .card-status {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-        font-weight: 600;
+        align-self: flex-start;
       }
 
-      .status-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-      }
-
-      /* Status Colors */
-      .status-completed { color: var(--success); }
-      .status-cancelled { color: var(--error); }
-
-      .status-icon.completed {
-        background: #d1fae5;
-        color: var(--success);
-      }
-
-      .status-icon.cancelled {
-        background: #fee2e2;
-        color: var(--error);
-      }
-
-      .card-body {
-        margin-bottom: var(--spacing-md);
-      }
-
-      .route {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
-        margin-bottom: 8px;
-        font-size: 0.9rem;
-      }
-
-      .location {
-        color: var(--text-main);
+      .passenger-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1rem;
       }
 
       .trip-details {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: var(--spacing-sm);
-        padding-top: var(--spacing-md);
-        border-top: 1px solid var(--border-color);
-        margin-bottom: var(--spacing-md);
       }
 
       .detail-item {
-        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        padding: var(--spacing-sm);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .detail-item:last-child {
+        border-bottom: none;
       }
 
       .detail-label {
-        font-size: 0.75rem;
-        color: var(--text-secondary);
-        margin-bottom: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      .detail-value {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--text-main);
+        margin-bottom: 0;
       }
 
       .card-footer {
-        display: flex;
-        gap: var(--spacing-sm); /* Tighter gap for buttons */
+        flex-direction: column;
+        gap: var(--spacing-sm);
       }
 
-      .card-footer button, .card-footer a {
-        flex: 1;
-        text-align: center;
-        text-decoration: none;
+      .card-footer button,
+      .card-footer a {
+        min-width: auto;
+        width: 100%;
       }
+    }
+  </style>
+</head>
 
-      .rating-display {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
+<body>
+  <header class="header">
+    <div class="container header-content"
+      style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+      <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
+      <nav class="nav header-nav" style="display: flex; gap: 8px;">
+        <a class="btn btn-ghost" href="driver-passengerfeedback.html">
+          <i class='bx bx-star'></i> My Reviews
+        </a>
+        <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
+      </nav>
+    </div>
+  </header>
 
-      .star {
-        color: var(--warning);
-        font-size: 14px;
-      }
-      
-      .empty-state {
-        text-align: center;
-        padding: var(--spacing-xxl) var(--spacing-md);
-        color: var(--text-secondary);
-      }
+  <main class="container history-container">
+    <div class="page-header">
+      <h1 class="page-title">Ride History</h1>
+      <p class="page-subtitle">View and manage your completed and cancelled rides</p>
+    </div>
 
-      .empty-state i {
-        font-size: 48px;
-        color: var(--text-muted);
-        margin-bottom: var(--spacing-md);
-      }
-    </style>
-  </head>
-  <body>
-    <header class="header">
-      <div class="container header-content" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-        <img
-          src="../../assets/corosa-logo.png"
-          alt="Corosa Logo"
-          class="logo"
-        />
-        <nav class="nav header-nav" style="display: flex; gap: 8px;">
-          <a class="btn btn-ghost" href="driver-passengerfeedback.html">
-            <i class='bx bx-star'></i> My Reviews
-          </a>
-          <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
-        </nav>
-      </div>
-    </header>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterHistory('all')">
+        <i class='bx bx-list-ul'></i> All Rides
+      </button>
+      <button class="filter-btn" onclick="filterHistory('completed')">
+        <i class='bx bx-check-circle'></i> Completed
+      </button>
+      <button class="filter-btn" onclick="filterHistory('cancelled')">
+        <i class='bx bx-x-circle'></i> Cancelled
+      </button>
+    </div>
 
-    <main class="container history-container">
-      <h1 style="margin-bottom: var(--spacing-lg); color: var(--text-main);">Ride History</h1>
+    <div class="history-list" id="historyList">
+    </div>
+  </main>
 
-      <div class="filter-bar">
-        <button class="filter-btn active" onclick="filterHistory('all')">
-          All Rides
-        </button>
-        <button class="filter-btn" onclick="filterHistory('completed')">
-          Completed
-        </button>
-        <button class="filter-btn" onclick="filterHistory('cancelled')">
-          Cancelled
-        </button>
-      </div>
+  <script>
+    // Global variables
+    let rideHistory = [];
+    let currentFilter = "all";
+    let isLoading = false;
 
-      <div class="history-list" id="historyList">
-        </div>
-    </main>
+    /**
+     * Fetch ride history from the database
+     */
+    async function fetchRideHistory() {
+      try {
+        isLoading = true;
+        showLoadingState();
 
-    <script>
-      // UPDATED SAMPLE DATA: Added 'feedback_id' to connect to specific reviews
-      const sampleHistory = [
-        {
-          id: 1,
-          passenger: "Sarah Johnson",
-          initials: "SJ",
-          from: "123 Main Street",
-          to: "Downtown Station",
-          date: "2024-01-15",
-          time: "2:30 PM",
-          distance: "3.2 km",
-          duration: "12 min",
-          fare: "₱85.00",
-          status: "completed",
-          rating: 5,
-          feedback_id: "review-1" // Links to ID in feedback page
-        },
-        {
-          id: 2,
-          passenger: "Mike Chen",
-          initials: "MC",
-          from: "456 Business Ave",
-          to: "Shopping Mall",
-          date: "2024-01-14",
-          time: "10:15 AM",
-          distance: "5.1 km",
-          duration: "18 min",
-          fare: "₱120.00",
-          status: "completed",
-          rating: 4,
-          feedback_id: "review-2" // Links to ID in feedback page
-        },
-        {
-          id: 3,
-          passenger: "Emma Wilson",
-          initials: "EW",
-          from: "789 Park Lane",
-          to: "Airport Terminal 3",
-          date: "2024-01-13",
-          time: "6:45 PM",
-          distance: "18.5 km",
-          duration: "35 min",
-          fare: "₱425.00",
-          status: "completed",
-          rating: 5,
-          feedback_id: null // No written feedback
-        },
-        {
-          id: 4,
-          passenger: "John Davis",
-          initials: "JD",
-          from: "Coffee Shop Downtown",
-          to: "University Campus",
-          date: "2024-01-12",
-          time: "11:20 AM",
-          distance: "4.8 km",
-          duration: "16 min",
-          fare: "₱107.50",
-          status: "cancelled",
-          rating: null,
-          feedback_id: null
-        },
-      ];
+        // Get user ID from session/localStorage
+        const userData = JSON.parse(localStorage.getItem('userData') || sessionStorage.getItem('userData') || '{}');
+        const userId = userData.userId || userData.user_id;
 
-      let currentFilter = "all";
-
-      function renderHistory() {
-        const historyList = document.getElementById("historyList");
-        historyList.innerHTML = "";
-
-        const filtered = sampleHistory.filter((ride) => {
-          if (currentFilter === "all") return true;
-          if (currentFilter === "completed") return ride.status === "completed";
-          if (currentFilter === "cancelled") return ride.status === "cancelled";
-          return true;
-        });
-
-        if (filtered.length === 0) {
-          historyList.innerHTML = `
-          <div class="empty-state">
-            <i class='bx bx-inbox'></i>
-            <p>No rides found</p>
-          </div>
-        `;
+        if (!userId) {
+          console.error('User ID not found in session');
+          showErrorState('Please log in to view your ride history');
           return;
         }
 
-        filtered.forEach((ride) => {
-          const statusClass = ride.status === "completed" ? "completed" : "cancelled";
-          const statusIcon = ride.status === "completed" ? "✓" : "✕";
-          const statusText = ride.status === "completed" ? "Completed" : "Cancelled";
-          const statusTextClass = ride.status === "completed" ? "status-completed" : "status-cancelled";
+        const response = await fetch(`../../../backend/api/driver/fetch-ride-history.php?userId=${userId}`);
+        const data = await response.json();
 
-          // Generate Star Display
-          const ratingHtml = ride.rating
-            ? `
+        if (data.success) {
+          rideHistory = data.history || [];
+          renderHistory();
+        } else {
+          console.error('API Error:', data.message);
+          showErrorState(data.message || 'Failed to load ride history');
+        }
+      } catch (error) {
+        console.error('Error fetching ride history:', error);
+        showErrorState('Unable to connect to the server. Please try again later.');
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    /**
+     * Show loading state while fetching data
+     */
+    function showLoadingState() {
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = `
+        <div class="empty-state">
+          <i class='bx bx-loader-alt bx-spin' style="font-size: 64px;"></i>
+          <h3>Loading your ride history...</h3>
+          <p>Please wait while we fetch your trips</p>
+        </div>
+      `;
+    }
+
+    /**
+     * Show error state when fetch fails
+     */
+    function showErrorState(message) {
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = `
+        <div class="empty-state">
+          <i class='bx bx-error-circle' style="font-size: 64px; color: var(--error);"></i>
+          <h3>Unable to Load History</h3>
+          <p>${message}</p>
+          <button class="btn btn-primary" onclick="fetchRideHistory()" style="margin-top: var(--spacing-md);">
+            <i class='bx bx-refresh'></i> Retry
+          </button>
+        </div>
+      `;
+    }
+
+    /**
+     * Render ride history cards
+     */
+    function renderHistory() {
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = "";
+
+      const filtered = rideHistory.filter((ride) => {
+        if (currentFilter === "all") return true;
+        if (currentFilter === "completed") return ride.status === "completed";
+        if (currentFilter === "cancelled") return ride.status === "cancelled";
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        const emptyMessage = currentFilter === "all"
+          ? "No rides yet"
+          : currentFilter === "completed"
+            ? "No completed rides"
+            : "No cancelled rides";
+        historyList.innerHTML = `
+          <div class="empty-state">
+            <i class='bx bx-inbox'></i>
+            <h3>${emptyMessage}</h3>
+            <p>Your ride history will appear here once you complete trips</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach((ride) => {
+        const statusClass = ride.status === "completed" ? "completed" : "cancelled";
+        const statusIcon = ride.status === "completed" ? "✓" : "✕";
+        const statusText = ride.status === "completed" ? "Completed" : "Cancelled";
+        const statusTextClass = ride.status === "completed" ? "status-completed" : "status-cancelled";
+
+        // Generate Star Display
+        const ratingHtml = ride.rating
+          ? `
           <div class="rating-display">
             ${Array(ride.rating).fill(0).map(() => '<span class="star">★</span>').join("")}
           </div>
         ` : "";
 
-          // LOGIC: Check if there is feedback to link to
-          // If feedback_id exists, create a link to the feedback page
-          const feedbackButton = ride.feedback_id 
-            ? `<a href="driver-passengerfeedback.html#${ride.feedback_id}" class="btn btn-outline" style="font-size: 0.9rem;">
-                 <i class='bx bx-message-detail'></i> Read Review
+        // LOGIC: Check if there is feedback to link to
+        // If feedback_id exists, create a link to the feedback page
+        const feedbackButton = ride.feedback_id
+          ? `<a href="driver-passengerfeedback.html#${ride.feedback_id}" class="btn btn-outline" style="font-size: 0.9rem;">
+                  <i class='bx bx-message-detail'></i> Read Review
                </a>`
-            : "";
+          : "";
 
-          const card = document.createElement("div");
-          card.className = "history-card";
-          
-          card.innerHTML = `
+        const card = document.createElement("div");
+        card.className = "history-card";
+
+        card.innerHTML = `
           <div class="card-header">
             <div class="card-passenger">
               <div class="passenger-avatar">${ride.initials}</div>
               <div class="passenger-info">
                 <h3>${ride.passenger}</h3>
-                <p>${ride.date}</p>
+                <p><i class='bx bx-calendar'></i> ${ride.date} • ${ride.time}</p>
               </div>
             </div>
             <div class="card-status ${statusTextClass}">
@@ -381,64 +1066,93 @@
           </div>
           
           <div class="card-body">
-            <div class="route">
-              <i class='bx bx-location-plus' style="color: var(--primary);"></i>
-              <span class="location">${ride.from}</span>
-            </div>
-            <div class="route">
-              <i class='bx bx-location-minus' style="color: var(--primary-hover);"></i>
-              <span class="location">${ride.to}</span>
+            <div class="route-container">
+              <div class="route">
+                <i class='bx bxs-map' style="color: #22c55e;"></i>
+                <span class="location">${ride.from}</span>
+              </div>
+              <div class="route">
+                <i class='bx bxs-map-pin' style="color: var(--primary);"></i>
+                <span class="location">${ride.to}</span>
+              </div>
             </div>
           </div>
           
           <div class="trip-details">
             <div class="detail-item">
-              <div class="detail-label">Time</div>
-              <div class="detail-value">${ride.time}</div>
+              <span class="detail-label">Distance</span>
+              <div class="detail-value">
+                <i class='bx bx-trip' style="color: var(--info);"></i>
+                ${ride.distance}
+              </div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">Fare</div>
-              <div class="detail-value">${ride.fare}</div>
+              <span class="detail-label">Duration</span>
+              <div class="detail-value">
+                <i class='bx bx-time' style="color: var(--warning);"></i>
+                ${ride.duration}
+              </div>
             </div>
             <div class="detail-item">
-               <div class="detail-label">Rating</div>
-              <div class="detail-value">${ride.rating ? ride.rating + " ★" : "-"}</div>
+              <span class="detail-label">Fare</span>
+              <div class="detail-value" style="color: var(--success); font-weight: 700;">
+                ${ride.fare}
+              </div>
             </div>
           </div>
           
+          ${ride.rating ? `
+            <div style="display: flex; align-items: center; justify-content: center; padding: var(--spacing-sm); margin-bottom: var(--spacing-md); background: #fffbeb; border-radius: var(--radius-md); gap: var(--spacing-sm);">
+              <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-secondary);">Passenger Rating:</span>
+              <div class="rating-display">
+                ${Array(ride.rating).fill(0).map(() => '<span class="star">★</span>').join("")}
+              </div>
+              <span style="font-size: 0.875rem; font-weight: 700; color: var(--text-main);">${ride.rating}.0</span>
+            </div>
+          ` : ""}
+          
           <div class="card-footer">
-            <button class="btn btn-ghost" onclick="viewDetails(${ride.id})">Details</button>
-            ${feedbackButton} ${ride.status === "completed" && !ride.rating 
-                ? `<button class="btn btn-primary" onclick="ratePassenger(${ride.id})">Rate User</button>` 
-                : "" 
-             }
+            <button class="btn btn-ghost" onclick="viewDetails(${ride.id})">
+              <i class='bx bx-info-circle'></i> Details
+            </button>
+            ${feedbackButton} ${ride.status === "completed" && !ride.rating
+            ? `<button class="btn btn-primary" onclick="ratePassenger(${ride.id})">
+                 <i class='bx bx-star'></i> Rate Passenger
+               </button>`
+            : ""
+          }
           </div>
         `;
-          historyList.appendChild(card);
-        });
-      }
-
-      function filterHistory(filter) {
-        currentFilter = filter;
-        document.querySelectorAll(".filter-btn").forEach((btn) => {
-          btn.classList.remove("active");
-        });
-        event.target.classList.add("active");
-        renderHistory();
-      }
-
-      function viewDetails(rideId) {
-        alert("View details for ride #" + rideId);
-      }
-
-      function ratePassenger(rideId) {
-        alert("Rate passenger for ride #" + rideId);
-      }
-
-      window.addEventListener("DOMContentLoaded", function () {
-        renderHistory();
+        historyList.appendChild(card);
       });
-    </script>
-    <script src="../../shared/js/header-auth.js"></script>
-  </body>
+    }
+
+    function filterHistory(filter) {
+      currentFilter = filter;
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.classList.remove("active");
+      });
+      event.target.classList.add("active");
+      renderHistory();
+    }
+
+    function viewDetails(rideId) {
+      alert("View details for ride #" + rideId);
+    }
+
+    function ratePassenger(rideId) {
+      alert("Rate passenger for ride #" + rideId);
+    }
+
+    /**
+     * Initialize page on load
+     */
+    window.addEventListener("DOMContentLoaded", function () {
+      // Fetch ride history from database
+      fetchRideHistory();
+    });
+  </script>
+  <script src="../../shared/js/header-auth.js"></script>
+</body>
+
 </html>
