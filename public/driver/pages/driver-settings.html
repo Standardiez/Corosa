@@ -4,81 +4,232 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Driver Settings — Corosa</title>
-    <link rel="stylesheet" href="../../styles/styles.css" />
     <link
       href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
       rel="stylesheet"
     />
     <script src="../js/driver-settings.js"></script>
+
     <style>
-      .settings-container {
-        max-width: 600px;
+      /* =========================================
+         1. UNIFIED DRIVER STYLES (Red Theme)
+         ========================================= */
+      :root {
+        /* --- Color Palette --- */
+        --primary: #d32f2f;          
+        --primary-hover: #b71c1c;    
+        --primary-light: #ffcdd2;    
+        --primary-foreground: #ffffff; 
+
+        --success: #2e7d32;   
+        --warning: #ed6c02;   
+        --error: #d32f2f;     
+
+        --background: #f8f9fa;       
+        --background-card: #ffffff;  
+        --border-color: #e0e0e0;     
+        
+        --text-main: #212121;        
+        --text-secondary: #757575;   
+        --text-muted: #9e9e9e;       
+
+        /* --- Spacing & Radius --- */
+        --spacing-xs: 4px;
+        --spacing-sm: 8px;
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
+
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+
+        --header-height: 64px;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      
+      body {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--background);
+        color: var(--text-main);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Layout */
+      .header {
+        height: var(--header-height);
+        background-color: var(--background-card);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--spacing-lg);
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 100;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .header .logo { height: 32px; width: auto; }
+
+      .main-content {
+        padding: var(--spacing-lg);
+        padding-top: calc(var(--header-height) + var(--spacing-lg));
+        max-width: 800px; /* Centered narrow layout for settings */
         margin: 0 auto;
       }
 
-      .settings-section {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
+      /* Cards */
+      .card {
+        background: var(--background-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: var(--spacing-lg);
       }
 
-      .section-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 20px;
+      .card-header {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-sm);
+        border-bottom: 1px solid var(--border-color);
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1.1rem;
       }
 
-      .section-title i {
-        color: #667eea;
-        font-size: 20px;
+      .card-header i { font-size: 1.25rem; }
+
+      /* Forms */
+      .form-group { margin-bottom: var(--spacing-md); }
+      
+      label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: var(--spacing-sm);
       }
 
+      input[type="text"], input[type="email"], input[type="tel"], input[type="number"], select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        background-color: var(--background-card);
+        transition: border-color 0.2s, box-shadow 0.2s;
+        color: var(--text-main);
+      }
+
+      input:focus, select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+      .btn-primary:hover { background: var(--primary-hover); }
+
+      .btn-secondary {
+        background: #e0e0e0;
+        color: var(--text-main);
+      }
+      .btn-secondary:hover { background: #bdbdbd; }
+
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+      }
+      .btn-outline:hover { background: var(--primary-light); }
+
+      .button-group {
+        display: flex;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-xl);
+      }
+      
+      .button-group .btn { flex: 1; }
+
+      /* Alerts */
+      .success-message {
+        display: none;
+        background: #e8f5e9;
+        color: var(--success);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--spacing-lg);
+        font-weight: 500;
+        border: 1px solid #c8e6c9;
+        text-align: center;
+      }
+      .success-message.show { display: block; }
+
+      /* =========================================
+         2. PAGE SPECIFIC STYLES (Settings)
+         ========================================= */
+      
+      /* Settings Item (Row with text left, toggle right) */
       .setting-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #f3f4f6;
+        padding: var(--spacing-md) 0;
+        border-bottom: 1px solid var(--background); /* Very subtle divider */
       }
 
       .setting-item:last-child {
         border-bottom: none;
       }
 
-      .setting-label {
-        flex: 1;
-      }
-
       .setting-label h3 {
-        font-size: 14px;
+        font-size: 0.95rem;
         font-weight: 600;
-        color: #111827;
-        margin-bottom: 4px;
+        color: var(--text-main);
+        margin-bottom: 2px;
       }
 
       .setting-label p {
-        font-size: 13px;
-        color: #6b7280;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
       }
 
+      /* Toggle Switch */
       .toggle-switch {
         position: relative;
-        width: 48px;
-        height: 28px;
-        background: #d1d5db;
-        border-radius: 14px;
+        width: 44px;
+        height: 24px;
+        background: var(--text-muted);
+        border-radius: 20px;
         cursor: pointer;
-        transition: background 0.3s;
-      }
-
-      .toggle-switch.active {
-        background: #667eea;
+        transition: background 0.3s ease;
+        flex-shrink: 0;
       }
 
       .toggle-switch::after {
@@ -86,132 +237,48 @@
         position: absolute;
         top: 2px;
         left: 2px;
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         background: white;
-        border-radius: 12px;
-        transition: left 0.3s;
+        border-radius: 50%;
+        transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      }
+
+      .toggle-switch.active {
+        background: var(--primary);
       }
 
       .toggle-switch.active::after {
-        left: 22px;
+        transform: translateX(20px);
       }
 
-      .select-field {
-        padding: 10px;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        font-size: 14px;
-        background: white;
-        cursor: pointer;
-      }
-
-      .select-field:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      }
-
-      .form-group {
-        margin-bottom: 20px;
-      }
-
-      .form-group label {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        color: #111827;
-        margin-bottom: 8px;
-      }
-
-      .form-group input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        font-size: 14px;
-      }
-
-      .form-group input:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      }
-
-      .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 30px;
-      }
-
-      .btn {
-        flex: 1;
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .btn-secondary {
-        background: #f3f4f6;
-        color: #374151;
-      }
-
-      .btn-secondary:hover {
-        background: #e5e7eb;
-      }
-
-      .btn-primary {
-        background: #667eea;
-        color: white;
-      }
-
-      .btn-primary:hover {
-        background: #5568d3;
-      }
-
-      .success-message {
-        display: none;
-        background: #d1fae5;
-        color: #065f46;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        font-size: 14px;
-      }
-
-      .success-message.show {
-        display: block;
+      /* Responsive */
+      @media (max-width: 600px) {
+        .main-content { padding: var(--spacing-md); padding-top: calc(var(--header-height) + var(--spacing-md)); }
+        .button-group { flex-direction: column-reverse; }
       }
     </style>
   </head>
   <body>
     <header class="header">
-      <div class="container header-content">
-        <img
-          src="../../assets/corosa-logo.png"
-          alt="Corosa Logo"
-          class="logo"
-        />
+      <div class="container header-content" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+        <img src="../../assets/corosa-logo.png" alt="Corosa Logo" class="logo" />
         <nav class="nav header-nav">
           <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
         </nav>
       </div>
     </header>
 
-    <main class="container settings-container">
-      <h1 style="margin-bottom: 30px; margin-top: 20px">Settings</h1>
+    <main class="main-content">
+      <h1 style="margin-bottom: var(--spacing-lg); color: var(--text-main);">Settings</h1>
 
       <div class="success-message" id="successMessage">
-        ✓ Settings updated successfully
+        <i class='bx bx-check-circle'></i> Settings updated successfully
       </div>
 
-      <!-- Profile Settings -->
-      <div class="settings-section">
-        <div class="section-title">
+      <div class="card">
+        <div class="card-header">
           <i class="bx bx-user"></i> Profile Settings
         </div>
         <div class="form-group">
@@ -232,28 +299,17 @@
         </div>
       </div>
 
-      <!-- Vehicle Settings -->
-      <div class="settings-section">
-        <div class="section-title">
+      <div class="card">
+        <div class="card-header">
           <i class="bx bx-car"></i> Vehicle Information
         </div>
         <div class="form-group">
           <label for="vehicle-model">Vehicle Model</label>
-          <input
-            type="text"
-            id="vehicle-model"
-            placeholder="e.g., Honda Civic"
-          />
+          <input type="text" id="vehicle-model" placeholder="e.g., Honda Civic" />
         </div>
         <div class="form-group">
           <label for="vehicle-year">Year</label>
-          <input
-            type="number"
-            id="vehicle-year"
-            placeholder="2023"
-            min="2000"
-            max="2099"
-          />
+          <input type="number" id="vehicle-year" placeholder="2023" min="2000" max="2099" />
         </div>
         <div class="form-group">
           <label for="seat-capacity">Seat Capacity</label>
@@ -275,9 +331,11 @@
         </div>
       </div>
 
-      <!-- Availability Settings -->
-      <div class="settings-section">
-        <div class="section-title"><i class="bx bx-time"></i> Availability</div>
+      <div class="card">
+        <div class="card-header">
+          <i class="bx bx-time"></i> Availability
+        </div>
+        
         <div class="setting-item">
           <div class="setting-label">
             <h3>Currently Available</h3>
@@ -285,6 +343,7 @@
           </div>
           <div class="toggle-switch active" id="availabilityToggle"></div>
         </div>
+
         <div class="setting-item">
           <div class="setting-label">
             <h3>Accept Shared Rides</h3>
@@ -292,13 +351,10 @@
           </div>
           <div class="toggle-switch" id="sharedRideToggle"></div>
         </div>
-        <div class="setting-item">
-          <div class="setting-label">
-            <h3>Preferred Ride Type</h3>
-          </div>
-        </div>
-        <div style="padding: 0 0 15px 0; border-bottom: 1px solid #f3f4f6">
-          <select class="select-field" id="rideType" style="width: 100%">
+
+        <div class="form-group" style="margin-top: var(--spacing-md);">
+          <label for="rideType">Preferred Ride Type</label>
+          <select id="rideType">
             <option value="both">Both Economy & Premium</option>
             <option value="economy">Economy Only</option>
             <option value="premium">Premium Only</option>
@@ -306,11 +362,11 @@
         </div>
       </div>
 
-      <!-- Safety & Preferences -->
-      <div class="settings-section">
-        <div class="section-title">
+      <div class="card">
+        <div class="card-header">
           <i class="bx bx-shield"></i> Safety & Preferences
         </div>
+        
         <div class="setting-item">
           <div class="setting-label">
             <h3>Auto-Accept Requests</h3>
@@ -318,6 +374,7 @@
           </div>
           <div class="toggle-switch" id="autoAcceptToggle"></div>
         </div>
+
         <div class="setting-item">
           <div class="setting-label">
             <h3>Trip Notifications</h3>
@@ -325,9 +382,10 @@
           </div>
           <div class="toggle-switch active" id="notificationToggle"></div>
         </div>
-        <div class="form-group" style="margin-bottom: 0">
+
+        <div class="form-group" style="margin-top: var(--spacing-md);">
           <label for="minRating">Minimum Passenger Rating</label>
-          <select class="select-field" id="minRating" style="width: 100%">
+          <select id="minRating">
             <option value="any">Any Rating</option>
             <option value="3.0">3.0+ Stars</option>
             <option value="3.5">3.5+ Stars</option>
@@ -337,9 +395,8 @@
         </div>
       </div>
 
-      <!-- Payment Settings -->
-      <div class="settings-section">
-        <div class="section-title">
+      <div class="card">
+        <div class="card-header">
           <i class="bx bx-credit-card"></i> Payment Settings
         </div>
         <div class="form-group">
@@ -348,7 +405,7 @@
         </div>
         <div class="form-group">
           <label for="payoutFrequency">Payout Frequency</label>
-          <select class="select-field" id="payoutFrequency" style="width: 100%">
+          <select id="payoutFrequency">
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -364,7 +421,6 @@
       </div>
     </main>
 
-    <!-- All settings logic is now in driver-settings.js -->
     <script src="../../shared/js/header-auth.js"></script>
   </body>
 </html>
