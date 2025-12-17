@@ -9,6 +9,7 @@
       href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
       rel="stylesheet"
     />
+    <script src="../js/driver-ridestatus.js"></script>
     <style>
       /* Driver-specific overrides for ride status tracking */
       .status-card {
@@ -287,37 +288,28 @@
               <div
                 class="progress-line-fill"
                 id="progress-fill"
-                style="width: 50%"
+                style="width: 0%"
               ></div>
             </div>
 
-            <div class="stage completed">
-              <div class="stage-circle">
-                <i class="bx bx-check" style="font-size: 1.25rem"></i>
-              </div>
-              <div class="stage-label">Waiting for driver</div>
+            <div class="stage" id="stage-1">
+              <div class="stage-circle">1</div>
+              <div class="stage-label">Driver on the Way</div>
             </div>
 
-            <div class="stage active">
-              <div class="stage-circle">
-                <i class="bx bx-check" style="font-size: 1.25rem"></i>
-              </div>
-              <div class="stage-label">Driver is on the way</div>
+            <div class="stage" id="stage-2">
+              <div class="stage-circle">2</div>
+              <div class="stage-label">Ride In Progress</div>
             </div>
 
-            <div class="stage">
+            <div class="stage" id="stage-3">
               <div class="stage-circle">3</div>
-              <div class="stage-label">Ride in progress</div>
+              <div class="stage-label">Arrived at Destination</div>
             </div>
 
-            <div class="stage">
+            <div class="stage" id="stage-4">
               <div class="stage-circle">4</div>
-              <div class="stage-label">Dropping you off</div>
-            </div>
-
-            <div class="stage">
-              <div class="stage-circle">5</div>
-              <div class="stage-label">Arrived at destination</div>
+              <div class="stage-label">Completed</div>
             </div>
           </div>
         </div>
@@ -375,53 +367,7 @@
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
-
-      // Simulate ride progress
-      let currentStage = 2;
-
-      function updateProgress() {
-        const stages = document.querySelectorAll(".stage");
-        const progressFill = document.getElementById("progress-fill");
-
-        // Update stage classes
-        stages.forEach((stage, index) => {
-          stage.classList.remove("completed", "active");
-          if (index < currentStage - 1) {
-            stage.classList.add("completed");
-          } else if (index === currentStage - 1) {
-            stage.classList.add("active");
-          }
-        });
-
-        // Update progress bar
-        const progress = ((currentStage - 1) / (stages.length - 1)) * 100;
-        progressFill.style.width = progress + "%";
-
-        // Update button text based on stage
-        const updateBtn = document.getElementById("update-status-btn");
-        if (currentStage >= 5) {
-          updateBtn.textContent = "Rate";
-          updateBtn.classList.add("completed");
-        } else {
-          updateBtn.textContent = "Update Status";
-          updateBtn.classList.remove("completed");
-        }
-      }
-
-      // Update status when button is clicked
-      document
-        .getElementById("update-status-btn")
-        .addEventListener("click", function () {
-          if (currentStage < 5) {
-            currentStage++;
-            updateProgress();
-          } else {
-            // Show rating interface or redirect
-            alert("Ride completed! Opening rating page...");
-          }
-        });
-
-      updateProgress();
+      // Ride status controller logic is in driver-ridestatus.js
     </script>
   </body>
 </html>

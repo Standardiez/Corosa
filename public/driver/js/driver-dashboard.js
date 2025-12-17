@@ -108,12 +108,82 @@ class DriverDashboard {
         if (this.currentRide && this.currentRide.trip_id) {
           await this.displayPassengersForRide(this.currentRide.trip_id);
         }
+
+        // Refresh stats
+        await this.fetchStats();
       } catch (error) {
         console.error("[Dashboard] Auto-refresh error:", error);
       }
     }, 5000); // 5 second refresh interval (was 2 seconds)
 
     console.log("[Dashboard] Auto-refresh enabled (5 second interval)");
+
+    // Load stats immediately on first load
+    this.fetchStats();
+  }
+
+  async fetchStats() {
+    try {
+      if (!this.driverId) {
+        throw new Error("Driver ID not available");
+      }
+
+      console.log(
+        `[Dashboard] Fetching stats for driver ${this.driverId}...`
+      );
+
+      const response = await fetch(
+        `http://localhost:3000/api/driver/stats/${this.driverId}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to fetch stats");
+      }
+
+      const stats = result.data || {};
+      console.log("[Dashboard] Stats fetched:", stats);
+
+      // Update UI with stats
+      this.updateStatsUI(stats);
+    } catch (error) {
+      console.error("[Dashboard] Error fetching stats:", error);
+      // Keep existing values if fetch fails
+    }
+  }
+
+  updateStatsUI(stats) {
+    // Update pending requests
+    const pendingEl = document.getElementById("stat-pending-requests");
+    if (pendingEl) {
+      pendingEl.textContent = stats.pending_requests || 0;
+    }
+
+    // Update total rides
+    const totalRidesEl = document.getElementById("stat-total-rides");
+    if (totalRidesEl) {
+      totalRidesEl.textContent = stats.total_rides || 0;
+    }
+
+    // Update average rating
+    const avgRatingEl = document.getElementById("stat-avg-rating");
+    if (avgRatingEl) {
+      avgRatingEl.textContent = (stats.average_rating || 0).toFixed(1);
+    }
+
+    // Update weekly earnings
+    const weeklyEarningsEl = document.getElementById("stat-weekly-earnings");
+    if (weeklyEarningsEl) {
+      const earnings = parseFloat(stats.weekly_earnings || 0).toFixed(2);
+      weeklyEarningsEl.textContent = "₱" + earnings.replace(/\.00$/, "");
+    }
+
+    console.log("[Dashboard] Stats UI updated");
   }
 
   async loadCurrentRide() {
@@ -134,19 +204,77 @@ class DriverDashboard {
       console.log("[Dashboard] Current ride response:", data);
 
       if (data.success && data.rides && data.rides.length > 0) {
-        // Get most recent ride
-        this.currentRide = data.rides[0];
-        this.hasRides = true;
-        this.displayRideOnMap();
+        // Get most recent ride that's not completed or cancelled
+        const activeRide = data.rides.find(
+          (r) =>
+            r.ride_status !== "completed" &&
+            r.ride_status !== "cancelled"
+        );
+
+        if (activeRide) {
+          this.currentRide = activeRide;
+          this.hasRides = true;
+          this.displayRideOnMap();
+        } else {
+          // No active rides - clear sections
+          this.hasRides = false;
+          this.clearMapAndRequests();
+        }
       } else {
         this.hasRides = false;
-        this.showMapFallback();
+        this.clearMapAndRequests();
       }
     } catch (error) {
       console.error("[Dashboard] Error loading current ride:", error);
       this.hasRides = false;
-      this.showMapFallback();
+      this.clearMapAndRequests();
     }
+  }
+
+  clearMapAndRequests() {
+    // Clear the route map
+    const mapContainer = document.getElementById("map-container");
+    if (mapContainer) {
+      mapContainer.innerHTML = `
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 300px;
+          background: #f3f4f6;
+          border-radius: 8px;
+          color: #6b7280;
+        ">
+          <div style="text-align: center;">
+            <p style="margin: 0 0 10px 0; font-size: 14px;">No active ride</p>
+            <p style="margin: 0; font-size: 12px; color: #9ca3af;">Create a new ride to get started</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Clear pending requests container
+    const pendingContainer = document.getElementById(
+      "pending-requests-container"
+    );
+    if (pendingContainer) {
+      pendingContainer.innerHTML = `
+        <div style="
+          padding: 20px;
+          text-align: center;
+          color: #6b7280;
+          background: #f9fafb;
+          border-radius: 8px;
+        ">
+          <p style="margin: 0 0 10px 0; font-size: 14px;">No pending requests</p>
+          <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+            Waiting for passengers to book your ride
+          </p>
+        </div>
+      `;
+    }
+
+    console.log("[Dashboard] Cleared map and requests");
   }
 
   displayRideOnMap() {
