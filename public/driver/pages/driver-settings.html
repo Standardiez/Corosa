@@ -9,6 +9,7 @@
       href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
       rel="stylesheet"
     />
+    <script src="../js/driver-settings.js"></script>
     <style>
       .settings-container {
         max-width: 600px;
@@ -214,16 +215,63 @@
           <i class="bx bx-user"></i> Profile Settings
         </div>
         <div class="form-group">
-          <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" placeholder="Your name" />
+          <label for="first-name">First Name</label>
+          <input type="text" id="first-name" placeholder="Your first name" />
         </div>
         <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" placeholder="+1 (555) 000-0000" />
+          <label for="last-name">Last Name</label>
+          <input type="text" id="last-name" placeholder="Your last name" />
+        </div>
+        <div class="form-group">
+          <label for="phone-number">Phone Number</label>
+          <input type="tel" id="phone-number" placeholder="+1 (555) 000-0000" />
         </div>
         <div class="form-group">
           <label for="email">Email Address</label>
           <input type="email" id="email" placeholder="your.email@example.com" />
+        </div>
+      </div>
+
+      <!-- Vehicle Settings -->
+      <div class="settings-section">
+        <div class="section-title">
+          <i class="bx bx-car"></i> Vehicle Information
+        </div>
+        <div class="form-group">
+          <label for="vehicle-model">Vehicle Model</label>
+          <input
+            type="text"
+            id="vehicle-model"
+            placeholder="e.g., Honda Civic"
+          />
+        </div>
+        <div class="form-group">
+          <label for="vehicle-year">Year</label>
+          <input
+            type="number"
+            id="vehicle-year"
+            placeholder="2023"
+            min="2000"
+            max="2099"
+          />
+        </div>
+        <div class="form-group">
+          <label for="seat-capacity">Seat Capacity</label>
+          <select id="seat-capacity">
+            <option value="">Select seat capacity</option>
+            <option value="1">1 Seat</option>
+            <option value="2">2 Seats</option>
+            <option value="3">3 Seats</option>
+            <option value="4">4 Seats</option>
+            <option value="5">5 Seats</option>
+            <option value="6">6 Seats</option>
+            <option value="7">7 Seats</option>
+            <option value="8">8 Seats</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="license-plate">License Plate</label>
+          <input type="text" id="license-plate" placeholder="e.g., ABC-1234" />
         </div>
       </div>
 
@@ -309,122 +357,14 @@
       </div>
 
       <div class="button-group">
-        <button class="btn btn-secondary" onclick="goBack()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveSettings()">
+        <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
+        <button class="btn btn-primary" id="save-profile-btn">
           Save Changes
         </button>
       </div>
     </main>
 
-    <script>
-      // Load settings on page load
-      window.addEventListener("DOMContentLoaded", function () {
-        const userData = localStorage.getItem("userData");
-        if (!userData) {
-          window.location.href = "../../shared/pages/login.html";
-          return;
-        }
-
-        const user = JSON.parse(userData);
-        document.getElementById("fullName").value = user.name || "";
-
-        // Load saved settings
-        const settings = JSON.parse(
-          localStorage.getItem("driverSettings") || "{}"
-        );
-        document.getElementById("phone").value = settings.phone || "";
-        document.getElementById("email").value = settings.email || "";
-        document.getElementById("rideType").value = settings.rideType || "both";
-        document.getElementById("minRating").value =
-          settings.minRating || "any";
-        document.getElementById("bankAccount").value =
-          settings.bankAccount || "";
-        document.getElementById("payoutFrequency").value =
-          settings.payoutFrequency || "weekly";
-
-        if (settings.available === false) {
-          document
-            .getElementById("availabilityToggle")
-            .classList.remove("active");
-        }
-
-        if (settings.sharedRides === true) {
-          document.getElementById("sharedRideToggle").classList.add("active");
-        }
-
-        if (settings.autoAccept === true) {
-          document.getElementById("autoAcceptToggle").classList.add("active");
-        }
-
-        if (settings.notifications === false) {
-          document
-            .getElementById("notificationToggle")
-            .classList.remove("active");
-        }
-      });
-
-      // Toggle switch handlers
-      document
-        .getElementById("availabilityToggle")
-        .addEventListener("click", function () {
-          this.classList.toggle("active");
-        });
-
-      document
-        .getElementById("sharedRideToggle")
-        .addEventListener("click", function () {
-          this.classList.toggle("active");
-        });
-
-      document
-        .getElementById("autoAcceptToggle")
-        .addEventListener("click", function () {
-          this.classList.toggle("active");
-        });
-
-      document
-        .getElementById("notificationToggle")
-        .addEventListener("click", function () {
-          this.classList.toggle("active");
-        });
-
-      function saveSettings() {
-        const settings = {
-          phone: document.getElementById("phone").value,
-          email: document.getElementById("email").value,
-          rideType: document.getElementById("rideType").value,
-          minRating: document.getElementById("minRating").value,
-          bankAccount: document.getElementById("bankAccount").value,
-          payoutFrequency: document.getElementById("payoutFrequency").value,
-          available: document
-            .getElementById("availabilityToggle")
-            .classList.contains("active"),
-          sharedRides: document
-            .getElementById("sharedRideToggle")
-            .classList.contains("active"),
-          autoAccept: document
-            .getElementById("autoAcceptToggle")
-            .classList.contains("active"),
-          notifications: document
-            .getElementById("notificationToggle")
-            .classList.contains("active"),
-          updatedAt: new Date().toISOString(),
-        };
-
-        localStorage.setItem("driverSettings", JSON.stringify(settings));
-
-        // Show success message
-        const successMsg = document.getElementById("successMessage");
-        successMsg.classList.add("show");
-        setTimeout(() => {
-          successMsg.classList.remove("show");
-        }, 3000);
-      }
-
-      function goBack() {
-        window.location.href = "driver-Homepage.html";
-      }
-    </script>
+    <!-- All settings logic is now in driver-settings.js -->
     <script src="../../shared/js/header-auth.js"></script>
   </body>
 </html>

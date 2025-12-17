@@ -158,6 +158,24 @@
         el.classList.add("pending"); // Future stage - waiting
       }
     }
+
+    // When ride reaches completion (stage 3), redirect to rating page
+    if (n === 3) {
+      console.log("[RideStatus] Ride completed! Redirecting to rating page...");
+
+      // Get booking ID from session
+      const bookingId = sessionStorage.getItem("bookingId");
+
+      if (bookingId) {
+        // Store booking ID for rate-driver page
+        sessionStorage.setItem("currentBookingId", bookingId);
+      }
+
+      // Show completion message and redirect after 2 seconds
+      setTimeout(function () {
+        window.location.href = "rate-driver.html";
+      }, 2000);
+    }
   }
 
   // ========================================================================

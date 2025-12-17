@@ -48,7 +48,9 @@ const tripAssignmentsRouter = require("./api/shared/js/trip-assignment");
 const vehicleRouter = require("./api/shared/js/vehicle");
 const driverRegistrationRouter = require("./server/routes/driver-registration");
 const driverRidesRouter = require("./server/routes/driver-rides");
+const driverProfileRouter = require("./server/routes/driver-profile");
 const driverBookingsRouter = require("./server/routes/driver-bookings");
+const passengerReviewsRouter = require("./server/routes/passenger-reviews");
 
 // Mount routes
 app.use("/api/trips", tripsRouter);
@@ -57,7 +59,9 @@ app.use("/api/trip-assignments", tripAssignmentsRouter);
 app.use("/api/vehicle", vehicleRouter);
 app.use("/api/driver", driverRegistrationRouter);
 app.use("/api/driver", driverRidesRouter);
+app.use("/api/driver", driverProfileRouter);
 app.use("/api", driverBookingsRouter); // Bookings at /api level (POST /api/bookings)
+app.use("/api/reviews", passengerReviewsRouter); // Review submission at /api/reviews level
 
 // Start server - bind to 0.0.0.0 for LAN access
 const PORT = process.env.PORT || 3000;
