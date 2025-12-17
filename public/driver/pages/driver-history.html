@@ -4,101 +4,105 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ride History — Corosa</title>
-    <link rel="stylesheet" href="../../styles/styles.css" />
+    <link rel="stylesheet" href="../../styles/unified-driver.css" />
     <link
       href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
       rel="stylesheet"
     />
-    <script src="../js/driver-history.js"></script>
     <style>
+      /* Page-specific overrides */
       .history-container {
         max-width: 800px;
         margin: 0 auto;
+        padding-top: var(--spacing-lg);
       }
 
       .filter-bar {
         display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
         flex-wrap: wrap;
       }
 
       .filter-btn {
         padding: 8px 16px;
-        border: 1px solid #e5e7eb;
-        background: white;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
+        border: 1px solid var(--border-color);
+        background: var(--background-card);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
-        color: #6b7280;
+        color: var(--text-secondary);
       }
 
       .filter-btn.active {
-        background: #667eea;
+        background: var(--primary);
         color: white;
-        border-color: #667eea;
+        border-color: var(--primary);
       }
 
-      .filter-btn:hover {
-        border-color: #667eea;
+      .filter-btn:hover:not(.active) {
+        border-color: var(--primary);
+        color: var(--primary);
       }
 
       .history-list {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: var(--spacing-md);
       }
 
       .history-card {
-        background: white;
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: var(--background-card);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-md);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
         transition: all 0.2s;
       }
 
       .history-card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-light);
       }
 
       .card-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 12px;
+        margin-bottom: var(--spacing-sm);
       }
 
       .card-passenger {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: var(--spacing-md);
       }
 
       .passenger-avatar {
         width: 44px;
         height: 44px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--gradient-primary);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 1rem;
       }
 
       .passenger-info h3 {
-        font-size: 14px;
+        font-size: 1rem;
         font-weight: 600;
-        color: #111827;
+        color: var(--text-main);
         margin: 0;
       }
 
       .passenger-info p {
-        font-size: 13px;
-        color: #6b7280;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
         margin: 2px 0 0 0;
       }
 
@@ -106,16 +110,8 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 13px;
+        font-size: 0.85rem;
         font-weight: 600;
-      }
-
-      .status-completed {
-        color: #10b981;
-      }
-
-      .status-cancelled {
-        color: #ef4444;
       }
 
       .status-icon {
@@ -128,38 +124,43 @@
         font-size: 12px;
       }
 
+      /* Status Colors */
+      .status-completed { color: var(--success); }
+      .status-cancelled { color: var(--error); }
+
       .status-icon.completed {
         background: #d1fae5;
-        color: #10b981;
+        color: var(--success);
       }
 
       .status-icon.cancelled {
         background: #fee2e2;
-        color: #ef4444;
+        color: var(--error);
       }
 
       .card-body {
-        margin-bottom: 12px;
+        margin-bottom: var(--spacing-md);
       }
 
       .route {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--spacing-sm);
         margin-bottom: 8px;
-        font-size: 13px;
+        font-size: 0.9rem;
       }
 
       .location {
-        color: #374151;
+        color: var(--text-main);
       }
 
       .trip-details {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        gap: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #f3f4f6;
+        gap: var(--spacing-sm);
+        padding-top: var(--spacing-md);
+        border-top: 1px solid var(--border-color);
+        margin-bottom: var(--spacing-md);
       }
 
       .detail-item {
@@ -167,51 +168,28 @@
       }
 
       .detail-label {
-        font-size: 12px;
-        color: #6b7280;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
         margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
       .detail-value {
-        font-size: 14px;
+        font-size: 0.9rem;
         font-weight: 600;
-        color: #111827;
+        color: var(--text-main);
       }
 
       .card-footer {
         display: flex;
-        gap: 10px;
-        border-top: 1px solid #f3f4f6;
-        padding-top: 12px;
+        gap: var(--spacing-sm); /* Tighter gap for buttons */
       }
 
-      .card-footer button {
+      .card-footer button, .card-footer a {
         flex: 1;
-        padding: 8px;
-        border: none;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .btn-view {
-        background: #f3f4f6;
-        color: #374151;
-      }
-
-      .btn-view:hover {
-        background: #e5e7eb;
-      }
-
-      .btn-rate {
-        background: #667eea;
-        color: white;
-      }
-
-      .btn-rate:hover {
-        background: #5568d3;
+        text-align: center;
+        text-decoration: none;
       }
 
       .rating-display {
@@ -221,41 +199,43 @@
       }
 
       .star {
-        color: #fbbf24;
+        color: var(--warning);
         font-size: 14px;
       }
-
+      
       .empty-state {
         text-align: center;
-        padding: 40px 20px;
-        color: #6b7280;
+        padding: var(--spacing-xxl) var(--spacing-md);
+        color: var(--text-secondary);
       }
 
       .empty-state i {
         font-size: 48px;
-        color: #d1d5db;
-        margin-bottom: 16px;
+        color: var(--text-muted);
+        margin-bottom: var(--spacing-md);
       }
     </style>
   </head>
   <body>
     <header class="header">
-      <div class="container header-content">
+      <div class="container header-content" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
         <img
           src="../../assets/corosa-logo.png"
           alt="Corosa Logo"
           class="logo"
         />
-        <nav class="nav header-nav">
+        <nav class="nav header-nav" style="display: flex; gap: 8px;">
+          <a class="btn btn-ghost" href="driver-passengerfeedback.html">
+            <i class='bx bx-star'></i> My Reviews
+          </a>
           <a class="btn btn-outline" href="driver-Homepage.html">Back</a>
         </nav>
       </div>
     </header>
 
     <main class="container history-container">
-      <h1 style="margin-bottom: 20px; margin-top: 20px">Ride History</h1>
+      <h1 style="margin-bottom: var(--spacing-lg); color: var(--text-main);">Ride History</h1>
 
-      <!-- Filter Bar -->
       <div class="filter-bar">
         <button class="filter-btn active" onclick="filterHistory('all')">
           All Rides
@@ -266,18 +246,14 @@
         <button class="filter-btn" onclick="filterHistory('cancelled')">
           Cancelled
         </button>
-        <button class="filter-btn" onclick="filterHistory('month')">
-          This Month
-        </button>
       </div>
 
-      <!-- History List -->
       <div class="history-list" id="historyList">
-        <!-- Sample data will be inserted here -->
-      </div>
+        </div>
     </main>
 
     <script>
+      // UPDATED SAMPLE DATA: Added 'feedback_id' to connect to specific reviews
       const sampleHistory = [
         {
           id: 1,
@@ -289,9 +265,10 @@
           time: "2:30 PM",
           distance: "3.2 km",
           duration: "12 min",
-          fare: "$8.50",
+          fare: "₱85.00",
           status: "completed",
           rating: 5,
+          feedback_id: "review-1" // Links to ID in feedback page
         },
         {
           id: 2,
@@ -303,9 +280,10 @@
           time: "10:15 AM",
           distance: "5.1 km",
           duration: "18 min",
-          fare: "$12.00",
+          fare: "₱120.00",
           status: "completed",
           rating: 4,
+          feedback_id: "review-2" // Links to ID in feedback page
         },
         {
           id: 3,
@@ -317,9 +295,10 @@
           time: "6:45 PM",
           distance: "18.5 km",
           duration: "35 min",
-          fare: "$42.50",
+          fare: "₱425.00",
           status: "completed",
           rating: 5,
+          feedback_id: null // No written feedback
         },
         {
           id: 4,
@@ -331,9 +310,10 @@
           time: "11:20 AM",
           distance: "4.8 km",
           duration: "16 min",
-          fare: "$10.75",
+          fare: "₱107.50",
           status: "cancelled",
           rating: null,
+          feedback_id: null
         },
       ];
 
@@ -347,14 +327,6 @@
           if (currentFilter === "all") return true;
           if (currentFilter === "completed") return ride.status === "completed";
           if (currentFilter === "cancelled") return ride.status === "cancelled";
-          if (currentFilter === "month") {
-            const rideDate = new Date(ride.date);
-            const now = new Date();
-            return (
-              rideDate.getMonth() === now.getMonth() &&
-              rideDate.getFullYear() === now.getFullYear()
-            );
-          }
           return true;
         });
 
@@ -369,32 +341,30 @@
         }
 
         filtered.forEach((ride) => {
-          const statusClass =
-            ride.status === "completed" ? "completed" : "cancelled";
+          const statusClass = ride.status === "completed" ? "completed" : "cancelled";
           const statusIcon = ride.status === "completed" ? "✓" : "✕";
-          const statusText =
-            ride.status === "completed" ? "Completed" : "Cancelled";
-          const statusTextClass =
-            ride.status === "completed"
-              ? "status-completed"
-              : "status-cancelled";
+          const statusText = ride.status === "completed" ? "Completed" : "Cancelled";
+          const statusTextClass = ride.status === "completed" ? "status-completed" : "status-cancelled";
 
+          // Generate Star Display
           const ratingHtml = ride.rating
             ? `
           <div class="rating-display">
-            ${Array(ride.rating)
-              .fill(0)
-              .map(() => '<span class="star">★</span>')
-              .join("")}
-            <span style="font-size: 12px; color: #6b7280; margin-left: 4px;">${
-              ride.rating
-            }.0</span>
+            ${Array(ride.rating).fill(0).map(() => '<span class="star">★</span>').join("")}
           </div>
-        `
+        ` : "";
+
+          // LOGIC: Check if there is feedback to link to
+          // If feedback_id exists, create a link to the feedback page
+          const feedbackButton = ride.feedback_id 
+            ? `<a href="driver-passengerfeedback.html#${ride.feedback_id}" class="btn btn-outline" style="font-size: 0.9rem;">
+                 <i class='bx bx-message-detail'></i> Read Review
+               </a>`
             : "";
 
           const card = document.createElement("div");
           card.className = "history-card";
+          
           card.innerHTML = `
           <div class="card-header">
             <div class="card-passenger">
@@ -412,11 +382,11 @@
           
           <div class="card-body">
             <div class="route">
-              <i class='bx bx-location-plus' style="color: #667eea;"></i>
+              <i class='bx bx-location-plus' style="color: var(--primary);"></i>
               <span class="location">${ride.from}</span>
             </div>
             <div class="route">
-              <i class='bx bx-location-minus' style="color: #ef4444;"></i>
+              <i class='bx bx-location-minus' style="color: var(--primary-hover);"></i>
               <span class="location">${ride.to}</span>
             </div>
           </div>
@@ -427,32 +397,21 @@
               <div class="detail-value">${ride.time}</div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">Distance</div>
-              <div class="detail-value">${ride.distance}</div>
+              <div class="detail-label">Fare</div>
+              <div class="detail-value">${ride.fare}</div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">Duration</div>
-              <div class="detail-value">${ride.duration}</div>
+               <div class="detail-label">Rating</div>
+              <div class="detail-value">${ride.rating ? ride.rating + " ★" : "-"}</div>
             </div>
           </div>
           
           <div class="card-footer">
-            <button class="btn-view" onclick="viewDetails(${
-              ride.id
-            })">View Details</button>
-            ${
-              ride.status === "completed"
-                ? `
-              <button class="btn-rate" onclick="ratePassenger(${ride.id})">
-                ${
-                  ride.rating
-                    ? "Rating: " + ride.rating + "★"
-                    : "Rate Passenger"
-                }
-              </button>
-            `
-                : ""
-            }
+            <button class="btn btn-ghost" onclick="viewDetails(${ride.id})">Details</button>
+            ${feedbackButton} ${ride.status === "completed" && !ride.rating 
+                ? `<button class="btn btn-primary" onclick="ratePassenger(${ride.id})">Rate User</button>` 
+                : "" 
+             }
           </div>
         `;
           historyList.appendChild(card);
@@ -461,34 +420,22 @@
 
       function filterHistory(filter) {
         currentFilter = filter;
-
-        // Update active button
         document.querySelectorAll(".filter-btn").forEach((btn) => {
           btn.classList.remove("active");
         });
         event.target.classList.add("active");
-
         renderHistory();
       }
 
       function viewDetails(rideId) {
         alert("View details for ride #" + rideId);
-        // Could redirect to detailed ride view
       }
 
       function ratePassenger(rideId) {
         alert("Rate passenger for ride #" + rideId);
-        // Could redirect to rating page
       }
 
-      // Load on page load
       window.addEventListener("DOMContentLoaded", function () {
-        const userData = localStorage.getItem("userData");
-        if (!userData) {
-          window.location.href = "../../shared/pages/login.html";
-          return;
-        }
-
         renderHistory();
       });
     </script>
