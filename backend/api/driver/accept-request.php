@@ -67,10 +67,10 @@ try {
             throw new Exception("Trip not found or unauthorized");
         }
 
-        // Update trip_assignment status to accepted/active
+        // Update trip_assignment status to confirmed
         $assignmentUpdateQuery = "
             UPDATE trip_assignment
-            SET assignment_status = 'active'
+            SET assignment_status = 'confirmed'
             WHERE booking_id = :booking_id AND trip_id = :trip_id
             LIMIT 1
         ";

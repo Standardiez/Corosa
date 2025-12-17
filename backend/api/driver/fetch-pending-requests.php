@@ -92,8 +92,8 @@ try {
         JOIN bookings b ON ta.booking_id = b.booking_id
         JOIN users u ON b.passenger_id = u.user_id
         WHERE t.driver_id = :driver_id
-        AND ta.assignment_status IN ('pending', 'confirmed')
-        AND t.ride_status IN ('available', 'pending')
+        AND ta.assignment_status = 'pending'
+        AND t.ride_status IN ('available', 'pending', 'active')
         ORDER BY b.booking_date DESC
     ";
 
