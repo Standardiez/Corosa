@@ -838,21 +838,56 @@
   };
 
   // initialize by loading google maps script then calling initMap
-  function initialize() {
+  async function initialize() {
     const data = loadData();
     if (!data) return;
 
-    // CHECK IF BOOKING IS STILL PENDING
+    // CHECK BOOKING STATUS
     const bookingStatus = sessionStorage.getItem("bookingStatus");
-    if (bookingStatus === "pending") {
-      console.log(
-        "[RideStatus] Booking status is pending - showing waiting message"
-      );
-      showPendingApprovalMessage();
-      return; // Don't load the map yet
+    const bookingId = sessionStorage.getItem("bookingId");
+    
+    // If status is already known as declined, show message immediately
+    if (bookingStatus === "declined") {
+      console.log("[RideStatus] Booking was declined - showing declined message");
+      showDeclinedMessage();
+      return;
+    }
+    
+    // If pending, check current status from server
+    if (bookingStatus === "pending" && bookingId) {
+      console.log("[RideStatus] Checking current booking status from server...");
+      
+      try {
+        const response = await fetch(
+          `/Corosa/backend/api/driver/check-booking-status.php?bookingId=${bookingId}`
+        );
+        const result = await response.json();
+        
+        if (result.success && result.status) {
+          if (result.status === "declined") {
+            console.log("[RideStatus] Booking is declined");
+            sessionStorage.setItem("bookingStatus", "declined");
+            showDeclinedMessage();
+            return;
+          } else if (result.status === "pending") {
+            console.log("[RideStatus] Booking is still pending - showing waiting message");
+            showPendingApprovalMessage();
+            return;
+          } else if (result.status === "confirmed" || result.status === "active") {
+            console.log("[RideStatus] Booking is confirmed - loading map");
+            sessionStorage.setItem("bookingStatus", "confirmed");
+            // Continue to load map
+          }
+        }
+      } catch (error) {
+        console.error("[RideStatus] Error checking booking status:", error);
+        // Fall back to showing pending message
+        showPendingApprovalMessage();
+        return;
+      }
     }
 
-    // If not pending, load the map normally
+    // If not pending or declined, load the map normally
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
       "AIzaSyBsoZUgOFGSg7oXvdgstZuduXjNPIp_S3k"
@@ -865,6 +900,76 @@
   /**
    * Show "Waiting for driver's approval" message when booking is pending
    */
+  function showDeclinedMessage() {
+    const mapContainer = document.getElementById("map");
+    if (!mapContainer) return;
+
+    mapContainer.innerHTML = `
+      <div style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 40px 20px;
+        text-align: center;
+      ">
+        <div style="
+          width: 80px;
+          height: 80px;
+          background: #fee2e2;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 24px;
+        ">
+          <i class="bx bx-x-circle" style="font-size: 48px; color: #dc2626;"></i>
+        </div>
+        <h2 style="
+          font-size: 24px;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 12px;
+        ">Request Declined</h2>
+        <p style="
+          font-size: 16px;
+          color: #6b7280;
+          max-width: 400px;
+          margin-bottom: 32px;
+          line-height: 1.6;
+        ">
+          Unfortunately, the driver has declined your ride request. 
+          Please try requesting another available ride.
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <a href="request-ride.html" class="btn btn-primary" style="
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            <i class="bx bx-search"></i>
+            Find Another Ride
+          </a>
+          <a href="../../shared/pages/index.html" class="btn btn-outline" style="
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            <i class="bx bx-home"></i>
+            Go Home
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
   function showPendingApprovalMessage() {
     const mapContainer = document.getElementById("map");
     const stagesContainer = document.getElementById("stages");
@@ -915,31 +1020,38 @@
         `;
     document.head.appendChild(style);
 
-    // Set up auto-refresh to check if booking has been accepted
+    // Set up auto-refresh to check if booking has been accepted or declined
     const checkApprovalInterval = setInterval(async () => {
       try {
         const bookingId = sessionStorage.getItem("bookingId");
         if (!bookingId) return;
 
-        // Check booking status via backend
-        // Use centralized API config if available, otherwise fallback
-        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        // Check booking status via PHP backend
         const response = await fetch(
-          `${apiBase}/api/bookings/${bookingId}/status`
+          `/Corosa/backend/api/driver/check-booking-status.php?bookingId=${bookingId}`
         );
         const result = await response.json();
 
         console.log("[RideStatus] Booking status check:", result);
 
-        if (
-          result.success &&
-          result.data &&
-          result.data.assignment_status === "accepted"
-        ) {
-          console.log("[RideStatus] Booking has been accepted! Reloading...");
-          clearInterval(checkApprovalInterval);
-          sessionStorage.setItem("bookingStatus", "accepted");
-          window.location.reload();
+        if (result.success && result.status) {
+          const status = result.status;
+          
+          // Handle confirmed/accepted status
+          if (status === "confirmed" || status === "active") {
+            console.log("[RideStatus] Booking has been accepted! Reloading...");
+            clearInterval(checkApprovalInterval);
+            sessionStorage.setItem("bookingStatus", "confirmed");
+            window.location.reload();
+          }
+          
+          // Handle declined status
+          if (status === "declined") {
+            console.log("[RideStatus] Booking was declined by driver");
+            clearInterval(checkApprovalInterval);
+            sessionStorage.setItem("bookingStatus", "declined");
+            showDeclinedMessage();
+          }
         }
       } catch (error) {
         console.error("[RideStatus] Error checking booking status:", error);
