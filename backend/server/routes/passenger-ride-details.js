@@ -18,7 +18,9 @@ router.get("/ride-details/:bookingId", async (req, res) => {
   try {
     const { bookingId } = req.params;
 
-    console.log(`[GET /api/passenger/ride-details/${bookingId}] Fetching ride details`);
+    console.log(
+      `[GET /api/passenger/ride-details/${bookingId}] Fetching ride details`
+    );
 
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST || "localhost",
@@ -65,13 +67,15 @@ router.get("/ride-details/:bookingId", async (req, res) => {
         trip_id: booking.trip_id,
         assignment_status: booking.assignment_status,
         start_lat: booking.start_lat,
-        start_long: booking.start_long
+        start_long: booking.start_long,
       });
 
       // If no trip_assignment, find driver by matching trip coordinates or get most recent trip
       if (!tripId) {
-        console.log("[Ride Details] No trip_assignment found, searching trips...");
-        
+        console.log(
+          "[Ride Details] No trip_assignment found, searching trips..."
+        );
+
         // Try exact coordinate match first
         let [trips] = await connection.execute(
           `SELECT trip_id, driver_id
@@ -80,12 +84,19 @@ router.get("/ride-details/:bookingId", async (req, res) => {
            AND end_lat = ? AND end_long = ?
            ORDER BY created_at DESC
            LIMIT 1`,
-          [booking.start_lat, booking.start_long, booking.end_lat, booking.end_long]
+          [
+            booking.start_lat,
+            booking.start_long,
+            booking.end_lat,
+            booking.end_long,
+          ]
         );
 
         // If no exact match, get most recent trip with available seats
         if (trips.length === 0) {
-          console.log("[Ride Details] No exact coordinate match, getting most recent trip...");
+          console.log(
+            "[Ride Details] No exact coordinate match, getting most recent trip..."
+          );
           [trips] = await connection.execute(
             `SELECT trip_id, driver_id
              FROM trips
@@ -108,7 +119,7 @@ router.get("/ride-details/:bookingId", async (req, res) => {
           `SELECT driver_id FROM trips WHERE trip_id = ?`,
           [tripId]
         );
-        
+
         if (trips.length > 0) {
           driverId = trips[0].driver_id;
         }
@@ -138,10 +149,16 @@ router.get("/ride-details/:bookingId", async (req, res) => {
           driverInfo = drivers[0];
           console.log("[Ride Details] Driver info fetched:", driverInfo);
         } else {
-          console.log("[Ride Details] No driver found for driver_id:", driverId);
+          console.log(
+            "[Ride Details] No driver found for driver_id:",
+            driverId
+          );
         }
       } else {
-        console.log("[Ride Details] WARNING: No driver_id found for booking", booking.booking_id);
+        console.log(
+          "[Ride Details] WARNING: No driver_id found for booking",
+          booking.booking_id
+        );
       }
 
       // Fetch existing review if any

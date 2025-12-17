@@ -21,7 +21,8 @@
   // Get booking ID from URL or session
   function getBookingId() {
     const params = new URLSearchParams(window.location.search);
-    const bookingId = params.get("bookingId") || sessionStorage.getItem("bookingId");
+    const bookingId =
+      params.get("bookingId") || sessionStorage.getItem("bookingId");
     return bookingId;
   }
 
@@ -42,24 +43,25 @@
   function generateInitials(firstName, lastName) {
     const first = (firstName || "").charAt(0).toUpperCase();
     const last = (lastName || "").charAt(0).toUpperCase();
-    return (first + last) || "?";
+    return first + last || "?";
   }
 
   // Fetch ride details from database
   async function fetchRideDetails(bookingId) {
     try {
       // Use centralized API config if available, otherwise fallback
-      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+      const apiBase =
+        window.API_CONFIG?.NODE_API_BASE || "http://localhost:3000";
       const url = `${apiBase}/api/passenger/ride-details/${bookingId}`;
-      
+
       console.log("[RideStatus] Fetching ride details from:", url);
-      
+
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const result = await response.json();
 
       if (!result.success) {
@@ -92,11 +94,12 @@
   async function submitReview(bookingId, passengerId, rating, comment) {
     try {
       // Use centralized API config if available, otherwise fallback
-      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+      const apiBase =
+        window.API_CONFIG?.NODE_API_BASE || "http://localhost:3000";
       const url = `${apiBase}/api/reviews`;
-      
+
       console.log("[RideStatus] Submitting review to:", url);
-      
+
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -131,40 +134,63 @@
     const review = data.review;
 
     // Populate Route Details section
-    document.getElementById("rate-pickup-location").textContent = 
-      `${booking.start_lat.toFixed(4)}, ${booking.start_long.toFixed(4)}`;
-    
-    document.getElementById("rate-dropoff-location").textContent = 
-      `${booking.end_lat.toFixed(4)}, ${booking.end_long.toFixed(4)}`;
-    
-    document.getElementById("rate-date-time").textContent = formatDateTime(booking.created_at);
+    document.getElementById(
+      "rate-pickup-location"
+    ).textContent = `${booking.start_lat.toFixed(
+      4
+    )}, ${booking.start_long.toFixed(4)}`;
+
+    document.getElementById(
+      "rate-dropoff-location"
+    ).textContent = `${booking.end_lat.toFixed(4)}, ${booking.end_long.toFixed(
+      4
+    )}`;
+
+    document.getElementById("rate-date-time").textContent = formatDateTime(
+      booking.created_at
+    );
 
     // Calculate rough distance (simple formula)
-    const distance = Math.sqrt(
-      Math.pow(booking.end_lat - booking.start_lat, 2) +
-      Math.pow(booking.end_long - booking.start_long, 2)
-    ) * 111; // Rough km conversion
-    document.getElementById("rate-distance").textContent = distance.toFixed(2) + " km";
+    const distance =
+      Math.sqrt(
+        Math.pow(booking.end_lat - booking.start_lat, 2) +
+          Math.pow(booking.end_long - booking.start_long, 2)
+      ) * 111; // Rough km conversion
+    document.getElementById("rate-distance").textContent =
+      distance.toFixed(2) + " km";
 
     // Populate Payment Details section
-    document.getElementById("rate-fare").textContent = formatCurrency(booking.total_cost * 0.9);
-    document.getElementById("rate-service-fee").textContent = formatCurrency(booking.total_cost * 0.1);
-    document.getElementById("rate-payment-method").textContent = booking.payment_type || "—";
-    document.getElementById("rate-total-paid").textContent = formatCurrency(booking.total_cost);
+    document.getElementById("rate-fare").textContent = formatCurrency(
+      booking.total_cost * 0.9
+    );
+    document.getElementById("rate-service-fee").textContent = formatCurrency(
+      booking.total_cost * 0.1
+    );
+    document.getElementById("rate-payment-method").textContent =
+      booking.payment_type || "—";
+    document.getElementById("rate-total-paid").textContent = formatCurrency(
+      booking.total_cost
+    );
 
     // Populate Driver Information section
     if (driver && driver.first_name && driver.last_name) {
-      console.log("[RideStatus] Setting driver name:", driver.first_name, driver.last_name);
-      document.getElementById("rate-driver-name").textContent = 
-        `${driver.first_name} ${driver.last_name}`;
-      
+      console.log(
+        "[RideStatus] Setting driver name:",
+        driver.first_name,
+        driver.last_name
+      );
+      document.getElementById(
+        "rate-driver-name"
+      ).textContent = `${driver.first_name} ${driver.last_name}`;
+
       // Set avatar initials
       const initials = generateInitials(driver.first_name, driver.last_name);
       document.getElementById("rate-driver-avatar").textContent = initials;
     } else {
       console.warn("[RideStatus] Driver data missing or incomplete:", driver);
       // Show placeholder if driver not yet assigned
-      document.getElementById("rate-driver-name").textContent = "Driver not yet assigned";
+      document.getElementById("rate-driver-name").textContent =
+        "Driver not yet assigned";
       document.getElementById("rate-driver-avatar").textContent = "—";
     }
 
@@ -292,9 +318,11 @@
     });
 
     // Reset on mouse leave
-    document.querySelector(".star-container")?.addEventListener("mouseleave", () => {
-      starButtons.forEach((b) => (b.style.opacity = "1"));
-    });
+    document
+      .querySelector(".star-container")
+      ?.addEventListener("mouseleave", () => {
+        starButtons.forEach((b) => (b.style.opacity = "1"));
+      });
   }
 
   // Setup review submission
@@ -318,7 +346,12 @@
       const comment = document.getElementById("reviewComment").value;
 
       // Submit to backend
-      const result = await submitReview(bookingId, passengerId, rating, comment);
+      const result = await submitReview(
+        bookingId,
+        passengerId,
+        rating,
+        comment
+      );
 
       const statusEl = document.getElementById("reviewStatus");
       if (result.success) {
@@ -340,9 +373,10 @@
       backBtn.addEventListener("click", () => {
         // Use navigation helper if available
         if (window.navigateToShared) {
-          window.navigateToShared('landing-page.html');
+          window.navigateToShared("landing-page.html");
         } else {
-          window.location.href = "/Corosa/public/shared/pages/landing-page.html";
+          window.location.href =
+            "/Corosa/public/shared/pages/landing-page.html";
         }
       });
     }

@@ -132,7 +132,7 @@
       if (!pickupCoords || !dropoffCoords || !selectedRide) {
         alert("Missing trip or ride data. Please start over.");
         if (window.navigateToPassenger) {
-          window.navigateToPassenger('select-pickup.html');
+          window.navigateToPassenger("select-pickup.html");
         } else {
           window.location.href = "/passenger/pages/select-pickup.html";
         }
@@ -152,7 +152,7 @@
       console.error("Error reading session data", e);
       alert("Missing trip or ride data. Please start over.");
       if (window.navigateToPassenger) {
-        window.navigateToPassenger('select-pickup.html');
+        window.navigateToPassenger("select-pickup.html");
       } else {
         window.location.href = "/passenger/pages/select-pickup.html";
       }
@@ -362,7 +362,7 @@
     if (!userId) {
       alert("Please log in before confirming a ride.");
       if (window.navigateToShared) {
-        window.navigateToShared('login.html');
+        window.navigateToShared("login.html");
       } else {
         window.location.href = "/shared/pages/login.html";
       }
@@ -376,19 +376,19 @@
       selectedRide.tripId ||
       selectedRide.trip_id ||
       selectedRide.id;
-    
+
     console.log("[ConfirmRide] Trip ID sources:", {
       sessionStorage: sessionStorage.getItem("selectedTripId"),
       selectedRide_tripId: selectedRide.tripId,
       selectedRide_trip_id: selectedRide.trip_id,
       selectedRide_id: selectedRide.id,
-      final_tripId: tripId
+      final_tripId: tripId,
     });
-    
+
     if (!tripId) {
       alert("Missing trip information. Please select a ride again.");
       if (window.navigateToPassenger) {
-        window.navigateToPassenger('request-ride.html');
+        window.navigateToPassenger("request-ride.html");
       } else {
         window.location.href = "/passenger/pages/request-ride.html";
       }
@@ -461,15 +461,13 @@
        * { success: false, message: "Missing required fields..." }
        */
       // Use centralized API config if available, otherwise fallback
-      const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
-      const bookingResponse = await fetch(
-        `${apiBase}/api/bookings`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingPayload),
-        }
-      );
+      const apiBase =
+        window.API_CONFIG?.NODE_API_BASE || "http://localhost:3000";
+      const bookingResponse = await fetch(`${apiBase}/api/bookings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingPayload),
+      });
       const bookingResult = await bookingResponse.json();
 
       // Check if booking creation was successful

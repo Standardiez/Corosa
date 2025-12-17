@@ -14,23 +14,29 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, Postman, or same-origin requests)
     if (!origin) return callback(null, true);
-    
+
     // Get allowed origins from environment or use defaults
-    const allowedOrigins = process.env.CORS_ORIGIN 
-      ? process.env.CORS_ORIGIN.split(',')
-      : ['http://localhost', 'http://localhost:8080', 'http://127.0.0.1', 'http://127.0.0.1:8080'];
-    
+    const allowedOrigins = process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(",")
+      : [
+          "http://localhost",
+          "http://localhost:8080",
+          "http://127.0.0.1",
+          "http://127.0.0.1:8080",
+        ];
+
     // Allow if origin is in allowed list, or if it's a local network IP (for LAN access)
-    const isAllowed = allowedOrigins.some(allowed => origin.startsWith(allowed)) ||
-                     /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin) ||
-                     /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(origin) ||
-                     /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+(:\d+)?$/.test(origin);
-    
+    const isAllowed =
+      allowedOrigins.some((allowed) => origin.startsWith(allowed)) ||
+      /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin) ||
+      /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(origin) ||
+      /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+(:\d+)?$/.test(origin);
+
     callback(null, isAllowed);
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -69,8 +75,10 @@ app.use("/api/reviews", passengerReviewsRouter); // Review submission at /api/re
 
 // Start server - bind to 0.0.0.0 for LAN access
 const PORT = process.env.PORT || 3000;
-const HOST = '0.0.0.0';
+const HOST = "0.0.0.0";
 app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
-  console.log(`CORS enabled for: ${process.env.CORS_ORIGIN || 'localhost and LAN IPs'}`);
+  console.log(
+    `CORS enabled for: ${process.env.CORS_ORIGIN || "localhost and LAN IPs"}`
+  );
 });

@@ -39,7 +39,8 @@ router.post("/reviews", async (req, res) => {
 
     res.json({
       success: true,
-      message: existingReview.length > 0 ? "Review updated" : "Review submitted",
+      message:
+        existingReview.length > 0 ? "Review updated" : "Review submitted",
       data: {
         bookingId,
         rating,
