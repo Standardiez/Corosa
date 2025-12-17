@@ -7,7 +7,7 @@ RUN docker-php-ext-install pdo pdo_mysql
 # Enable Apache mod_rewrite and mod_headers
 RUN a2enmod rewrite headers
 
-# Add CORS headers for API endpoints (with proper handling for preflight requests)
+# Add CORS headers for API endpoints
 RUN echo '<IfModule mod_headers.c>\n\
     # Handle preflight requests\n\
     Header always set Access-Control-Allow-Origin "*"\n\

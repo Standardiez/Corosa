@@ -38,7 +38,7 @@ services:
       DB_PASSWORD: corosa_password
       DB_NAME: corosa_db
       PORT: 3000
-      CORS_ORIGIN: "http://localhost:8080,http://localhost,http://127.0.0.1:8080,http://127.0.0.1"  # Allow Docker frontend + direct calls + LAN
+      CORS_ORIGIN: "http://localhost:8080,http://localhost,http://127.0.0.1:8080,http://127.0.0.1" 
     ports:
       - "0.0.0.0:3000:3000"  # Bind to all interfaces for LAN access
     depends_on:
@@ -58,7 +58,7 @@ services:
       retries: 3
       start_period: 40s
 
-  # PHP/Apache Server (for remaining PHP endpoints)
+  # PHP/Apache Server
   php-api:
     build:
       context: .
