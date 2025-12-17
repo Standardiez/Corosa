@@ -39,6 +39,9 @@
 
 // Validation patterns
 const patterns = {
+  firstName: /^[a-zA-Z'-]{1,50}$/,
+  middleInitial: /^[a-zA-Z]{0,1}$/,
+  lastName: /^[a-zA-Z'-]{1,50}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   mobile: /^09\d{9}$/
 };
