@@ -65,18 +65,7 @@ function switchTab(tab) {
         btn.classList.toggle('active', btn.dataset.tab === tab);
     });
 
-    // Show/hide tables
-    document.getElementById('rides-table-container').style.display =
-        tab === 'rides' ? 'block' : 'none';
-    document.getElementById('transactions-table-container').style.display =
-        tab === 'transactions' ? 'block' : 'none';
-
-    // Load appropriate data
-    if (tab === 'rides') {
-        loadVehicleData();
-    } else {
-        loadTransactionsData();
-    }
+    loadVehicleData();
 }
 
 /**
@@ -106,12 +95,11 @@ async function loadStatistics() {
 async function loadVehicleData() {
     try {
         // Fetch vehicle data from backend Node.js API
-        const response = await fetch('/backend/api/shared/js/vehicle');
+        const response = await fetch('http://localhost:3000/api/vehicle');
         const result = await response.json();
         if (result.success && Array.isArray(result.data)) {
             allVehicles = result.data.map(vehicle => ({
                 owner: vehicle.driver_id || '',
-                license: vehicle.license || '',
                 model: vehicle.vehicle_model || '',
                 plate: vehicle.plate_number || '',
                 seatCapacity: vehicle.seat_capacity || '',

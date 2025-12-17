@@ -98,17 +98,25 @@ async function loadStatistics() {
  */
 async function loadUserData() {
     try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/Corosa/backend/api/users.php?action=getAll');
-        // allUsers = await response.json();
-
-        // Mock users data
-        allUsers = generateMockUsers();
+        // Fetch users from backend Node.js API
+        const response = await fetch('http:/localhost:3000/api/user');
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data)) {
+            allUsers = result.data.map(user => ({
+                id: user.id,
+                name: user.username || '',
+                email: user.email || '',
+                mobile: user.mobile || '',
+                birthdate: user.birthdate || '',
+                occupation: user.occupation || '',
+                status: user.status || ''
+            }));
+        } else {
+            allUsers = [];
+        }
         filteredData = [...allUsers];
-
         renderUsersTable();
         updatePagination();
-
     } catch (error) {
         console.error('Error loading users:', error);
         showError('Failed to load users data');
@@ -116,32 +124,7 @@ async function loadUserData() {
 }
 
 /**
- * Generate mock vehicle data
- */
-function generateMockUsers() {
-    const statuses = ['verified', 'pending', 'declined'];
-    const names = ['Juan Dela Cruz', 'Maria Santos', 'Pedro Reyes', 'Ana Garcia', 'Carlos Lim', 'Sofia Tan'];
-    const emails = ['juan@email.com', 'maria@email.com', 'pedro@email.com', 'ana@email.com', 'carlos@email.com', 'sofia@email.com'];
-    const mobiles = ['09171234567', '09181234567', '09191234567', '09201234567', '09211234567', '09221234567'];
-    const birthdates = ['1990-01-01', '1985-05-12', '1992-07-23', '1988-11-30', '1995-03-15', '1993-09-09'];
-    const occupations = ['Teacher', 'Student'];
-
-    const users = [];
-    for (let i = 1; i <= 25; i++) {
-        users.push({
-            name: names[Math.floor(Math.random() * names.length)],
-            email: emails[Math.floor(Math.random() * emails.length)],
-            mobile: mobiles[Math.floor(Math.random() * mobiles.length)],
-            birthdate: birthdates[Math.floor(Math.random() * birthdates.length)],
-            occupation: occupations[Math.floor(Math.random() * occupations.length)],
-            status: statuses[Math.floor(Math.random() * statuses.length)]
-        });
-    }
-    return users;
-}
-
-/**
- * Render vehicles table
+ * Render users table
  */
 function renderUsersTable() {
     const tbody = document.getElementById('users-table-body');

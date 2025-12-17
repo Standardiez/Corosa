@@ -1,7 +1,7 @@
 const express = require("express");
 // You may need to create VehicleNode or similar class for DB logic
 // For now, let's assume VehicleNode is similar to TripNode
-const VehicleNode = require("../../../classes/driver/js/VehicleNode");
+const VehicleNode = require("../../../classes/driver/js/VehicleNode.js");
 
 const router = express.Router();
 const vehicle = new VehicleNode();

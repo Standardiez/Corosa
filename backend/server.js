@@ -51,12 +51,14 @@ const driverRidesRouter = require("./server/routes/driver-rides");
 const driverProfileRouter = require("./server/routes/driver-profile");
 const driverBookingsRouter = require("./server/routes/driver-bookings");
 const passengerReviewsRouter = require("./server/routes/passenger-reviews");
+const userRouter = require("./api/shared/js/user");
 
 // Mount routes
 app.use("/api/trips", tripsRouter);
 app.use("/api/bookings", bookingsRouter);
 app.use("/api/trip-assignments", tripAssignmentsRouter);
 app.use("/api/vehicle", vehicleRouter);
+app.use("/api/user", userRouter);
 app.use("/api/driver", driverRegistrationRouter);
 app.use("/api/driver", driverRidesRouter);
 app.use("/api/driver", driverProfileRouter);
