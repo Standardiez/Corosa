@@ -29,6 +29,7 @@ const driverRidesRouter = require("./server/routes/driver-rides");
 const driverBookingsRouter = require("./server/routes/driver-bookings");
 const passengerRideDetailsRouter = require("./server/routes/passenger-ride-details");
 const passengerReviewsRouter = require("./server/routes/passenger-reviews");
+const adminRouter = require("./server/routes/admin");
 
 // Mount routes
 app.use("/api/trips", tripsRouter);
@@ -43,6 +44,9 @@ app.use("/api", driverBookingsRouter); // Bookings at /api level (POST /api/book
 // Passenger ride details + reviews (used by ride-status page)
 app.use("/api/passenger", passengerRideDetailsRouter);
 app.use("/api/reviews", passengerReviewsRouter);
+
+// Admin routes
+app.use("/api/admin", adminRouter);
 
 // Start server
 const PORT = 3000;
