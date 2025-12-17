@@ -93,9 +93,21 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!firstName) {
       setError("firstName", "First name is required");
       valid = false;
+    } else if (!patterns.firstName.test(firstName)) {
+      setError("firstName", "First name can only contain letters, apostrophes, and hyphens");
+      valid = false;
     }
+
+    if (middleInitial && !patterns.middleInitial.test(middleInitial)) {
+      setError("middleInitial", "Middle initial must be a single letter");
+      valid = false;
+    }
+
     if (!lastName) {
       setError("lastName", "Last name is required");
+      valid = false;
+    } else if (!patterns.lastName.test(lastName)) {
+      setError("lastName", "Last name can only contain letters, apostrophes, and hyphens");
       valid = false;
     }
     if (!birthdate) {

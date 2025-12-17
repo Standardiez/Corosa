@@ -3,6 +3,10 @@
 
     // Use centralized API config if available, otherwise fallback
     const API_BASE = window.API_CONFIG?.PHP_API_BASE || '/backend/api';
+    const USERS_ENDPOINT =
+        window.API_CONFIG?.PHP_API?.USERS || `${API_BASE}/shared/php/users.php`;
+    const ADDRESS_ENDPOINT =
+        window.API_CONFIG?.PHP_API?.ADDRESS || `${API_BASE}/shared/php/address.php`;
     let currentUserData = null;
     let currentAddressData = null;
     let isEditMode = false;
@@ -69,11 +73,11 @@
     }
 
     async function fetchUserProfile(userId) {
-        const userData = await fetchJson(`${API_BASE}/users.php?user_id=${encodeURIComponent(userId)}`);
+        const userData = await fetchJson(`${USERS_ENDPOINT}?user_id=${encodeURIComponent(userId)}`);
         let addressData = null;
         if (userData.address_id) {
             try {
-                addressData = await fetchJson(`${API_BASE}/address.php?address_id=${encodeURIComponent(userData.address_id)}`);
+                addressData = await fetchJson(`${ADDRESS_ENDPOINT}?address_id=${encodeURIComponent(userData.address_id)}`);
             } catch (e) {
                 console.warn('Unable to fetch address data', e);
             }
@@ -149,6 +153,13 @@
         document.getElementById('cancel-edit-btn').style.display = 'none';
     }
 
+    // Reuse same validation patterns as signup
+    const namePatterns = {
+        firstName: /^[a-zA-Z'-]{1,50}$/,
+        middleInitial: /^[a-zA-Z]{0,1}$/,
+        lastName: /^[a-zA-Z'-]{1,50}$/
+    };
+
     async function saveProfileChanges() {
         const userId = sessionStorage.getItem('userId') || getStoredUser()?.userId;
         if (!userId) {
@@ -169,9 +180,25 @@
             address_id: currentUserData?.address_id || null
         };
 
-        // Validate required fields
-        if (!userUpdate.first_name || !userUpdate.last_name) {
-            alert('First name and last name are required.');
+        // Validate required fields and formats (same rules as signup)
+        if (!userUpdate.first_name) {
+            alert('First name is required.');
+            return;
+        }
+        if (!namePatterns.firstName.test(userUpdate.first_name)) {
+            alert('First name can only contain letters, apostrophes, and hyphens.');
+            return;
+        }
+        if (userUpdate.middle_initial && !namePatterns.middleInitial.test(userUpdate.middle_initial)) {
+            alert('Middle initial must be a single letter.');
+            return;
+        }
+        if (!userUpdate.last_name) {
+            alert('Last name is required.');
+            return;
+        }
+        if (!namePatterns.lastName.test(userUpdate.last_name)) {
+            alert('Last name can only contain letters, apostrophes, and hyphens.');
             return;
         }
 
@@ -188,7 +215,7 @@
 
         try {
             // Update user
-            const userResponse = await fetch(`${API_BASE}/users.php`, {
+            const userResponse = await fetch(USERS_ENDPOINT, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userUpdate)
@@ -208,7 +235,7 @@
                     address_barangay: document.getElementById('barangay-input').value.trim()
                 };
 
-                const addressResponse = await fetch(`${API_BASE}/address.php`, {
+                const addressResponse = await fetch(ADDRESS_ENDPOINT, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(addressUpdate)
