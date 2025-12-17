@@ -187,6 +187,10 @@
               ></div>
             </div>
 
+            <button id="view-ride-status-btn" class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+              <i class="bx bx-show"></i> View Ride Status
+            </button>
+
             <!-- Passengers Section -->
             <div
               id="passengers-section"
@@ -333,6 +337,15 @@
           sessionStorage.setItem("userRole", "driver");
           // Redirect to select pickup location
           window.location.href = "../../passenger/pages/select-pickup.html";
+        });
+
+      // Handle "View Ride Status" button click
+      document
+        .getElementById("view-ride-status-btn")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          // Redirect to driver ride status page
+          window.location.href = "driver-ridestatus.html";
         });
     </script>
     <script src="../../shared/js/header-auth.js"></script>

@@ -74,19 +74,19 @@ function switchTab(tab) {
  * Load statistics
  */
 async function loadStatistics() {
-    // TODO: Replace with actual API call
-    // const response = await fetch('/Corosa/backend/api/users-stats.php');
     try {
-        const statsResponse = await fetch('http://localhost:3000/api/user?get=stats');
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        const statsResponse = await fetch(`${apiBase}/api/admin/dashboard`);
         const statsResult = await statsResponse.json();
-        if (!statsResult.success) {
+        if (statsResult.status !== 'success') {
             showError('Failed to load user statistics');
             return;
         }
 
-        document.getElementById('stat-total-users').textContent = statsResult.data.totalUsers;
-        document.getElementById('stat-active-users').textContent = statsResult.data.active;
-        document.getElementById('stat-inactive-users').textContent = statsResult.data.inactive;
+        const totalUsers = (statsResult.data.totalDrivers || 0) + (statsResult.data.totalPassengers || 0);
+        document.getElementById('stat-total-users').textContent = totalUsers;
+        document.getElementById('stat-active-users').textContent = statsResult.data.totalPassengers || 0;
+        document.getElementById('stat-inactive-users').textContent = statsResult.data.totalDrivers || 0;
     } catch (error) {
         console.error('Error loading user statistics:', error);
         showError('Failed to load user statistics');
@@ -98,18 +98,19 @@ async function loadStatistics() {
  */
 async function loadUserData() {
     try {
-        // Fetch users from backend Node.js API
-        const response = await fetch('http://localhost:3000/api/user?get=all');
+        // Fetch users from backend Node.js API (passengers endpoint)
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        const response = await fetch(`${apiBase}/api/admin/passengers`);
         const result = await response.json();
-        if (result.success && Array.isArray(result.data)) {
+        if (result.status === 'success' && Array.isArray(result.data)) {
             allUsers = result.data.map(user => ({
-                id: user.id,
-                name: user.first_name + ' ' + user.last_name || '',
+                id: user.user_id,
+                name: (user.first_name || '') + ' ' + (user.last_name || ''),
                 email: user.email || '',
                 mobile: user.mobile_number || '',
-                birthdate: user.birthdate || '',
-                occupation: user.employment_status || '',
-                status: user.account_status || ''
+                birthdate: user.created_at || '',
+                occupation: '-',
+                status: user.account_status || 'active'
             }));
         } else {
             allUsers = [];

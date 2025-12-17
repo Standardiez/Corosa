@@ -75,7 +75,8 @@ async function loadStatistics() {
     // TODO: Replace with actual API call
     // const response = await fetch('/Corosa/backend/api/rides-stats.php');
     try {
-        const statsResponse = await fetch('http://localhost:3000/api/vehicle?get=stats');
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        const statsResponse = await fetch(`${apiBase}/api/vehicle?get=stats`);
         const statsResult = await statsResponse.json();
         if (!statsResult.success) {
             showError('Failed to load vehicle statistics');
@@ -97,7 +98,8 @@ async function loadStatistics() {
 async function loadVehicleData() {
     try {
         // Fetch vehicle data from backend Node.js API
-        const response = await fetch('http://localhost:3000/api/vehicle?get=all');
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        const response = await fetch(`${apiBase}/api/vehicle?get=all`);
         const result = await response.json();
         if (result.success && Array.isArray(result.data)) {
             allVehicles = result.data.map(vehicle => ({

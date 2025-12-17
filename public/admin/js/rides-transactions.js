@@ -70,7 +70,8 @@ function switchTab(tab) {
 async function loadStatistics() {
     try {
         // Fetch real data from Node.js API
-        const response = await fetch('http://localhost:3000/api/trips?action=getAllForAdmin');
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        const response = await fetch(`${apiBase}/api/trips?action=getAllForAdmin`);
         const result = await response.json();
 
         if (result.success && Array.isArray(result.data)) {
@@ -125,7 +126,8 @@ function loadMockStatistics() {
 async function loadRidesData() {
     try {
         // Fetch real data from Node.js API
-        const response = await fetch('http://localhost:3000/api/trips?action=getAllForAdmin');
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        const response = await fetch(`${apiBase}/api/trips?action=getAllForAdmin`);
         const result = await response.json();
 
         if (result.success && Array.isArray(result.data)) {
@@ -276,7 +278,8 @@ function calculateFare(distance) {
 async function loadTransactionsData() {
     try {
         // Fetch real data from Node.js API
-        const response = await fetch('http://localhost:3000/api/trip-assignments?action=getAllForAdmin');
+        const apiBase = window.API_CONFIG?.NODE_API_BASE || 'http://localhost:3000';
+        const response = await fetch(`${apiBase}/api/trip-assignments?action=getAllForAdmin`);
         const result = await response.json();
 
         if (result.success && Array.isArray(result.data)) {

@@ -591,7 +591,7 @@ function showError(message) {
  */
 async function loadPendingRequests() {
   try {
-    if (!driverId || !currentTripId) {
+    if (!driverId) {
       return;
     }
 
@@ -615,12 +615,8 @@ async function loadPendingRequests() {
     const result = await response.json();
 
     if (result.status === "success" && result.pendingRequests) {
-      // Filter requests for the current trip only
-      const tripRequests = result.pendingRequests.filter(
-        (req) => req.tripId === parseInt(currentTripId) && req.status === "pending"
-      );
-
-      displayPendingRequests(tripRequests);
+      // Display all pending requests for the driver
+      displayPendingRequests(result.pendingRequests);
     }
   } catch (error) {
     console.error("[Driver Ride Status] Error loading pending requests:", error);
@@ -661,10 +657,10 @@ function displayPendingRequests(requests) {
       </div>
       <div class="request-actions">
         <button class="btn-accept" onclick="acceptRequest(${request.bookingId}, ${request.tripId})">
-          <i class="bx bx-check"></i> Accept
+          ✔ Accept
         </button>
         <button class="btn-decline" onclick="declineRequest(${request.bookingId}, ${request.tripId})">
-          <i class="bx bx-x"></i> Decline
+          ✖ Decline
         </button>
       </div>
     `;

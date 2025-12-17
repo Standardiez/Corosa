@@ -8,12 +8,12 @@ const express = require("express");
 const mysql = require("mysql2/promise");
 const router = express.Router();
 
-// Database connection pool
+// Database connection pool - supports both Docker and local environments
 const pool = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "corosa_db",
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "corosa_db",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
