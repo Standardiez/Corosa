@@ -1,22 +1,6 @@
 // Search and sort state
 let searchQuery = '';
 
-// Add event listeners for search and sort (apply only on button press)
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('user-search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            searchQuery = e.target.value.toLowerCase();
-        });
-    }
-    // Apply Filters button
-    const applyBtn = document.getElementById('apply-filters');
-    if (applyBtn) {
-        applyBtn.addEventListener('click', function() {
-            applyFilters();
-        });
-    }
-});
 /**
  * Rides & Transactions Management
  * Admin page for monitoring active rides and transaction history
@@ -31,6 +15,20 @@ let filteredData = [];
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners for search and sort (apply only on button press)
+    const searchInput = document.getElementById('user-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            searchQuery = e.target.value.toLowerCase();
+        });
+    }
+    // Apply Filters button
+    const applyBtn = document.getElementById('apply-filters');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', function() {
+            applyFilters();
+        });
+    }
     initializeEventListeners();
     loadStatistics();
     loadUserData();
@@ -99,7 +97,7 @@ async function loadStatistics() {
 async function loadUserData() {
     try {
         // Fetch users from backend Node.js API
-        const response = await fetch('http:/localhost:3000/api/user');
+        const response = await fetch('http://localhost:3000/api/user');
         const result = await response.json();
         if (result.success && Array.isArray(result.data)) {
             allUsers = result.data.map(user => ({
