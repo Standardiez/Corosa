@@ -136,7 +136,15 @@ if (!empty($errors)) {
     echo json_encode([
         "success" => false,
         "message" => "Validation failed",
-        "errors" => $errors
+        "errors" => $errors,
+        "debug" => [
+            "userId" => $userId,
+            "email" => $email,
+            "plateNumber" => $plateNumber,
+            "vehicleModel" => $vehicleModel,
+            "seatCapacity" => $seatCapacity,
+            "hasLicenseImage" => !empty($driverLicenseBase64)
+        ]
     ]);
     exit;
 }

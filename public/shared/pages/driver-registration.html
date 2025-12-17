@@ -9,6 +9,7 @@
       href="https://cdn.boxicons.com/3.0.3/fonts/basic/boxicons.min.css"
       rel="stylesheet"
     />
+    <script src="../js/api-config.js"></script>
   </head>
   <body>
     <header class="header">
@@ -293,11 +294,31 @@
           const base64String = e.target.result.split(",")[1]; // Remove data:image/jpeg;base64, prefix
           const imageType = driverLicenseFile.type;
 
+          // Get userId from localStorage
+          const userDataStr = localStorage.getItem("userData");
+          let userId = null;
+          if (userDataStr) {
+            try {
+              userId = JSON.parse(userDataStr).userId;
+            } catch (e) {
+              console.error("Failed to parse userData:", e);
+            }
+          }
+
+          // Check if user is logged in
+          if (!userId) {
+            loadingIndicator.style.display = "none";
+            form.style.opacity = "1";
+            form.style.pointerEvents = "auto";
+            alert("You must be logged in to register as a driver. Please log in first.");
+            sessionStorage.setItem("flowIntent", "driver");
+            window.location.href = "login.html";
+            return;
+          }
+
           // Create JSON payload
           const submitData = {
-            userId: localStorage.getItem("userData")
-              ? JSON.parse(localStorage.getItem("userData")).userId
-              : null,
+            userId: userId,
             email: email,
             plateNumber: plateNumber,
             vehicleModel: vehicleModel,
@@ -311,23 +332,43 @@
             base64String.length,
             "bytes"
           );
+          console.log("User ID:", userId, "Email:", email);
+          console.log("Full submit data:", JSON.stringify({
+            userId: submitData.userId,
+            email: submitData.email,
+            plateNumber: submitData.plateNumber,
+            vehicleModel: submitData.vehicleModel,
+            seatCapacity: submitData.seatCapacity,
+            hasLicenseImage: !!submitData.driverLicenseBase64
+          }));
 
-          // Send to PHP backend
-          fetch("../../../backend/api/driver/driver-registration-handler.php", {
+          // Send to PHP backend (use absolute path for Docker compatibility)
+          const apiEndpoint = window.API_CONFIG?.PHP_API_BASE 
+            ? `${window.API_CONFIG.PHP_API_BASE}/driver/driver-registration-handler.php`
+            : "/backend/api/driver/driver-registration-handler.php";
+          fetch(apiEndpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(submitData),
           })
             .then((r) => {
               console.log("Response status:", r.status);
-              if (!r.ok) {
-                throw new Error(`HTTP ${r.status}: ${r.statusText}`);
-              }
               return r.text().then((text) => {
                 console.log("Response text:", text);
                 try {
-                  return JSON.parse(text);
+                  const json = JSON.parse(text);
+                  if (!r.ok) {
+                    // Include server error details in the thrown error
+                    const errMsg = json.message || `HTTP ${r.status}`;
+                    const errDetails = json.errors ? JSON.stringify(json.errors) : '';
+                    const debugInfo = json.debug ? JSON.stringify(json.debug) : '';
+                    throw new Error(`${errMsg}. Errors: ${errDetails}. Debug: ${debugInfo}`);
+                  }
+                  return json;
                 } catch (parseErr) {
+                  if (!r.ok) {
+                    throw new Error(`HTTP ${r.status}: ${r.statusText}. Response: ${text.substring(0, 500)}`);
+                  }
                   console.error("Failed to parse JSON:", parseErr);
                   throw new Error(
                     "Server returned invalid JSON: " + text.substring(0, 200)
