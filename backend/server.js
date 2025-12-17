@@ -51,6 +51,7 @@ const driverRidesRouter = require("./server/routes/driver-rides");
 const driverProfileRouter = require("./server/routes/driver-profile");
 const driverBookingsRouter = require("./server/routes/driver-bookings");
 const passengerReviewsRouter = require("./server/routes/passenger-reviews");
+const passengerRideDetailsRouter = require("./server/routes/passenger-ride-details");
 const userRouter = require("./api/shared/js/user");
 
 // Mount routes
@@ -63,6 +64,7 @@ app.use("/api/driver", driverRegistrationRouter);
 app.use("/api/driver", driverRidesRouter);
 app.use("/api/driver", driverProfileRouter);
 app.use("/api", driverBookingsRouter); // Bookings at /api level (POST /api/bookings)
+app.use("/api/passenger", passengerRideDetailsRouter); // Ride details at /api/passenger level
 app.use("/api/reviews", passengerReviewsRouter); // Review submission at /api/reviews level
 
 // Start server - bind to 0.0.0.0 for LAN access

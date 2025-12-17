@@ -374,7 +374,17 @@
     const tripId =
       sessionStorage.getItem("selectedTripId") ||
       selectedRide.tripId ||
+      selectedRide.trip_id ||
       selectedRide.id;
+    
+    console.log("[ConfirmRide] Trip ID sources:", {
+      sessionStorage: sessionStorage.getItem("selectedTripId"),
+      selectedRide_tripId: selectedRide.tripId,
+      selectedRide_trip_id: selectedRide.trip_id,
+      selectedRide_id: selectedRide.id,
+      final_tripId: tripId
+    });
+    
     if (!tripId) {
       alert("Missing trip information. Please select a ride again.");
       if (window.navigateToPassenger) {
@@ -506,11 +516,11 @@
         "[ConfirmRide] Booking created with status: pending. Navigating to ride-status..."
       );
 
-      // Navigate to ride status page to show "Waiting for driver's approval" message
+      // Navigate to ride status page with booking ID in URL
       if (window.navigateToPassenger) {
-        window.navigateToPassenger('ride-status.html');
+        window.navigateToPassenger(`ride-status.html?bookingId=${bookingId}`);
       } else {
-        window.location.href = "/passenger/pages/ride-status.html";
+        window.location.href = `/Corosa/public/passenger/pages/ride-status.html?bookingId=${bookingId}`;
       }
     } catch (error) {
       // ================================================================

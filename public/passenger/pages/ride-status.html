@@ -457,56 +457,6 @@
     </header>
 
     <main class="container status-card" style="padding-top:var(--spacing-lg); padding-bottom:var(--spacing-xl);">
-        <section class="card">
-            <h2 style="margin:0 0 var(--spacing-sm) 0">Ride status</h2>
-            <p class="text-muted">Track your ride in real time.</p>
-
-            <div class="stages" id="stages">
-                <div class="stage" id="stage-1">
-                    <div class="circle">1</div>
-                    <div class="text-muted">Driver en route</div>
-                </div>
-                <div class="stage" id="stage-2">
-                    <div class="circle">2</div>
-                    <div class="text-muted">Onboard — heading to drop-off</div>
-                </div>
-                <div class="stage" id="stage-3">
-                    <div class="circle">3</div>
-                    <div class="text-muted">Completed</div>
-                </div>
-            </div>
-
-            <div id="map" class="map-area">Loading map…</div>
-
-            <div class="summary">
-                <div class="block">
-                    <small class="text-muted">Pickup</small>
-                    <div id="pickup-location">Loading...</div>
-                </div>
-                <div class="block">
-                    <small class="text-muted">Drop-off</small>
-                    <div id="dropoff-location">Loading...</div>
-                </div>
-            </div>
-
-            <div class="driver-mini" id="driver-mini">
-                <div class="driver-avatar" id="driver-avatar">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 8h-16v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2z"
-                            fill="currentColor" />
-                    </svg>
-                </div>
-                <div style="flex:1">
-                    <div id="driver-name" style="font-weight:700">Loading...</div>
-                    <div id="driver-employment" class="text-muted"></div>
-                </div>
-                <div style="text-align:right">
-                    <div class="text-muted">Seats</div>
-                    <div id="driver-capacity" style="font-weight:700">—</div>
-                </div>
-            </div>
-
-        </section>
 
         <section class="card rate-review-section" aria-labelledby="rate-review-title">
             <div class="rate-review-container" data-booking-id="" data-driver-id="">
@@ -515,30 +465,12 @@
                     <p>Review your completed ride information</p>
                 </div>
 
-                <script src="../js/rate-and-review.js">
-                </script>
-                <script src="../../shared/js/header-auth.js"></script>
-
                 <div class="info-card">
                     <h2>Driver Information</h2>
                     <div class="driver-section">
-                        <div class="driver-avatar" id="rate-driver-avatar" aria-hidden="true">🚗</div>
+                        <div class="driver-avatar" id="rate-driver-avatar" aria-hidden="true">KN</div>
                         <div class="driver-info">
                             <h3 id="rate-driver-name">Driver name</h3>
-                            <div class="driver-meta">
-                                <span class="badge" id="rate-driver-rating">⭐ — Rating</span>
-                                <span class="vehicle-info" id="rate-vehicle-info">Vehicle details</span>
-                            </div>
-                            <button class="btn-view-reviews" type="button" data-driver-id="">View Reviews</button>
-                        </div>
-                    </div>
-                    <div class="reviews-panel" id="driverReviews" aria-live="polite" aria-expanded="false">
-                        <header>
-                            <h3>Driver Reviews</h3>
-                            <button class="btn btn-outline btn-close-reviews" type="button">Close</button>
-                        </header>
-                        <div class="reviews-body">
-                            <div class="empty-state">No reviews found yet.</div>
                         </div>
                     </div>
                 </div>
@@ -632,7 +564,7 @@
     <script src="../../shared/js/api-config.js"></script>
     <script src="../../shared/js/navigation-helper.js"></script>
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-    <script src="../js/ride-status.js"></script>
+    <script src="../js/ride-status-database.js"></script>
 
 </body>
 
