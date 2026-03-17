@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -48,29 +48,122 @@
     </header>
 
     <main>
-      <section class="hero">
-        <div class="container hero-inner">
-          <img
-            src="../../assets/corosa-logo.png"
-            alt="Corosa Logo"
-            class="hero-logo"
-          />
-          <p class="hero-tagline">Carpooling by and for SLU Maryheights.</p>
-
-          <div class="hero-ctas" style="margin-top: var(--spacing-lg)">
+      <!-- About Us Section -->
+      <section class="about-us">
+        <h2 class="about-us-title">About Us</h2>
+        <div class="container about-us-container">
+          <!-- Left Side: Member Details -->
+          <div class="about-us-left">
+            <div class="member-role-badge" id="memberRoleBadge">Role Title</div>
+            <h2 class="about-us-member-name" id="memberName">Member Name</h2>
+            <p class="about-us-member-desc" id="memberDescription">
+              Meet the talented individual behind Corosa, dedicated to making
+              carpooling convenient and accessible for the SLU Maryheights
+              community.
+            </p>
             <a
-              id="find"
+              id="exploreBtn"
               class="btn btn-primary"
               href="../../passenger/pages/select-pickup.html"
-              >Find Ride</a
             >
-            <a
-              id="create"
-              class="btn btn-accent"
-              href="index.html"
-              style="margin-left: var(--spacing-md)"
-              >Go Back</a
-            >
+              Find Ride
+            </a>
+          </div>
+
+          <!-- Right Side: Carousel -->
+          <div class="about-us-right">
+            <div class="carousel-container">
+              <div class="carousel-track" id="carouselTrack">
+                <!-- Team Member Cards -->
+                <div class="carousel-card active" data-member-index="0">
+                  <div class="carousel-card-image">
+                    <img
+                      src="../../assets/Redolme_PressID.png"
+                      alt="Member 1"
+                    />
+                  </div>
+                </div>
+                <div class="carousel-card" data-member-index="1">
+                  <div class="carousel-card-image">
+                    <img src="../../assets/PAYANAY.jpg" alt="Member 2" />
+                  </div>
+                </div>
+                <div class="carousel-card" data-member-index="2">
+                  <div class="carousel-card-image">
+                    <img src="../../assets/renee.jpg" alt="Member 3" />
+                  </div>
+                </div>
+                <div class="carousel-card" data-member-index="3">
+                  <div class="carousel-card-image">
+                    <img src="../../assets/me.jpg" alt="Member 4" />
+                  </div>
+                </div>
+                <div class="carousel-card" data-member-index="4">
+                  <div class="carousel-card-image">
+                    <img src="../../assets/nowel.jpg" alt="Member 5" />
+                  </div>
+                </div>
+                <div class="carousel-card" data-member-index="5">
+                  <div class="carousel-card-image">
+                    <img src="../../assets/stev.jpg" alt="Member 6" />
+                  </div>
+                </div>
+                <div class="carousel-card" data-member-index="6">
+                  <div class="carousel-card-image">
+                    <img src="../../assets/jenn.jpg" alt="Member 7" />
+                  </div>
+                </div>
+                <div class="carousel-card" data-member-index="7">
+                  <div class="carousel-card-image">
+                    <img src="../../assets/ian.jpg" alt="Member 8" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Carousel Navigation Dots -->
+            <div class="carousel-dots" id="carouselDots">
+              <button
+                class="dot active"
+                data-index="0"
+                aria-label="View member 1"
+              ></button>
+              <button
+                class="dot"
+                data-index="1"
+                aria-label="View member 2"
+              ></button>
+              <button
+                class="dot"
+                data-index="2"
+                aria-label="View member 3"
+              ></button>
+              <button
+                class="dot"
+                data-index="3"
+                aria-label="View member 4"
+              ></button>
+              <button
+                class="dot"
+                data-index="4"
+                aria-label="View member 5"
+              ></button>
+              <button
+                class="dot"
+                data-index="5"
+                aria-label="View member 6"
+              ></button>
+              <button
+                class="dot"
+                data-index="6"
+                aria-label="View member 7"
+              ></button>
+              <button
+                class="dot"
+                data-index="7"
+                aria-label="View member 8"
+              ></button>
+            </div>
           </div>
         </div>
       </section>
@@ -103,6 +196,101 @@
             }
           });
         });
+
+      // Carousel functionality
+      const teamData = [
+        {
+          name: "Tristan Redolme",
+          role: "System Architect A.K.A 'Standardiez'",
+          description:
+            "designed the overall system framework, defined technical standards, and ensured seamless integration of components to deliver a scalable and efficient solution.",
+        },
+        {
+          name: "Kresha Mae Payanay",
+          role: "Quality Assurance Engineer A.K.A 'Testify'",
+          description:
+            "Developed test plans, executed manual and automated testing, and identified bugs to ensure system reliability and performance",
+        },
+        {
+          name: "Renee Nathalie Aprille Del Mendo",
+          role: "Front End Developer A.K.A 'Pixel Perfectionist'",
+          description:
+            "Built responsive user interfaces, implemented design mockups, and optimized performance to ensure a smooth and intuitive user experience.",
+        },
+        {
+          name: "Kurt Avryll Nito",
+          role: "Full Stack Developer A.K.A 'Code Conductor'",
+          description:
+            "Developed robust backend systems and implemented efficient frontend solutions to create a seamless user experience.",
+        },
+        {
+          name: "Nouel Benedict Mendoza",
+          role: "Backend Developer A.K.A 'Data Dynamo'",
+          description:
+            "Developed scalable backend systems and implemented efficient data management solutions to support the application's functionality.",
+        },
+        {
+          name: "Steven Joe Valdez",
+          role: "Project Manager A.K.A 'Taskmaster'",
+          description:
+            "Managed the project timeline, coordinated team efforts, and ensured successful delivery of the Corosa application.",
+        },
+        {
+          name: "Jenn Viaje",
+          role: "UX/UI Designer A.K.A 'Design Diva'",
+          description:
+            "Designed intuitive user interfaces and seamless user experiences for the Corosa application.",
+        },
+        {
+          name: "Ian Tayag",
+          role: "Database Administrator A.K.A 'Data Guardian'",
+          description:
+            "Managed the database infrastructure and ensured data integrity and security for the Corosa application.",
+        },
+      ];
+
+      let currentIndex = 0;
+
+      function updateCarousel(index) {
+        currentIndex = index;
+
+        // Update all carousel cards with proper data-position
+        document.querySelectorAll(".carousel-card").forEach((card, i) => {
+          card.classList.remove("active");
+          card.removeAttribute("data-position");
+
+          if (i === index) {
+            // Active card
+            card.classList.add("active");
+          } else if (i === (index + 1) % teamData.length) {
+            // Next card (second in line)
+            card.setAttribute("data-position", "1");
+          } else if (i === (index + 2) % teamData.length) {
+            // Card after next (third in line)
+            card.setAttribute("data-position", "2");
+          }
+        });
+
+        // Update active dot
+        document.querySelectorAll(".dot").forEach((dot, i) => {
+          dot.classList.toggle("active", i === index);
+        });
+
+        // Update left side text
+        document.getElementById("memberRoleBadge").textContent =
+          teamData[index].role;
+        document.getElementById("memberName").textContent =
+          teamData[index].name;
+        document.getElementById("memberDescription").textContent =
+          teamData[index].description;
+      }
+
+      // Add event listeners to dots
+      document.querySelectorAll(".dot").forEach((dot) => {
+        dot.addEventListener("click", function () {
+          updateCarousel(parseInt(this.getAttribute("data-index")));
+        });
+      });
     </script>
     <script src="../js/header-auth.js"></script>
   </body>
