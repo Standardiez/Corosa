@@ -1,3 +1,5 @@
+CONTRIBUTED AS: Stan8224
+
 === PROJECT OVERVIEW ===
 A web-based carpooling platform that connects Passengers (Clients) seeking rides with Car Owners (Providers) offering available seats. Assume that the app will be limited to the Maryheights Campus. The app would be similar to Grab but instead allow students or faculty with cars to allow carpooling while clients can book to be a passenger. The modules will include the Clients (book a ride), Car Owners (providers), Admin (view dashboard and perform user management).
 
